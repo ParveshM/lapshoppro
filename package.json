@@ -10,11 +10,17 @@
   "author": "Parvesh M",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.1.1",
+    "dotenv": "^16.3.1",
     "ejs": "^3.1.9",
     "express": "^4.18.2",
+    "express-async-handler": "^1.2.0",
     "express-ejs-layouts": "^2.5.1",
     "express-router": "^0.0.1",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^7.5.0",
     "morgan": "^1.10.0",
+    "nodemailer": "^6.9.5",
     "nodemon": "^3.0.1"
   }
 }

@@ -1,14 +1,15 @@
 <div class="breadcrumb-area pt-205 pb-210" style="background-image: url(assets/img/bg/breadcrumb.jpg)">
     <div class="container">
         <div class="breadcrumb-content text-center">
-            <h2>login</h2>
+            <h2>Login</h2>
             <ul>
-                <li><a href="#">home</a></li>
-                <li> login </li>
+                <li><a href="#">Home</a></li>
+                <li>Login</li>
             </ul>
         </div>
     </div>
 </div>
+
 <!-- login-area start -->
 <div class="register-area ptb-100">
     <div class="container-fluid">
@@ -18,17 +19,31 @@
                     <div class="login-form-container">
                         <div class="login-form">
                             <form action="#" method="post">
-                                <input type="text" name="user-name" placeholder="Username">
-                                <input type="password" name="user-password" placeholder="Password">
+                                <label for="email">Email:</label>
+                                <input type="email" name="email" placeholder="Email">
+                                <label for="password">Password:</label>
+                                <input type="password" name="password" placeholder="Password">
                                 <div class="button-box">
                                     <div class="login-toggle-btn">
                                         <input type="checkbox">
                                         <label>Remember me</label>
                                         <a href="#">Forgot Password?</a>
                                     </div>
-                                    <button type="submit" class="default-btn floatright">Login</button>
+                                    <button type="submit" class="default-btn floatright ">Login</button>
                                 </div>
                             </form>
+
+                            <% if (typeof message !=='undefined' ) { %>
+                                <div class="alert alert-danger alert-dismissible fade show mt-3" id="message"
+                                    role="alert">
+                                    <div class="d-flex justify-content-between">
+                                        <%- message %>
+                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                    </div>
+                                </div>
+                                <% } %>
                         </div>
                     </div>
                 </div>
@@ -37,3 +52,12 @@
     </div>
 </div>
 
+<script>
+    const message = document.getElementById('message');
+
+    const hide = () => {
+        message.style.display = 'none';
+    }
+
+    setTimeout(hide, 3000);
+</script>
