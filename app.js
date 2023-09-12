@@ -4,7 +4,8 @@ const path = require('path');
 const logger = require('morgan');
 const session = require('express-session')
 require('dotenv').config()
-
+const passport = require('passport')
+const connectFlash = require('connect-flash')
 
 // importing files--
 const expressLayouts = require('express-ejs-layouts')
@@ -28,6 +29,11 @@ app.use(session({
     saveUninitialized:true,
     cookie:{httpOnly:true}
 }))
+app.use(connectFlash());
+// for passport authentication
+app.use(passport.initialize())
+app.use(passport.session())
+require('./utility/passportAuth')
 
 // view engine setup
 app.use(express.static(path.join(__dirname, 'public')));

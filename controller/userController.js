@@ -1,6 +1,6 @@
 const User = require('../models/userModel')
 const asyncHandler = require('express-async-handler')
-const passport = require('passport')
+// const passport = require('passport')
 
 
 
@@ -56,36 +56,39 @@ const loadLogin = async (req, res) => {
 }
 
 // verifying Login---
-const verifyLogin = async (req, res) => {
-    try {
+// const verifyLogin = async (req, res) => {
+//     try { 
 
-        const { email, password } = req.body
+//         const { email, password } = req.body
 
-         const findUser = await User.findOne({email})
-         if(findUser&& await findUser.isPasswordMatched(password)){  /* Checking the user credentials */
+//          const findUser = await User.findOne({email})
+//          if(findUser&& await findUser.isPasswordMatched(password)){  /* Checking the user credentials */
          
          
-         const _id = findUser?._id   
-         req.session.User_id = _id;
-         console.log("user verified");
-        //  res.redirect('/')
-        res.send('user verified')
+//          const _id = findUser?._id   
+//          req.session.User_id = _id;
+//          console.log("user verified");
+//         //  res.redirect('/')
+//         res.send('user verified')
 
-         }else{
-            res.render('./shop/pages/login',{message:'Invalid User Credentials'})
-         }
+//          }else{
+//             res.render('./shop/pages/login',{message:'Invalid User Credentials'})
+//          }
 
 
-    } catch (error) {
-        throw new Error(error)
-    }
-}
+//     } catch (error) {
+//         throw new Error(error)
+//     }
+// }
 
 // UserLogout----
 const userLogout = async (req,res)=>{
     try {
-        req.session.user_id = null;
-        console.log("user logged out");
+        req.logout(function(err) {
+
+            if (err) {
+                  next(err);
+                 }})
         res.redirect('/')
     } catch (error) {
         console.log(error.message);
@@ -97,8 +100,7 @@ module.exports = {
     loadLandingPage,
     loadRegister,
     insertUser,
-    loadLogin,
-    verifyLogin,
+    loadLogin, 
     userLogout
 }
 
