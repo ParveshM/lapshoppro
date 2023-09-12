@@ -21,23 +21,30 @@ const userSchema = new Schema({
     },
     role: {
         type: String,
-        default:'user'
+        default: 'user'
     },
-    salt:String,
-    address: [],
-    cart: [],
-    wishlist: []
+    salt: String,
+    isBlock: {
+        type: Boolean,
+        default: false
+    },
+    cart: {
+        type: Array,
+        default: []
+    },
+    address: { type: mongoose.Schema.Types.ObjectId, ref: 'Address' },
+    wishlist: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' }
 }, { timestamps: true });
 
 
-userSchema.pre('save',async function(next){
-    const salt = await bcrypt.genSaltSync(10);
-    this.password = await bcrypt.hash(this.password,salt)
+userSchema.pre('save', async function (next) {
+    const salt =  bcrypt.genSaltSync(10);
+    this.password = await bcrypt.hash(this.password, salt)
     next()
 })
 
-userSchema.methods.isPasswordMatched = async function(enterdPassword){
-  return await bcrypt.compare(enterdPassword,this.password)
+userSchema.methods.isPasswordMatched = async function (enterdPassword) {
+    return await bcrypt.compare(enterdPassword, this.password)
 }
 
 

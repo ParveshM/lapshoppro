@@ -1,6 +1,6 @@
 const User = require('../models/userModel')
 const asyncHandler = require('express-async-handler')
-const {generateToken} = require('../config/jwtToken')
+const passport = require('passport')
 
 
 
@@ -16,7 +16,7 @@ const loadLandingPage = asyncHandler(async (req, res) => {
 // loading register page---
 const loadRegister = async (req, res) => {
 
-    try {
+    try {  
 
         res.render('./shop/pages/register')
     } catch (error) {
@@ -63,10 +63,13 @@ const verifyLogin = async (req, res) => {
 
          const findUser = await User.findOne({email})
          if(findUser&& await findUser.isPasswordMatched(password)){  /* Checking the user credentials */
+         
+         
          const _id = findUser?._id   
-        token = generateToken(_id);
-        console.log("generated Token is "+token);
-         res.redirect('/')
+         req.session.User_id = _id;
+         console.log("user verified");
+        //  res.redirect('/')
+        res.send('user verified')
 
          }else{
             res.render('./shop/pages/login',{message:'Invalid User Credentials'})
@@ -78,6 +81,17 @@ const verifyLogin = async (req, res) => {
     }
 }
 
+// UserLogout----
+const userLogout = async (req,res)=>{
+    try {
+        req.session.user_id = null;
+        console.log("user logged out");
+        res.redirect('/')
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
 
 module.exports = {
     loadLandingPage,
@@ -85,6 +99,6 @@ module.exports = {
     insertUser,
     loadLogin,
     verifyLogin,
-
+    userLogout
 }
 

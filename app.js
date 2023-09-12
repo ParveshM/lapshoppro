@@ -2,6 +2,7 @@
 const express = require('express');
 const path = require('path');
 const logger = require('morgan');
+const session = require('express-session')
 require('dotenv').config()
 
 
@@ -20,6 +21,13 @@ dataBase.dbConnect();
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+// Session init
+app.use(session({
+    secret:process.env.SECRET,
+    resave:false,
+    saveUninitialized:true,
+    cookie:{httpOnly:true}
+}))
 
 // view engine setup
 app.use(express.static(path.join(__dirname, 'public')));
