@@ -95,12 +95,63 @@ const userLogout = async (req,res)=>{
     }
 }
 
+// userProfile---
+const userProfile = async (req,res)=>{
+    try {
+        const person = req.user;
+        console.log(person);
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+// Shopping Page--
+const shopping = asyncHandler(async (req,res)=>{
+    try {
+        res.render('./shop/pages/shopping')
+    } catch (error) {
+        throw new Error(error)
+    }
+})
+
+// wishlist--
+const wishlist = asyncHandler(async (req,res)=>{
+    try {
+        res.render('./shop/pages/wishlist')
+    } catch (error) {
+        throw new Error(error)
+    }
+})
+
+// contact page--
+const contact = asyncHandler(async (req,res)=>{
+    try {
+        res.render('./shop/pages/contact')
+    } catch (error) {
+        throw new Error(error)
+    }
+})
+
+// About Us----
+
+const aboutUs = asyncHandler(async (req,res)=>{
+    try {
+        res.render('./shop/pages/about')
+    } catch (error) {
+        throw new Error(error)
+    }
+})
 
 module.exports = {
     loadLandingPage,
     loadRegister,
     insertUser,
     loadLogin, 
-    userLogout
+    userLogout,
+    userProfile,
+    shopping,
+    wishlist,
+    contact,
+    aboutUs
 }
 
