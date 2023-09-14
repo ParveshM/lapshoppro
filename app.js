@@ -11,11 +11,11 @@ const mongoose = require('mongoose')
 
 // importing files--
 const expressLayouts = require('express-ejs-layouts')
-const adminRoute = require('./routes/adminRoute');
+const adminRoute = require('./routes/adminRoute')
 const userRoute = require('./routes/userRoute');
 const dataBase = require('./config/dataBase')
 const {notFound, errorHandler} = require('./middlewares/errorHandler');
-const { log } = require('console');
+
 
 // using functions--
 const app = express();
@@ -59,19 +59,19 @@ app.use((req,res,next)=>{
 
 
 // view engine setup
-// app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static("public"));
 app.use("/admin", express.static(__dirname + "public/admin"));
-app.use("/shop", express.static(__dirname + "public/shop"));
+
 
 app.use(expressLayouts)
-app.set('layout', 'shop/layouts/user')
 app.set('view engine', 'ejs');
-
+app.set('views', path.join(__dirname, 'views'));
 
 
 // UserRoutes-----
 app.use('/', userRoute);
+// AdminRoutes---
+app.use('/admin',adminRoute)
 
 
 

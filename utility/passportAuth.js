@@ -16,7 +16,7 @@ passport.use(new LocalStrategy(
       if (!user || !await user.isPasswordMatched(password)) {
         return done(null, false, {message: 'Invalid credentials' });
       }
-
+      
       // If the user is found and the password matches, return the user
       return done(null, user);
     } catch (error) {

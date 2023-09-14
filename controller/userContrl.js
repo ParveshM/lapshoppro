@@ -55,32 +55,6 @@ const loadLogin = async (req, res) => {
     }
 }
 
-// verifying Login---
-// const verifyLogin = async (req, res) => {
-//     try { 
-
-//         const { email, password } = req.body
-
-//          const findUser = await User.findOne({email})
-//          if(findUser&& await findUser.isPasswordMatched(password)){  /* Checking the user credentials */
-         
-         
-//          const _id = findUser?._id   
-//          req.session.User_id = _id;
-//          console.log("user verified");
-//         //  res.redirect('/')
-//         res.send('user verified')
-
-//          }else{
-//             res.render('./shop/pages/login',{message:'Invalid User Credentials'})
-//          }
-
-
-//     } catch (error) {
-//         throw new Error(error)
-//     }
-// }
-
 // UserLogout----
 const userLogout = async (req,res)=>{
     try {

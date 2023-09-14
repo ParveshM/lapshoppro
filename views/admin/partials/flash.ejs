@@ -1,0 +1,34 @@
+<style>
+    .alert {
+        width: 46%;
+    margin: auto;
+    margin-top: 37px;
+    margin-bottom: -72px;
+}
+
+/* This will apply when the screen's width is 600px or less */
+@media (max-width: 600px) {
+  .alert {
+    width: 100%;
+  }
+}
+
+</style>
+<% if (locals.messages) { %>
+    <% Object.keys(messages).forEach((key) => { %>
+      <% messages[key].forEach((message) => { %>
+        <div class="alert alert-<%= key  %> alert-dismissible fade show" id="flash-message" role="alert">
+          <strong><%= key === "danger" ? "Error" : key %>!</strong> <%= message %>.
+        </div>
+      <% }) %>
+    <% }) %>
+  <% } %>
+    <script>
+      setTimeout(function() {
+        var alertElements = document.querySelectorAll('.alert');
+        alertElements.forEach(function(alertElement) {
+          alertElement.style.display = 'none';
+        });
+      }, 3000);
+    </script>
+  

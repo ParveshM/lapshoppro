@@ -1,5 +1,5 @@
 module.exports ={
-    role: {
+    roles: {
         admin: 'ADMIN',
         user :'USER'
     }

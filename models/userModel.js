@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt')
-const {role} = require('../utility/constants')
+const {roles} = require('../utility/constants')
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
@@ -20,10 +20,10 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
-    role: {
+    roles: {
         type: String,
-        enum :[role.user,role.admin],
-        default:role.user
+        enum :[roles.user,roles.admin],
+        default:roles.user
     },
     salt: String,
     isBlock: {
