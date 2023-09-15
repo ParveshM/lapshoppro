@@ -1,8 +1,8 @@
 const  express = require('express');
 const  adminRoute = express.Router();
 const adminController = require("../controller/adminContrl")
-const passport = require('passport')
-const {ensureAdmin}  = require('../middlewares/auth')
+const categoryController = require('../controller/categoryContrl')
+
 
 
 
@@ -11,28 +11,41 @@ adminRoute.use((req,res,next)=>{
     next();
 })
 
+// admin loginManagement---
 adminRoute.get('/',adminController.loadLogin)
+adminRoute.post('/',adminController.verifyAdmin);
+adminRoute.get('/logout',adminController.logout)
+ 
+// adminController.userManagement---
+adminRoute.get('/dashboard',adminController.loadDashboard)
+adminRoute.get('/user',adminController.userManagement) 
+adminRoute.post('/user/blockUser/:id',adminController.blockUser)
+adminRoute.post('/user/unBlockUser/:id',adminController.unBlockUser)
+ 
+// categoryManagement--- 
+adminRoute.get('/category',categoryController.categoryManagement)
+adminRoute.get('/addCategory',categoryController.addCategory)
+adminRoute.post('/addCategory',categoryController.insertCategory)
+adminRoute.post('/category/list/:id',categoryController.list)
+adminRoute.post('/category/unList/:id',categoryController.unList)
 
-  adminRoute.post('/',passport.authenticate('local', {
-    
-    successRedirect: '/admin/dashboard', // Use an absolute path
-    failureRedirect: '/admin', // Use an absolute path
-    failureFlash: true,
-  }));
+adminRoute.get('/editCategory/:id',categoryController.editCategoryPage)
+// adminRoute.get('/editCategory',categoryController.editCategoryPage)
 
+adminRoute.post('/editCategory/:id',categoryController.updateCategory)
 
-adminRoute.get('/dashboard',ensureAdmin,isAdminLogged,adminController.loadDashboard)
-adminRoute.get('/logout',ensureAdmin,isAdminLogged,adminController.logout)
+ 
+ 
 
 
 module.exports = adminRoute
 
-function isAdminLogged (req,res,next){
-  console.log( req.user);
-  if(req.isAuthenticated()){
-      next()
-  }else{
-      res.redirect('/')
-  }
-}
+// function isAdminLogged (req,res,next){
+//   console.log( req.user);
+//   if(req.isAuthenticated()){
+//       next()
+//   }else{
+//       res.redirect('/')
+//   }
+// }
 

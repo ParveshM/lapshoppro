@@ -1,11 +1,11 @@
 <!DOCTYPE HTML>
-<html lang="en">
+<html lang="en"> 
 
 
 <!-- Mirrored from wp.alithemes.com/html/evara/evara-backend/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 01 Aug 2021 15:32:35 GMT -->
 <head>
     <meta charset="utf-8">
-    <title>Evara Dashboard</title>
+    <title> <%= title %> </title>
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -17,20 +17,25 @@
     <link rel="shortcut icon" type="image/x-icon" href="assets/imgs/theme/favicon.svg">
     <!-- Template CSS -->
     <link href="assets/css/main.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
 </head>
 <body>
     
     
-<% if (title !=='Login') { %>
- 
-    <%- include('../partials/sideBar.ejs') %>
-    <%- include('../partials/navbar.ejs') %>
+    <% if (title === "Login") { %>
+        <%- body %>
+    <% } else { %>
+        <%- include('../partials/sideBar.ejs') %>
+        <%- include('../partials/navbar.ejs') %>
+        <%- body%>
+        <%- include('../partials/footer.ejs') %>
+     <% } %>   
+    
 
-    <% } %>
-
-    <page> <%-body  %> </page>
           
-    <%- include('../partials/footer.ejs') %>
     
 
 

@@ -1,0 +1,74 @@
+
+
+    <div class="container mt-4">
+        <h1>User Management</h1>
+
+        <!-- Add User Button -->
+        <button class="btn btn-primary float-right " data-toggle="modal" data-target="#addUserModal">Add User</button>
+
+
+        <div class="col-search mx-5">
+            <form class="searchform">
+                <div class="input-group">
+                    <input list="search_terms" type="text" class="form-control" placeholder="Search term">
+                    <button class="btn btn-light bg" type="button"> <i class="material-icons md-search"></i></button>
+                </div>
+            </form>
+        </div>
+        <!-- User Table -->
+        <!-- User Table -->
+<table class="table mt-3">
+    <thead>
+        <tr>
+            <th>Profile</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% if (users?.length > 0) { %>
+            <% for (let i = 0; i < users.length; i++) { %>
+                <% if (users[i].userName === 'Admin') { continue; } %>
+                <tr>
+                    <td><i class="fas fa-user-circle fa-lg"></i></td>
+                    <td><%- users[i].userName %></td>
+                    <td><%- users[i].email %></td>
+                    <td>
+
+                        <% if (users[i].isBlock) { %>
+                            
+                            <form action="user/unBlockUser/<%- users[i]?._id %>" method="post">
+                            <button type="submit" class="btn btn-success btn-sm unblock-button">Unblock</button>
+                            </form>
+
+                        <% } else { %>
+                            <form action="/admin/user/blockUser/<%- users[i]?._id %>" method="post">
+                                <button type="submit" class="btn btn-danger btn-sm block-button">Block</button>
+                                </form>
+                                <% } %>
+                        
+                    </td>
+                </tr>
+            <% } %>
+        <% } else { %>
+            <tr>
+                <td colspan="4"><h2>NO USERS FOUND</h2></td>
+            </tr>
+        <% } %>
+    </tbody>
+</table>
+
+
+    </div>
+
+   
+
+    <!-- Edit User Modal -->
+    <div class="modal fade" id="editUserModal" tabindex="-1" role="dialog" aria-labelledby="editUserModalLabel" aria-hidden="true">
+        <!-- Similar structure as the Add User Modal -->
+    </div>
+
+    <!-- Include Bootstrap JS (jQuery and Popper.js required) -->
+  
+

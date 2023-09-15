@@ -8,7 +8,7 @@ const passport = require('passport')
 const connectFlash = require('connect-flash')
 const connectMongo = require('connect-mongo')
 const mongoose = require('mongoose')
-
+ 
 // importing files--
 const expressLayouts = require('express-ejs-layouts')
 const adminRoute = require('./routes/adminRoute')
@@ -20,6 +20,8 @@ const {notFound, errorHandler} = require('./middlewares/errorHandler');
 // using functions--
 const app = express();
 dataBase.dbConnect();
+
+// Assuming your static assets are in a directory called 'assets'
 
 
 app.use(logger('dev'));
@@ -62,7 +64,6 @@ app.use((req,res,next)=>{
 app.use(express.static("public"));
 app.use("/admin", express.static(__dirname + "public/admin"));
 
-
 app.use(expressLayouts)
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
@@ -79,9 +80,7 @@ app.use('/admin',adminRoute)
 app.use(notFound);
 app.use(errorHandler);
 
-
-
-
+// server setup--
 app.listen(3000, () => {
     console.log(`Server Started on http://localhost:${process.env.PORT}`)
 })

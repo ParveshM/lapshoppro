@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt')
-const {roles} = require('../utility/constants')
+
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
@@ -20,11 +20,7 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
-    roles: {
-        type: String,
-        enum :[roles.user,roles.admin],
-        default:roles.user
-    },
+   
     salt: String,
     isBlock: {
         type: Boolean,
@@ -43,10 +39,6 @@ userSchema.pre('save', async function (next) {
     if(this.isNew){
     const salt =  bcrypt.genSaltSync(10);
     this.password = await bcrypt.hash(this.password, salt)
-    
-    if(this.email === process.env.ADMIN_EMAIL){
-        this.role = role.admin
-    }
     }
     next()
 })
