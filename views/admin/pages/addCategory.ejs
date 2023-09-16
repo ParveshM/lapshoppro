@@ -5,18 +5,13 @@
     <form action="" method="post">
         <div class="form-group col-lg-6">
             <label for="categoryName">Category Name</label>
-            <input type="text" class="form-control" name="addCategory" id="categoryName" placeholder="Enter category name" required>
+            <input type="text" class="form-control" name="addCategory" id="categoryName"  placeholder="Enter category name" required>
         </div>
 
         <button type="submit" class="btn btn-primary">Add Category</button>
     </form>
 </div>
 
-<% if(typeof catCheck !=='undefined') { %>
-    <div class="alert alert-danger fade show mt-3" id="message" role="alert">
-        <%- catCheck %>
-    </div>
-<% } %>
 
 <% if(typeof message !=='undefined') { %>
     <div class="alert alert-success fade show mt-3" id="message" role="alert">

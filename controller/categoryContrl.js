@@ -2,15 +2,15 @@ const category = require('../models/categoryModel')
 const expressHandler = require('express-async-handler')
 
 
-// category page--
+// category page-- 
 const categoryManagement = expressHandler(async (req, res) => {
     try {
-        const findCategory = await category.find()
+        const findCategory = await category.find({isDeleted:false})
         res.render('./admin/pages/categories',{catList: findCategory,title: 'Categories'}) 
     } catch (error) {
         throw new Error(error)
     }
-})
+}) 
 
 // addCategory form---
 const addCategory = expressHandler(async (req, res) => {
@@ -25,19 +25,21 @@ const addCategory = expressHandler(async (req, res) => {
 const insertCategory = expressHandler(async (req, res) => {
     try {
 
-        const categoryName = req.body.addCategory 
-
-        const findCat = await category.findOne({categoryName})
-        if (findCat) {
-            res.render('./admin/pages/addCategory',{catCheck: 'Category already existing',title:'addCategory'})
-
-        } else {
-            await category.create({
-                categoryName
-
-            });
+        const categoryName = req.body.addCategory
+            const result = await category.findOneAndUpdate(
+                { categoryName },
+                {
+                    $set: {
+                        categoryName,
+                        isDeleted: false, /** updated the isDeleted field to false when the document already existing **/
+                    },
+                },
+                { upsert: true} // Upsert 
+            );
+            
+            console.log(result);
             res.render('./admin/pages/addCategory',{message:`Category ${categoryName} added successfully`,title:'addCategory'})
-        }
+        
     } catch (error) {
         throw new Error(error)
     }
@@ -76,47 +78,52 @@ const unList = expressHandler(async (req, res) => {
 })
 
 // edit Category form --
-const editCategoryPage = expressHandler(async(req,res)=>{
+const editCategory = expressHandler(async(req,res)=>{
   
     try {
         const {id} = req.params
-        console.log(id,"kkk");
-        // const catName = await category.findOne({_id:id});
         const catName = await category.findById(id);
-        console.log(catName,"kakak");
-        // if(catName){
-       
-       
-        // }else{
-        //     console.log('error in rendering');
-        // }
-        res.render('./admin/pages/editCategory',{title:'editCategory'});
+        if(catName){
+            res.render('./admin/pages/editCategory',{title:'editCategory',values:catName});    
+        }else{
+            console.log('error in rendering');
+        }
     } catch (error) {
-        throw new Error(error)
+        throw new Error(error)   
     }
 })
-// const editCategory = expressHandler(async(req,res)=>{
-  
-//     try {
-       
-//         res.render('./admin/pages/editCategory',{title:'editCategory'})
-        
-//     } catch (error) {
-//         throw new Error(error)
-//     }
-// })
-
+ 
 // update Category name --
 const updateCategory = expressHandler(async(req,res)=>{
     try {
        const id = req.params.id
-       const updatedName = req.body
-        const updating = await category.findByIdAndUpdate({_id:id},{$set:{categoryName:updatedName}})
-        res.render('./admin/pages/editCategory',{title:'editCategory'})
+       const updatedName = req.body.updatedName
+       console.log(updatedName);
+       await category.findByIdAndUpdate(id,{$set:{categoryName:updatedName}})
+        res.redirect('/admin/category')
     } catch (error) {
         throw new Error(error)
     }
 })
+
+// deleteCategory----
+const deleteCategory = expressHandler(async(req,res)=>{
+   console.log('got the request ',req.params.id);
+    try {
+        const {id} = req.params
+        const deleted = await category.findByIdAndUpdate(id,{$set:{isDeleted:true}});
+         if(deleted){
+            res.redirect('/admin/category')
+
+         }else{
+            console.log('error in redirecting');
+         }
+       
+    } catch (error) {
+        throw new Error(error)   
+    }
+})
+
 
 
 module.exports = {
@@ -125,6 +132,7 @@ module.exports = {
     insertCategory,
     list,
     unList,
-    editCategoryPage,
-    updateCategory
+    editCategory,
+    updateCategory, 
+    deleteCategory
 }

@@ -51,20 +51,27 @@
                                 <button type="submit" class="btn btn-danger btn-sm block-button">unList</button>
                             </form>
                             <% } %>
-                       </td>
-                    <td>
-                        <a href="/admin/editCategory/<%- catList[i]._id %>">
-                           <button class="btn btn-info btn-sm"><i class="material-icons md-edit pb-1"></i></button>
-                        </a>
+                     </td>
+                  <td>
+                        <div class="d-flex justify-content-even">
+                            <a href="/admin/editCategory/<%- catList[i]._id %>">
+                                <button class="btn btn-info btn-sm"><i class="material-icons md-edit pb-1"></i></button>
+                            </a>
+                            <form action="/admin/deleteCategory/<%- catList[i]._id %>" method="post">
+                                <button class="btn btn-danger btn-sm ml-2"><i class="material-icons md-delete pb-1 "></i></button>
+                            </form>
+                        </div>
                     </td>
+                    
+                    <td></td>
                         </tr>
                         
                         <% } %>
 
+                        
                         <% } else { %>
                             <h2>NO CATOGERIES FOUND</h2>
                             <% } %>
-                        
            
         </tbody>
     </table>

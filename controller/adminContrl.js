@@ -21,9 +21,9 @@ const verifyAdmin = expressHandler(async(req,res)=>{
          if(req.body.email === email && req.body.password === password){
               
               req.session.admin = email; 
-            res.render('./admin/pages/index')
+            res.render('./admin/pages/index',{title:'dashboard'})
          }else{
-            res.render('./admin/pages/login', {adminCheck: 'Invalid Credentials'})
+            res.render('./admin/pages/login', {adminCheck: 'Invalid Credentials',title:'verify'})
          }
 
     } catch (error) {
@@ -42,7 +42,7 @@ const loadDashboard = expressHandler(async(req,res)=>{
     }
 })
 
-// UserManagement--
+// UserManagement-- 
 const userManagement = expressHandler(async(req,res)=>{
 
     try {
@@ -51,7 +51,7 @@ const userManagement = expressHandler(async(req,res)=>{
         console.log(findUsers,"haiii");
 
     
-        res.render('./admin/pages/userList',{users:findUsers})
+        res.render('./admin/pages/userList',{users:findUsers,title:'UserList'})
     } catch (error) {
         throw new Error(error) 
     }
@@ -87,7 +87,7 @@ const unBlockUser = expressHandler(async (req, res) => {
 const logout = (req, res)=>{
     try {
         req.session.admin = null;
-        res.redirect('/admin')
+        res.redirect('/admin',{title:'logout'})
     } catch (error) {
         throw new Error(error)
     }

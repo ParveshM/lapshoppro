@@ -2,7 +2,7 @@ const  express = require('express');
 const  adminRoute = express.Router();
 const adminController = require("../controller/adminContrl")
 const categoryController = require('../controller/categoryContrl')
-
+const productController = require('../controller/productContrl')
 
 
 
@@ -28,13 +28,13 @@ adminRoute.get('/addCategory',categoryController.addCategory)
 adminRoute.post('/addCategory',categoryController.insertCategory)
 adminRoute.post('/category/list/:id',categoryController.list)
 adminRoute.post('/category/unList/:id',categoryController.unList)
-
-adminRoute.get('/editCategory/:id',categoryController.editCategoryPage)
-// adminRoute.get('/editCategory',categoryController.editCategoryPage)
-
+adminRoute.get('/editCategory/:id',categoryController.editCategory)
 adminRoute.post('/editCategory/:id',categoryController.updateCategory)
-
+adminRoute.post('/deleteCategory/:id',categoryController.deleteCategory)
  
+// Product Management---
+adminRoute.get('/product/addProduct',productController.addProduct)
+adminRoute.post('/product/addProduct',productController.insertProduct)
  
 
 
@@ -47,5 +47,5 @@ module.exports = adminRoute
 //   }else{
 //       res.redirect('/')
 //   }
-// }
+// } 
 

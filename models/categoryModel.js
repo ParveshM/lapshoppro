@@ -4,14 +4,17 @@ const Schema = mongoose.Schema;
 const categorySchema = new Schema({
     categoryName:{
         type:String,
-        required:true,
-        unique:true,
-        index:true,
+        required:true
+        
     },
     list:{ 
         type:Boolean,
         default:false
     },
+    isDeleted:{
+        type:Boolean,
+        default:false
+    }
 },{timestamps:true});
 
 //Export the model
