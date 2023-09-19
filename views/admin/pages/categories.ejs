@@ -14,10 +14,10 @@
     <h1>Category Management</h1>
 
     <div class="col-search ml-4 mb-2">
-        <form class="searchform">
+        <form class="searchform" action="/admin/category/search" method="post">
             <div class="input-group">
-                <input list="search_terms" type="text" class="form-control" placeholder="Search term">
-                <button class="btn btn-light bg" type="button"> <i class="material-icons md-search"></i></button>
+                <input list="search_terms" type="text" class="form-control" name="search" placeholder="Search a category">
+                <button type="submit" class="btn btn-light bg"  > <i class="material-icons md-search"></i></button>
             </div>
         </form>
     </div>
@@ -32,7 +32,10 @@
             </tr>
         </thead>
         <tbody>
-             <% if (catList?.length>0) { %>
+            
+             
+                
+                <% if (catList?.length>0) { %>
               
                 <% for( let i = 0; i < catList.length; i++ ) { %>
                 
@@ -57,9 +60,7 @@
                             <a href="/admin/editCategory/<%- catList[i]._id %>">
                                 <button class="btn btn-info btn-sm"><i class="material-icons md-edit pb-1"></i></button>
                             </a>
-                            <form action="/admin/deleteCategory/<%- catList[i]._id %>" method="post">
-                                <button class="btn btn-danger btn-sm ml-2"><i class="material-icons md-delete pb-1 "></i></button>
-                            </form>
+                          
                         </div>
                     </td>
                     
@@ -72,10 +73,11 @@
                         <% } else { %>
                             <h2>NO CATOGERIES FOUND</h2>
                             <% } %>
-           
-        </tbody>
-    </table>
-</div>
+                         
+                            
+                        </tbody>
+                    </table>
+                </div>
 
 <!-- Add Category Modal -->
 <div class="modal fade" id="addCategoryModal" tabindex="-1" role="dialog" aria-labelledby="addCategoryModalLabel"

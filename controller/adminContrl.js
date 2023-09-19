@@ -15,15 +15,21 @@ const verifyAdmin = expressHandler(async(req,res)=>{
 
     try {
       
-        const email = 'admin@gmail.com'
-        const password =  '1234'
-            console.log(req.body); 
-         if(req.body.email === email && req.body.password === password){
+        const email = process.env.ADMIN_EMAIL
+        const password =   process.env.ADMIN_PASSWORD
+          
+            const emailCheck = req.body.email
+           const user = await User.findOne({email:emailCheck})
+
+            if(user){
+                     res.render('./admin/pages/login',{adminCheck:'You are not an Admin',title:'Login'})
+            }
+         if(email === email && req.body.password === password){
               
               req.session.admin = email; 
             res.render('./admin/pages/index',{title:'dashboard'})
          }else{
-            res.render('./admin/pages/login', {adminCheck: 'Invalid Credentials',title:'verify'})
+            res.render('./admin/pages/login', {adminCheck: 'Invalid Credentials',title:'Login'})
          }
 
     } catch (error) {
@@ -48,10 +54,26 @@ const userManagement = expressHandler(async(req,res)=>{
     try {
      
         const findUsers = await User.find();
-        console.log(findUsers,"haiii");
-
-    
+            
         res.render('./admin/pages/userList',{users:findUsers,title:'UserList'})
+    } catch (error) {
+        throw new Error(error) 
+    }
+}) 
+// searchUser
+const searchUser = expressHandler(async(req,res)=>{
+
+    try {
+     
+        const  data = req.body.search
+        const searching = await User.find({userName:{$regex: data , $options: 'i' }});
+        if(searching){
+             res.render('./admin/pages/userList',{users:searching,title:'Search'})
+        }else{
+            res.render('./admin/pages/userList',{title:'Search'})
+        }
+            
+       
     } catch (error) {
         throw new Error(error) 
     }
@@ -79,15 +101,11 @@ const unBlockUser = expressHandler(async (req, res) => {
     }
 });
 
-
-
-
-
 // Admin Logout--
 const logout = (req, res)=>{
     try {
         req.session.admin = null;
-        res.redirect('/admin',{title:'logout'})
+        res.redirect('/admin')
     } catch (error) {
         throw new Error(error)
     }
@@ -99,6 +117,7 @@ module.exports = {
     verifyAdmin,
     loadDashboard,
     userManagement,
+    searchUser,
     blockUser,
     unBlockUser,
     logout

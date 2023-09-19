@@ -16,6 +16,10 @@ userRoute.get('/', userController.loadLandingPage);
 userRoute.get('/register',ensureNotAuthenticated,userController.loadRegister);
 userRoute.post('/register',ensureNotAuthenticated,userController.insertUser);
 
+userRoute.get('/sendOTP',ensureNotAuthenticated,userController.sendOTPpage);
+userRoute.post('/sendOTP',ensureNotAuthenticated,userController.verifyOTP);
+
+
 userRoute.get('/login',ensureNotAuthenticated,userController.loadLogin);
 userRoute.post('/login',ensureNotAuthenticated,
  passport.authenticate('local', {
@@ -32,7 +36,7 @@ userRoute.get('/contact',userController.contact);
 userRoute.get('/about',userController.aboutUs);
 
 
-
+// userRoute.get('/sendOtp',userController.sendOtp)
 
 
 module.exports = userRoute;

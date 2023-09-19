@@ -19,6 +19,12 @@
     </div>
 <% } %>
 
+<% if(typeof catCheck !=='undefined') { %>
+    <div class="alert alert-danger fade show mt-3" id="message" role="alert">
+        <%- catCheck %>
+    </div>
+<% } %>
+
 <script>
   const message = document.getElementById('message');
 

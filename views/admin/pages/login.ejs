@@ -4,15 +4,16 @@
         <div class="col-md-8 col-lg-7 col-xl-6">
           <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.svg"
             class="img-fluid" alt="Phone image">
-        </div>
+        </div  >
         
-        <% if(typeof adminCheck !=='undefined') { %>
-            <div class="alert alert-danger fade show mt-3" id="message" role="alert">
+      
+
+        <div class="col-md-7 col-lg-5 col-xl-5 offset-xl-1">
+            <% if(typeof adminCheck !=='undefined') { %>
+            <div class="alert alert-danger fade show mt-3 " id="message" role="alert">
                 <%- adminCheck %>
             </div>
         <% } %>
-
-        <div class="col-md-7 col-lg-5 col-xl-5 offset-xl-1">
             <h2>WELCOME ADMIN!</h2><br>
           <form action="#" method="post">
             <!-- Email input -->

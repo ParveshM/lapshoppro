@@ -637,7 +637,7 @@ b {
     position: relative
 }
 
-.menu-aside .menu-link:hover {
+.menu-aside  .menu-link:hover {
     -webkit-transition: .2s linear;
     transition: .2s linear;
     background-color: #e9ecef

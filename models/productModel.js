@@ -24,7 +24,7 @@ var ProductSchema = new mongoose.Schema({
         ref: 'Category' 
     },
     brand: {
-        type: String,
+        type: String, 
         required:true 
     },
     quantity: {
@@ -35,13 +35,29 @@ var ProductSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
-    images: {
-        type: String,
-        required:true
-    },
+    primaryImage:[{
+        name:{
+            type:String, 
+            required:true
+        },
+        path:{
+            type:String, 
+            required:true
+        } 
+    }], 
+    secondaryImages:[{
+        name:{
+            type:String,
+            required:true, 
+        },
+        path:{
+            type:String,
+            required:true, 
+        }
+    }],
     color: {
         type: String,
-        required:true
+        required:true 
     },
     ratings: [{ 
         star: Number,
@@ -49,8 +65,11 @@ var ProductSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User'
         }
-    }]
-
+    }],
+    isListed:{
+        type:Boolean,
+        default:false
+    }
 }, { timestamps: true });
 
 // Export the model

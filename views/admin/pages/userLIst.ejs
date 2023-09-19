@@ -8,10 +8,10 @@
 
 
         <div class="col-search mx-5">
-            <form class="searchform">
+            <form class="searchform" action="/admin/user/search" method="post">
                 <div class="input-group">
-                    <input list="search_terms" type="text" class="form-control" placeholder="Search term">
-                    <button class="btn btn-light bg" type="button"> <i class="material-icons md-search"></i></button>
+                    <input list="search_terms" type="text" class="form-control" name="search" placeholder="Search a user">
+                    <button class="btn btn-light bg" type="submit"> <i class="material-icons md-search"></i></button>
                 </div>
             </form>
         </div>

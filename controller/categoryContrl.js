@@ -24,26 +24,27 @@ const addCategory = expressHandler(async (req, res) => {
 // inserting  categories--
 const insertCategory = expressHandler(async (req, res) => {
     try {
-
-        const categoryName = req.body.addCategory
-            const result = await category.findOneAndUpdate(
-                { categoryName },
-                {
-                    $set: {
-                        categoryName,
-                        isDeleted: false, /** updated the isDeleted field to false when the document already existing **/
-                    },
-                },
-                { upsert: true} // Upsert 
-            );
-            
-            console.log(result);
-            res.render('./admin/pages/addCategory',{message:`Category ${categoryName} added successfully`,title:'addCategory'})
-        
+        const categoryName = req.body.addCategory;
+        const findCat = await category.findOne({ categoryName }); 
+        if (findCat) {
+            const catCheck = `Category ${categoryName} Already existing`;
+            res.render('./admin/pages/addCategory', { catCheck, title: 'addCategory' });
+        } else {
+            const result =  new category({
+                     categoryName : req.body.addCategory
+            })
+            const save =await result.save();
+            console.log(save);
+            res.render('./admin/pages/addCategory', {
+                message: `Category ${categoryName} added successfully`,
+                title: 'addCategory',
+            });
+        }
     } catch (error) {
-        throw new Error(error)
+        throw new Error(error);
     }
-})
+});
+
 
 // list category--
 const list = expressHandler(async (req, res) => {
@@ -106,17 +107,17 @@ const updateCategory = expressHandler(async(req,res)=>{
     }
 })
 
-// deleteCategory----
-const deleteCategory = expressHandler(async(req,res)=>{
-   console.log('got the request ',req.params.id);
+// searchcCategory----
+const searchCategory = expressHandler(async(req,res)=>{
+   console.log(req.body.search);
     try {
-        const {id} = req.params
-        const deleted = await category.findByIdAndUpdate(id,{$set:{isDeleted:true}});
-         if(deleted){
-            res.redirect('/admin/category')
+          const  data = req.body.search
+        const searching = await category.find({categoryName:{$regex: data , $options: 'i' }});
+         if(searching){
+            res.render('./admin/pages/categories',{title:'Searching',catList:searching })
 
          }else{
-            console.log('error in redirecting');
+            res.render('./admin/pages/categories',{title:'Searching'})
          }
        
     } catch (error) {
@@ -133,6 +134,7 @@ module.exports = {
     list,
     unList,
     editCategory,
-    updateCategory, 
-    deleteCategory
+    updateCategory,
+    searchCategory 
+
 }

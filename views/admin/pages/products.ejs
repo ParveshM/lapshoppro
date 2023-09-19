@@ -1,0 +1,83 @@
+<section class="content-main">
+    <div class="content-header">
+        <div>
+            <h2 class="content-title card-title">Products List</h2>
+
+        </div>
+        <div>
+            <a href="#" class="btn btn-light rounded font-md">Export</a>
+            <a href="#" class="btn btn-light rounded  font-md">Import</a>
+            <a href="#" class="btn btn-primary btn-sm rounded">Create new</a>
+        </div>
+    </div>
+    <div class="card mb-4">
+
+        <table style="width: 100%;" id="example" class="table table-striped table-bordered table-sm" cellspacing="0"
+            width="100%">
+            <thead>
+                <tr>
+                    <th class="th-sm">Image</th>
+                    <th class="th-sm">Product name</th>
+                    <th class="th-sm">Brand</th>
+                    <th class="th-sm">Category</th>
+                    <th class="th-sm">Stock</th>
+                    <th class="th-sm">Sale Price</th>
+                    <th>List/Unlist</th>
+                    <th class="th-sm">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+
+
+                <% productList.forEach(element=> { %>
+                    <tr>
+                        <td><img src=" /admin/uploads/<%= element?.primaryImage?.[0]?.name; %>"
+                                style="max-width: 100px;max-height: 100px;" alt="Product Image"></td>
+                        <td>
+                            <%= element.title %>
+                        </td>
+                        <td>
+                            <%= element.brand %>
+                        </td>
+                        <td>
+                            <%= element.categoryName?.categoryName %>
+                        </td>
+                        <td>
+                            <%= element.quantity %>
+                        </td>
+                        <td>
+                            <%= element.salePrice %>
+                        </td>
+                        <td>
+                            <% if (element.isListed) { %>
+
+                                <form action="/admin/product/list/<%- element?._id %>" method="post">
+                                    <button type="submit" class="btn btn-success btn-sm unblock-button">List</button>
+                                </form>
+
+                                <% } else { %>
+                                    <form action="/admin/product/unList/<%- element?._id %>" method="post">
+                                        <button type="submit" class="btn btn-danger btn-sm block-button">unList</button>
+                                    </form>
+                                    <% } %>
+                        </td>
+                        <td>
+                            <a href="/admin/product/editProduct/<%- element._id %>">
+                                <button class="btn btn-info btn-sm ml-2 "><i class="material-icons md-edit pb-1"></i></button>
+                            </a>
+                        </td>
+                    </tr>
+                    <% }); %>
+
+
+
+            </tbody>
+    </div>
+
+</section>
+<script>
+    $(document).ready(function () {
+        new DataTable('#example');
+
+    })
+</script>
