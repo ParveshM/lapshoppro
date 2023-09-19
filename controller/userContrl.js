@@ -1,6 +1,6 @@
     const User = require('../models/userModel')
     const asyncHandler = require('express-async-handler')
-    const {sendOtp,generateOTP} = require('../middlewares/sendOtp')
+    const {sendOtp,generateOTP} = require('../utility/nodeMailer')
     // require('dotenv').config()
 
 
@@ -48,28 +48,18 @@
                 };
 
                 const OTP = generateOTP()
-
+                console.log('generated OTP',OTP);
                 req.session.otpUser = { ...UserData, otp:OTP };
-                req.session.phone = req.body.mobile;
+                req.session.mail = req.body.email;
                 console.log(req.session.otpUser);
-                console.log(req.body.mobile);
+                console.log(req.body.email);
 
-                try {
-
-                
-                    const verifying = await sendOtp(req.body.mobile,OTP);  /* otp sending */
-                   
-
-                    if (verifying) {
-                      
-                        return res.redirect('/sendOTP');
-                    } else {
-                       
-                        console.error('Sending OTP failed');
-                        return res.status(500).send('Sending OTP failed');
-                    }
+                try {              
+                     sendOtp(req.body.email,OTP);  /* otp sending */               
+                        console.log('inside trying sendOTP email and otp ',OTP);
+                        return res.redirect('/sendOTP');               
                 } catch (error) {
-                    // Handle any errors that occur during OTP sending
+                   
                     console.error('Error sending OTP:', error);
                     return res.status(500).send('Error sending OTP');
                 }
@@ -79,40 +69,30 @@
         }
     }
 
-
-    // const UserData = await User.create(req.body);  /* User inserted*/
-    // if (UserData) {
-    //     res.render('./shop/pages/register', { message: "Registration Successfull ,Please Login" })
-    // }
-    // loadSentOTP page Loding--
-    const sendOTPpage = asyncHandler(async(req,res)=>{
-
-        try {
-            
-            
+ // loadSentOTP page Loding--
+ const sendOTPpage = asyncHandler(async(req,res)=>{
+        try {            
             res.render('./shop/pages/verifyOTP')
-
         } catch (error) {
             throw new Error(error)
         }
 
     })
 
-    // verifyOTP_-
-   // userController.js
-// ...
-
 // verifyOTP route handler
 const verifyOTP = asyncHandler(async (req, res) => {
     try {
         const enteredOTP = req.body.otp; 
         
-        // Get the entered OTP from the form
+        
         const storedOTP = req.session.otpUser.otp; // Get the stored OTP from the session
     
         const user = req.session.otpUser;
+        console.log('entered',enteredOTP);
+        console.log('Stored',storedOTP);
+
         if (enteredOTP == storedOTP) {
-          
+          console.log('inside eqaul checking');
             const newUser  = await User.create(user);
             
          if(newUser){
