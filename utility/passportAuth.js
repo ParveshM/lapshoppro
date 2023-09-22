@@ -11,7 +11,7 @@ passport.use(new LocalStrategy(
     try {
       // Find the user by their email (username)
       const user = await User.findOne({ email });
-
+      console.log('user data',user);
       // If the user is not found or the password doesn't match, return false
       if (!user || !await user.isPasswordMatched(password)) {
         return done(null, false, {message: 'Invalid credentials' });

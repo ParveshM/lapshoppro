@@ -8,13 +8,9 @@ const categorySchema = new Schema({
         required:true
         
     },
-    list:{ 
+    isListed:{ 
         type:Boolean,
-        default:false
-    },
-    isDeleted:{
-        type:Boolean,
-        default:false
+        default:true
     }
 },{timestamps:true});
 

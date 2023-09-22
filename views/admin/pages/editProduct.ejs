@@ -97,16 +97,15 @@
                                     <h5>Choose product images </h5>
                                     <span class="fw-normal mb-4 text-success">file supports only:
                                         jpeg,jpg,png,webp</span>
+
                                     <span class="fw-bold">Select the Primary Image</span>
                                     <input type="file" accept=".jpg,.jpeg,.png,.webp,.svg"
-                                        class="form-control FilUploader" name="primaryImage" class="mb-3"  />
+                                        class="form-control FilUploader" name="primaryImage" class="mb-3" />
+                                    <!-- hidden primary -->
+                                    <input type="hidden" name="existingPrimaryImage"
+                                        value="<%= product.primaryImage[0].name %>" />
 
-                                    <!-- hidden  -->
-                                        <input type="hidden" name="existingPrimaryImage" value="<%= product.primaryImage[0].name %>" />
-                                        <% product.secondaryImages.forEach((image) => { %>
-                                            <input type="hidden" name="existingSecondaryImage" value="<%= image.name %>" />
-                                        <% }); %>
-                                        <!-- inputs -->
+                                    <!-- inputs -->
 
                                     <div class="col-md-6 mt-2 mr-5">
                                         <% product.primaryImage.forEach(image=> { %>
@@ -119,9 +118,10 @@
 
                                         <% product.secondaryImages.forEach(image=> { %>
                                             <input type="file" accept=".jpg,.jpeg,.png,.webp,.svg"
-                                                class="form-control FilUploader" name="secondaryImage" class="mb-3"
-                                                multiple /><br>
-                                            <img src="/admin/uploads/<%= image?.name; %>" class="max-size-image mb-3"
+                                                class="form-control FilUploader" name="secondaryImage"
+                                                class="mb-3" /><br>
+                                            <input type="hidden" name="idSecondaryImage" value="<%= image._id  %>">
+                                            <img src="/admin/uploads/<%= image?.name %>" class="max-size-image mb-3"
                                                 alt="<%= image.name %>">
                                             <% }); %>
                                 </div>

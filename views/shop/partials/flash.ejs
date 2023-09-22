@@ -6,7 +6,6 @@
     margin-bottom: -72px;
 }
 
-/* This will apply when the screen's width is 600px or less */
 @media (max-width: 600px) {
   .alert {
     width: 100%;
@@ -14,6 +13,7 @@
 }
 
 </style>
+
 <% if (locals.messages) { %>
     <% Object.keys(messages).forEach((key) => { %>
       <% messages[key].forEach((message) => { %>
@@ -23,6 +23,7 @@
       <% }) %>
     <% }) %>
   <% } %>
+
     <script>
       setTimeout(function() {
         var alertElements = document.querySelectorAll('.alert');

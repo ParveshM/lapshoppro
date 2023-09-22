@@ -1,5 +1,5 @@
 const expressHandler = require('express-async-handler')
-const User = require('../models/userModel')
+const User = require('../models/userModel') 
 
 // Loading loginPage--   
 const loadLogin = expressHandler(async(req,res)=>{

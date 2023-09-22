@@ -5,9 +5,9 @@
 
         </div>
         <div>
-            <a href="#" class="btn btn-light rounded font-md">Export</a>
-            <a href="#" class="btn btn-light rounded  font-md">Import</a>
-            <a href="#" class="btn btn-primary btn-sm rounded">Create new</a>
+            <!-- <a href="#" class="btn btn-light rounded font-md">Export</a>
+            <a href="#" class="btn btn-light rounded  font-md">Import</a> -->
+            <a href="/admin/product/addProduct" class="btn btn-primary btn-sm rounded">Add Product</a>
         </div>
     </div>
     <div class="card mb-4">
@@ -32,7 +32,7 @@
                 <% productList.forEach(element=> { %>
                     <tr>
                         <td><img src=" /admin/uploads/<%= element?.primaryImage?.[0]?.name; %>"
-                                style="max-width: 100px;max-height: 100px;" alt="Product Image"></td>
+                                style="max-width: 75px;max-height: 75px;" alt="Product Image"></td>
                         <td>
                             <%= element.title %>
                         </td>
@@ -51,26 +51,24 @@
                         <td>
                             <% if (element.isListed) { %>
 
-                                <form action="/admin/product/list/<%- element?._id %>" method="post">
-                                    <button type="submit" class="btn btn-success btn-sm unblock-button">List</button>
+                                <form action="/admin/product/UnList/<%- element?._id %>" method="post">
+                                    <button type="submit" class="btn btn-danger btn-sm unblock-button">Unlist</button>
                                 </form>
 
                                 <% } else { %>
-                                    <form action="/admin/product/unList/<%- element?._id %>" method="post">
-                                        <button type="submit" class="btn btn-danger btn-sm block-button">unList</button>
+                                    <form action="/admin/product/list/<%- element?._id %>" method="post">
+                                        <button type="submit" class="btn btn-success btn-sm block-button">List</button>
                                     </form>
                                     <% } %>
                         </td>
                         <td>
                             <a href="/admin/product/editProduct/<%- element._id %>">
-                                <button class="btn btn-info btn-sm ml-2 "><i class="material-icons md-edit pb-1"></i></button>
+                                <button class="btn btn-info btn-sm ml-2 "><i
+                                        class="material-icons md-edit pb-1"></i></button>
                             </a>
                         </td>
                     </tr>
                     <% }); %>
-
-
-
             </tbody>
     </div>
 

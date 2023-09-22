@@ -3725,7 +3725,7 @@ a.banner-book-style-btn:hover {
     bottom: 0;
     left: 0;
     padding: 40px 20px;
-    position: absolute;
+  
     right: 0;
 }
 .product-content-electro2 > h3 {
@@ -6526,7 +6526,7 @@ a.icon-cart-furniture.food-cart span {
 .breadcrumb-content li a:hover {
     color: #ccc;
 }
-.breadcrumb-content li a::after {
+.breadcrumb-content li a::{
     background-color: #fff;
     content: "";
     font-size: 8px;
@@ -7283,10 +7283,11 @@ h5.panel-title {
     background: #050035 none repeat scroll 0 0;
 }
 .product-color > ul li.pink {
-    background: #ff01f0 none repeat scroll 0 0;
+    background: silver none repeat scroll 0 0;
+    
 }
 .product-color > ul li.blue {
-    background: #3649ff none repeat scroll 0 0;
+    background: #004a8d none repeat scroll 0 0;
 }
 .product-color > ul li.sky {
     background: #00c0ff none repeat scroll 0 0;

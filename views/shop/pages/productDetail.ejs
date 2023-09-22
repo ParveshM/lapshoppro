@@ -1,0 +1,289 @@
+<div class="breadcrumb-area" style="background-color: black; color: white;">
+    <div class="container">
+        <div class="breadcrumb-content text-center pt-1">
+            <ul>
+                <li>
+                    <h3><a href="/">Home</a></h3>
+                </li>
+                <li>
+                    <h3 style="color: white;">/</h3>
+                </li>
+                <li>
+                    <h3 style="color: white;">Product</h3>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="product-details ptb-100 pb-90">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 col-lg-7 col-12">
+
+                <!-- Inside the HTML template -->
+                <div class="product-details-img-content">
+                    <div class="product-details-tab mr-35 product-details-tab2">
+                        <div class="product-details-small nav mr-10 product-details-2" role="tablist">
+
+                            <!-- Primary Images -->
+                            <% if (Array.isArray(product.primaryImage) && product.primaryImage.length> 0) { %>
+                                <% product.primaryImage.forEach((image, index)=> { %>
+                                    <a class="<%= index === 0 ? 'active' : '' %> mb-10"
+                                        href="#pro-details<%= index + 1 %>" data-bs-toggle="tab" role="tab"
+                                        aria-selected="<%= index === 0 %>">
+                                        <img src="/admin/uploads/<%= image.name %>" alt="">
+                                    </a>
+                                    <% }); %>
+                                        <% } %>
+
+                                            <!-- Secondary Images -->
+                                            <% if (Array.isArray(product.secondaryImages) &&
+                                                product.secondaryImages.length> 0) { %>
+                                                <% product.secondaryImages.forEach((image, index)=> { %>
+                                                    <a class="mb-10"
+                                                        href="#pro-details<%= product.primaryImage.length + index + 1 %>"
+                                                        data-bs-toggle="tab" role="tab" aria-selected="false">
+                                                        <img src="/admin/uploads/<%= image.name %>" alt="">
+                                                    </a>
+                                                    <% }); %>
+                                                        <% } %>
+                        </div>
+
+                        <div class="product-details-large tab-content">
+                            <!-- Primary Images -->
+                            <% if (Array.isArray(product.primaryImage) && product.primaryImage.length> 0) { %>
+                                <% product.primaryImage.forEach((image, index)=> { %>
+                                    <div class="tab-pane <%= index === 0 ? 'active show' : '' %> fade"
+                                        id="pro-details<%= index + 1 %>" role="tabpanel">
+                                        <div class="easyzoom easyzoom--overlay is-ready">
+                                            <a href="/admin/uploads/<%= image.name %>">
+                                                <img src="/admin/uploads/<%= image.name %>" alt="">
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <% }); %>
+                                        <% } %>
+
+                                            <!-- Secondary Images -->
+                                            <% if (Array.isArray(product.secondaryImages) &&
+                                                product.secondaryImages.length> 0) { %>
+                                                <% product.secondaryImages.forEach((image, index)=> { %>
+                                                    <div class="tab-pane fade"
+                                                        id="pro-details<%= product.primaryImage.length + index + 1 %>"
+                                                        role="tabpanel">
+                                                        <div class="easyzoom easyzoom--overlay is-ready">
+                                                            <a href="/admin/uploads/<%= image.name %>">
+                                                                <img src="/admin/uploads/<%= image.name %>" alt="">
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                    <% }); %>
+                                                        <% } %>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-md-12 col-lg-5 col-12">
+                <div class="product-details-content">
+                    <h3>
+                        <%= product.title %>
+                    </h3>
+                    <div class="rating-number">
+                        <div class="quick-view-rating">
+                            <i class="pe-7s-star p-star"></i>
+                            <i class="pe-7s-star red-star"></i>
+                            <i class="pe-7s-star"></i>
+                            <i class="pe-7s-star"></i>
+                            <i class="pe-7s-star"></i>
+                        </div>
+                        <div class="quick-view-number">
+                            <span>2 Rating's</span>
+                        </div>
+                    </div>
+                    <span class="text-decoration-line-through">
+                        ₹<%= product.productPrice %></span>
+                    <div class="details-price">
+                        <span>₹<%= product.salePrice %></span>
+                    </div>
+
+                    <div class="quick-view-select">
+
+                        <div class="select-option-part">
+                            <ul class="row">
+                                <li class="col-auto"><label>Color*</label></li>
+                                <li class="col-auto">
+                                    <%= product.color %>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="quickview-plus-minus">
+                        <div class="cart-plus-minus">
+                            <input type="text" value="02" name="qtybutton" class="cart-plus-minus-box">
+                        </div>
+                        <div class="quickview-btn-cart">
+                            <a class="btn-hover-black" href="#">add to cart</a>
+                        </div>
+                        <div class="quickview-btn-wishlist">
+                            <a class="btn-hover" href="#"><i class="pe-7s-like"></i></a>
+                        </div>
+                    </div>
+                    <div class="product-details-cati-tag mt-35">
+                        <ul>
+                            <li class="categories-title">Category :</li>
+                            <li><a href="#">
+                                    <%= product.categoryName.categoryName %>
+                                </a></li>
+                        </ul>
+                    </div>
+                    <br>
+                    <div class="product-share">
+                        <ul>
+                            <li class="categories-title">Share :</li>
+                            <li>
+                                <a href="#">
+                                    <i class="icofont icofont-social-facebook"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <i class="icofont icofont-social-twitter"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <i class="icofont icofont-social-pinterest"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <i class="icofont icofont-social-flikr"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- EJS template -->
+<div class="product-description-review-area pb-90">
+    <div class="container">
+        <div class="product-description-review text-center">
+            <div class="description-review-title nav" role="tablist">
+                <a class="active" href="#pro-dec" data-bs-toggle="tab" role="tab" aria-selected="true">
+                    Description
+                </a>
+                <a href="#pro-review" data-bs-toggle="tab" role="tab" aria-selected="false">
+                    Reviews (0)
+                </a>
+            </div>
+            <div class="description-review-text tab-content">
+                <div class="tab-pane active show fade" id="pro-dec" role="tabpanel">
+                    <% const sections=product.description.split('\n\n'); sections.forEach(section=> {
+                        const lines = section.split('\n');
+                        const title = lines[0];
+                        const details = lines.slice(1);
+                        %>
+                        <div class="structured-section">
+                            <h4>
+                                <%= title %>
+                            </h4>
+                            <ul>
+                                <% details.forEach(detail=> { %>
+                                    <li>
+                                        <%= detail %>
+                                    </li>
+                                    <% }); %>
+                            </ul>
+                        </div>
+                        <% }); %>
+                </div>
+                <div class="tab-pane fade" id="pro-review" role="tabpanel">
+                    <a href="#">Be the first to write your review!</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="product-area pb-95">
+    <div class="container">
+        <div class="section-title-3 text-center mb-50">
+            <h2>Related products</h2>
+        </div>
+        <div class="row">
+            <% if (products.length> 0) { %>
+                <% products.forEach(element=> { %>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <a href="/viewProduct/<%= element._id%>">
+                                <img class="card-img-top img-size"
+                                    src="/admin/uploads/<%= element.primaryImage[0].name %>"
+                                    alt="<%= element?.title %>">
+                            </a>
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <a href="/viewProduct/<%= element._id%>" class="truncate-text">
+                                        <%= element?.title %>
+                                    </a>
+                                </h5>
+                                <p class="card-text">₹<%= element?.salePrice %>
+                                </p>
+                                <div class="product-action">
+                                    <a class="animate-left" title="Wishlist" href="#">
+                                        <i class="pe-7s-like"></i>
+                                    </a>
+                                    <a class="animate-top" title="Add To Cart" href="#">
+                                        <i class="pe-7s-cart"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <% }); %>
+                        <% } %>
+        </div>
+    </div>
+</div>
+
+<style>
+    .truncate-text {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 5em;
+        /* Adjust the width as needed */
+    }
+
+    .card-title a {
+        display: block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+        /* Adjust the width as needed */
+    }
+
+    .img-size {
+        max-width: 300px;
+        max-height: 300px;
+    }
+
+    /* CSS Styles */
+    .structured-text {
+        width: 100%;
+        /* Set an appropriate width */
+        white-space: pre-line;
+        /* Preserve line breaks */
+        line-height: 1.5;
+        /* Adjust line spacing as needed */
+        font-family: Arial, sans-serif;
+        /* Choose a font */
+        font-size: 14px;
+        /* Adjust font size as needed */
+        /* Add more styles as desired */
+    }
+</style>

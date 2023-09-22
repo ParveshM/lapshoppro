@@ -1,123 +1,88 @@
-      <header>
-            <div class="header-top-furniture wrapper-padding-2 res-header-sm">
-                <div class="container-fluid">
-                    <div class="header-bottom-wrapper">
-                        <div class="logo-2 furniture-logo ptb-30">
-                            <a href="/">
-                                <img src="assets/img/logo/2.png" alt="">
-                            </a>
-                        </div>
-                        <div class="menu-style-2 furniture-menu menu-hover">
-                            <nav>
-                                <ul>
-                                    <li><a href="/">home</a></li>
-                                    <li><a href="/shop">Shop</a>
-                                    </li>
-                                    <li><a href="/about">About Us</a>
-                                        <!-- <ul class="single-dropdown">
-                                            <li><a href="about-us.html">about us</a></li>
-                                            <li><a href="menu-list.html">menu list</a></li>
-                                            <li><a href="login.html">login</a></li>
-                                            <li><a href="register.html">register</a></li>
-                                            <li><a href="cart.html">cart page</a></li>
-                                            <li><a href="checkout.html">checkout</a></li>
-                                            <li><a href="wishlist.html">wishlist</a></li>
-                                            <li><a href="contact.html">contact</a></li>
-                                        </ul> -->
-                                       
-                                           
-                                    </li>
-                                    <li><a href="#">blog</a></li>
-                                    <li><a href="/contact">contact</a></li>
-                                </ul>
-                            </nav>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="d-flex justify-content-end align-items-center">
-                                <div class="user-avatar">
-                                    <div class="dropdown">
-                                        <a class="dropdown-toggle" id="userMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            <i class="ti-user"></i>
-                                        </a>
-                                        <div class="dropdown-menu" aria-labelledby="userMenu">                                                      
-                                                <% if (!user) { %>
-                                                    <a class="dropdown-item" href="/login">Login</a>
-                                                    <a class="dropdown-item" href="/register">Register</a>
-                                                     <% }  else {%>
-                                                        <a class="dropdown-item" href="/logout">Logout</a>
-                                                        <a class="dropdown-item" href="/profile">Profile</a>      
-                                                     <% } %>
-                                                      
-                                        </div>
-                                    </div>
-                                </div>                            
- 
-                                    <div class="header-cart">
-                                        <a class="icon-cart-furniture" href="">
-                                           
-                                                <i class="ti-shopping-cart"></i>
-                                                
-                                            <span class="shop-count-furniture green">02</span>
-                                        </a>
-                                       
-                                        
-                                    </div>
+<header>
+    <div class="header-top-furniture wrapper-padding-2 res-header-sm">
+        <div class="container-fluid">
+            <div class="header-bottom-wrapper">
+                <div class="logo-2 furniture-logo ptb-30">
+                    <a href="/">
+                        <img class="logo-img" src="/assets/img/logo/LapshopPro.png" alt="">
+                    </a>
+                </div>
+                <div class="menu-style-2 furniture-menu menu-hover">
+                    <nav>
+                        <ul>
+                            <li><a href="/">home</a></li>
+                            <li><a href="/shop">Shop</a>
+                            </li>
+                            <li><a href="/about">About Us</a>
+                            </li>
+                            <!-- <li><a href="#">blog</a></li> -->
+                            <li><a href="/contact">contact</a></li>
+                        </ul>
+                    </nav>
+                </div>
+                <div class="col-md-3">
+                    <div class="d-flex justify-content-end align-items-center">
+                        <div class="user-avatar">
+                            <div class="dropdown">
+                                <a class="dropdown-toggle" id="userMenu" data-toggle="dropdown" aria-haspopup="true"
+                                    aria-expanded="false">
+                                    <i class="ti-user"></i>
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="userMenu">
+                                    <% if (!user) { %>
+                                        <a class="dropdown-item" href="/login">Login</a>
+                                        <a class="dropdown-item" href="/register">Register</a>
+                                        <% } else {%>
+                                            <a class="dropdown-item" href="/logout">Logout</a>
+                                            <a class="dropdown-item" href="/profile">Profile</a>
+                                            <% } %>
                                 </div>
-                                    
-                    <div class="row">
-                        <div class="mobile-menu-area d-md-block col-md-12 col-lg-12 col-12 d-lg-none d-xl-none">
-                            <div class="mobile-menu">
-                                <nav id="mobile-menu-active">
-                                    <ul class="menu-overflow">
-                                        <li><a href="/">HOME</a></li>
-                                        <li><a href="/shop">Shop</a></li>
-                                        <li><a href="/about">About Us</a>
-                                        
-                                        </li>
-                                        <li><a href="#">BLOG</a></li>
-                                        <li><a href="/contact"> Contact  </a></li>
-                                    </ul>
-                                </nav>							
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-            <div class="header-bottom-furniture wrapper-padding-2 border-top-3">
-                <div class="container-fluid">
-                    <div class="furniture-bottom-wrapper">
-                        <div class="furniture-login">
-                            <ul>
-                                <!-- <li>Get Access: <a href="/login">Login </a></li>
-                                <li><a href="/register">Reg </a></li> -->
-                            </ul>
+
+                        <div class="header-cart">
+                            <a class="icon-wishlist" href="/wishlist" data-toggle="tooltip" data-placement="top"
+                                title="Wishlist">
+                                <i class="ti-heart"></i>
+                            </a>
                         </div>
-                        <div class="furniture-search">
-                            <form action="#">
-                                <input placeholder="I am Searching for . . ." type="text">
-                                <button>
-                                    <i class="ti-search"></i>
-                                </button>
-                            </form>
-                        </div>
-                        <div class="furniture-wishlist">
-                            <ul>
-                                <li><a data-bs-toggle="modal" data-target="#exampleCompare" href="#"><i class="ti-reload"></i> Compare</a></li>
-                                <li><a href="/wishlist"><i class="ti-heart"></i> Wishlist</a></li>
-                            </ul>
+
+                        <div class="header-">
+                            <a class="icon-cart-furniture" href="/cart" data-toggle="tooltip" data-placement="top"
+                                title="View Cart">
+
+                                <i class="ti-shopping-cart"></i>
+
+                                <span class="shop-count-furniture green">02</span>
+                            </a>
+
+
                         </div>
                     </div>
+
                 </div>
             </div>
-        </header>
+
+</header>
 <style>
-    .ti-user{
-       
+    .ti-user,
+    .icon-wishlist {
+
         font-size: 26px;
     }
-    .user-avatar{
+
+    .user-avatar {
         margin-top: 5px;
-  
+
+    }
+
+    .logo-img {
+        max-width: 100px;
+        max-height: 100px;
     }
 </style>
- 
+<script>
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+</script>

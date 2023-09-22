@@ -9,21 +9,17 @@ const productManagement = expressHandler(async(req,res)=>{
     try {
        
         const findProduct = await Product.find().populate('categoryName');
-            res.render('./admin/pages/products',{title:'Products',productList:findProduct})
+                    res.render('./admin/pages/products',{title:'Products',productList:findProduct})
 
     } catch (error) {
         throw new Error(error)
     }
 })
 
-
-
 // addProduct Page---
 const addProduct = expressHandler(async (req, res) => {
     try {
-        const category = await Category.find({ isDeleted: false, list: false })
-        
-        
+        const category = await Category.find({isListed: true})
         if (category) {
             res.render('./admin/pages/addProduct', { title: 'addProduct', catList: category })
         }
@@ -80,7 +76,7 @@ const insertProduct = expressHandler(async (req, res) => {
         console.log(inserted);
         if(inserted){
 
-            res.redirect('/admin/dashboard')
+            res.redirect('/admin/products')
         }
     } catch (error) {
         throw new Error(error)
@@ -94,7 +90,7 @@ const listProduct = expressHandler(async (req, res) => {
         const id = req.params.id
         console.log(id);
         
-        const listing = await Product.findByIdAndUpdate({_id:id},{$set:{isListed:false}})
+        const listing = await Product.findByIdAndUpdate({_id:id},{$set:{isListed:true}})
         console.log(listing);
         res.redirect('/admin/products')
 
@@ -109,7 +105,7 @@ const unListProduct = expressHandler(async (req, res) => {
         const id = req.params.id
         console.log(id);
         
-        const listing = await Product.findByIdAndUpdate({_id:id},{$set:{isListed:true}})
+        const listing = await Product.findByIdAndUpdate({_id:id},{$set:{isListed:false}})
         console.log(listing);
         res.redirect('/admin/products')
 
@@ -118,13 +114,14 @@ const unListProduct = expressHandler(async (req, res) => {
     }
 
 })
+
 // editProductPage Loading---
-const editProductPage = expressHandler(async (req, res) => {
+const editProductPage = expressHandler(async (req, res) => { 
     try {
         const id = req.params.id
         console.log(id); 
-        const category = await Category.find({ list: false })
-        const productFound = await Product.findById(id).populate('categoryName').exec()
+        const category = await Category.find({ isList: true })
+        const productFound = await Product.findById(id).populate('categoryName').exec() 
         console.log(productFound);
        if(productFound){
         res.render('./admin/pages/editProduct',{title:'editProduct',product:productFound,catList:category})
@@ -133,20 +130,15 @@ const editProductPage = expressHandler(async (req, res) => {
     } catch (error) { 
         throw new Error(error)
     }
-
 })
 const updateProduct = expressHandler(async (req, res) => {
     try { 
 
-const id = req.params.id;
-
-// Retrieve existing product data
+const id = req.params.id; 
 const existingProduct = await Product.findById(id);
-
-// Extract the form data including image uploads
 const { title, description, brand, color, categoryName, quantity, productPrice, salePrice } = req.body;
 
-// Check if new primary image is uploaded
+
 let primaryImage;
 if (req.files.primaryImage) {
     const primaryImageFile = req.files.primaryImage[0];
@@ -159,16 +151,24 @@ if (req.files.primaryImage) {
     primaryImage = existingProduct.primaryImage[0];
 }
 
-// Check if new secondary images are uploaded
-let secondaryImages;
-if (req.files.secondaryImage) {
-    secondaryImages = req.files.secondaryImage.map((file) => ({
-        name: file.filename,
-        path: file.path,
-    }));
-} else {
-    // No new secondary images uploaded, retain the existing ones
-    secondaryImages = existingProduct.secondaryImages;
+const secondaryImageID = req.body.idSecondaryImage; /* hidden input image id */
+
+const dbImage = existingProduct.secondaryImages;
+
+ 
+
+
+let secondaryImages =  req.files.secondaryImage;
+
+
+if (secondaryImages) {
+    for (let i = 0; i < secondaryImages.length; i++) {
+       if(secondaryImageID[i] == dbImage[i]._id){
+        dbImage[i].name = secondaryImages[i].filename;
+        dbImage[i].path = secondaryImages[i].path;
+       }
+        
+    }   
 }
 const updatedProduct = await Product.findByIdAndUpdate(
     id,
@@ -182,9 +182,9 @@ const updatedProduct = await Product.findByIdAndUpdate(
         productPrice,
         salePrice,
         primaryImage: [primaryImage],
-        secondaryImages
+       
         });
-
+        console.log('updated product',updatedProduct);
 res.redirect('/admin/products');
 
 

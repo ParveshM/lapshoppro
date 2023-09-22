@@ -43,16 +43,18 @@
                     <td> <%-  i+1 %> </td>
                     <td> <%- catList[i].categoryName %> </td>
                     <td>
-                    <% if (catList[i].list) { %>
+                    <% if (catList[i].isListed) { %>
 
-                        <form action="/admin/category/list/<%- catList[i]?._id %>" method="post">
-                            <button type="submit" class="btn btn-success btn-sm unblock-button">List</button>
-                        </form>
-
+                       
+                            <a href="/admin/category/unList/<%- catList[i]?._id %>">
+                                <button type="submit" class="btn btn-danger btn-sm unblock-button">unList</button>
+                            </a>
+                            
+                     
                         <% } else { %>
-                            <form action="/admin/category/unList/<%- catList[i]?._id %>" method="post">
-                                <button type="submit" class="btn btn-danger btn-sm block-button">unList</button>
-                            </form>
+                            <a href="/admin/category/list/<%- catList[i]?._id %>">
+                                <button type="submit" class="btn btn-success btn-sm unblock-button">list</button>
+                            </a>
                             <% } %>
                      </td>
                   <td>

@@ -5,7 +5,7 @@ const expressHandler = require('express-async-handler')
 // category page-- 
 const categoryManagement = expressHandler(async (req, res) => {
     try {
-        const findCategory = await category.find({isDeleted:false})
+        const findCategory = await category.find()
         res.render('./admin/pages/categories',{catList: findCategory,title: 'Categories'}) 
     } catch (error) {
         throw new Error(error)
@@ -53,7 +53,7 @@ const list = expressHandler(async (req, res) => {
         const id = req.params.id
         console.log(id);
         
-        const listing = await category.findByIdAndUpdate({_id:id},{$set:{list:false}})
+        const listing = await category.findByIdAndUpdate({_id:id},{$set:{isListed:true}})
         console.log(listing);
         res.redirect('/admin/category')
 
@@ -68,7 +68,7 @@ const unList = expressHandler(async (req, res) => {
         const id = req.params.id
         console.log(id);
         
-        const listing = await category.findByIdAndUpdate({_id:id},{$set:{list:true}})
+        const listing = await category.findByIdAndUpdate({_id:id},{$set:{isListed:false}})
         console.log(listing);
         res.redirect('/admin/category')
 
@@ -124,7 +124,6 @@ const searchCategory = expressHandler(async(req,res)=>{
         throw new Error(error)   
     }
 })
-
 
 
 module.exports = {

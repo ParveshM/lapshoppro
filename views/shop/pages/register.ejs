@@ -1,48 +1,52 @@
 
 
-<div class="breadcrumb-area pt-205 pb-210" style="background-image: url(assets/img/bg/breadcrumb.jpg)">
-    <div class="container">
-        <div class="breadcrumb-content text-center">
-            <h2>register</h2>
-            <ul>
-                <li><a href="#">home</a></li>
-                <li> register </li>
-            </ul>
-        </div>
-    </div>
-</div>
 <!-- register-area start -->
-<div class="register-area ptb-100">
+<div class="register-area ptb-20 ">
+  <div class="breadcrumb-area pb-3 " >
+      <div class="container">
+          <div class="breadcrumb-content text-center">
+              
+              <ul>
+                  <li><a href="#" style="color: black;">home</a></li>
+                  <li style="color: black;"> register </li>
+              </ul>
+          </div>
+      </div>
+  </div>
   <div class="container-fluid">
     <div class="row">
       <div class="col-md-12 col-12 col-lg-12 col-xl-6 ms-auto me-auto">
-        <div class="login">
+
+        <div class="alert alert-danger fade show mt-3" id="error-message" role="alert" style="display: none;"></div>
+        
+        <% if (typeof userCheck !== 'undefined') { %>
+          <div class="alert alert-danger fade show mt-3" id="message" role="alert">
+              <%- userCheck %>
+          </div>
+          <% } %>
+          <div class="login">
+          <h2 style="color:black">Register</h2>
           <div class="login-form-container">
             <div class="login-form">
-              <form action="" method="post">
+              <form action="" method="post" onsubmit="return validateForm()">
                 <label for="user-name">Username:</label>
                 <input  type="text" id="user-name" name="userName" placeholder="Enter your name">
 
                 <label for="user-email">Email:</label>
-                <input type="email" id="user-email" name="email" placeholder="Enter your email">
+                <input type="text" id="user-email" name="email" placeholder="Enter your email">
 
                 <label for="user-password">Password:</label>
                 <input type="password" id="user-password" name="password" placeholder="Enter your password">
-
-                <!-- Add Phone Number input -->
-                <label for="user-phone">Phone Number:</label>
-                <input type="tel" id="user-phone" name="mobile" placeholder="Enter your phone number">
+                <label for="user-repassword">Reenter Password:</label>
+                <input type="password" id="user-repassword" name="repassword" placeholder="Reenter your password" >
                 <div class="button-box">
-                 <a href="/verifyEmail"> <button type="button" id="verify-email-btn" class="default-btn">Verify Email</button></a>
                   <button type="submit" class="default-btn floatright">Register</button>
-                  <!-- Add Login button -->
-                </div>
-                <!-- <div class="float-right">
+                
+                  <a href="/login" class="float-right mx-5">Already have an account ? Login now!</a>
 
-                  <a href="/login" class="default-btn float-right">Already have an account ?</a>
-                </div> -->
-              </form>
+                </div>
               
+              </form>
               <!-- alert boxes----- -->
               <% if (typeof  message !== 'undefined') { %>
                 <div class="alert alert-success fade show mt-3" id="message" role="alert">
@@ -51,11 +55,7 @@
                 <% } %>
               
               
-                <% if (typeof userCheck !== 'undefined') { %>
-                  <div class="alert alert-danger fade show mt-3" id="message" role="alert">
-                      <%- userCheck %>
-                  </div>
-                  <% } %>
+              
                   
             </div>
           </div>
@@ -66,12 +66,4 @@
 </div>
 
 
-<script>
-  const message = document.getElementById('message');
-
-  const hide = () => {
-      message.style.display = 'none';
-  }
-
-  setTimeout(hide, 3000);
-</script>
+<script src="/assets/js/registerValidation.js"></script>

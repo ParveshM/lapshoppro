@@ -8,22 +8,22 @@ const passport = require('passport')
 const connectFlash = require('connect-flash')
 const connectMongo = require('connect-mongo')
 const mongoose = require('mongoose')
- 
-// importing files--
+const nocache = require('nocache')
 const expressLayouts = require('express-ejs-layouts')
+
+// importing files--
 const adminRoute = require('./routes/adminRoute')
 const userRoute = require('./routes/userRoute');
 const dataBase = require('./config/dataBase')
-const {notFound, errorHandler} = require('./middlewares/errorHandler');
+const { notFound, errorHandler } = require('./middlewares/errorHandler');
 
 
 // using functions--
 const app = express();
 dataBase.dbConnect();
 
-// Assuming your static assets are in a directory called 'assets'
 
-
+app.use(nocache())
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -32,15 +32,19 @@ const mongoStore = new connectMongo(session)
 
 // Session init
 app.use(session({
-    secret:process.env.SECRET,
-    resave:false,
-    saveUninitialized:false,
-    cookie:{httpOnly:true},
-    store:new mongoStore({mongooseConnection: mongoose.connection})
+    secret: process.env.SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        httpOnly: true,
+        maxAge: 3600000 // Set the expiration time to 1 hour (in milliseconds)
+    },
+    store: new mongoStore({ mongooseConnection: mongoose.connection })
 }))
+
 // using for sending message to ejs
 app.use(connectFlash());
-app.use((req,res,next)=>{
+app.use((req, res, next) => {
     res.locals.messages = req.flash()
     next();
 })
@@ -53,7 +57,7 @@ app.use(passport.session())
 require('./utility/passportAuth')
 
 // for user session activity checking
-app.use((req,res,next)=>{
+app.use((req, res, next) => {
     res.locals.user = req.user;
     next()
 })
@@ -72,7 +76,7 @@ app.set('views', path.join(__dirname, 'views'));
 // UserRoutes-----
 app.use('/', userRoute);
 // AdminRoutes---
-app.use('/admin',adminRoute)
+app.use('/admin', adminRoute)
 
 
 
@@ -81,7 +85,8 @@ app.use(notFound);
 app.use(errorHandler);
 
 // server setup--
-app.listen(3000, () => {
+const PORT = process.env.PORT
+app.listen(PORT, () => {
     console.log(`Server Started on http://localhost:${process.env.PORT}`)
 })
 module.exports = app;
