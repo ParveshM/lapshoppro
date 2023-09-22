@@ -83,6 +83,12 @@ app.use('/admin', adminRoute)
 // error Handling---
 app.use(notFound);
 app.use(errorHandler);
+// Handle 404 errors
+app.use((req, res, next) => {
+    res.status(404).render('404', { layout: 'error/404' });
+    next()
+});
+
 
 // server setup--
 const PORT = process.env.PORT

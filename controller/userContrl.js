@@ -193,7 +193,11 @@ const viewProduct = asyncHandler(async (req, res) => {
     try {
         
         const id = req.params.id
+        
    const findProduct = await Product.findOne({_id:id}).populate('categoryName').exec()
+   if(!findProduct){
+    return res.status(404)
+   }
        const products = await Product.find({isListed:true})
         res.render('./shop/pages/productDetail',{product:findProduct,products:products})
     } catch (error) {
