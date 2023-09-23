@@ -3,8 +3,7 @@ const Product = require('../models/productModel')
 const Category = require('../models/categoryModel')
 const asyncHandler = require('express-async-handler')
 const { sendOtp, generateOTP } = require('../utility/nodeMailer')
-
-
+    
 // loadLandingPage---
 const loadLandingPage = asyncHandler(async (req, res) => {
     try {
@@ -196,7 +195,7 @@ const viewProduct = asyncHandler(async (req, res) => {
         
    const findProduct = await Product.findOne({_id:id}).populate('categoryName').exec()
    if(!findProduct){
-    return res.status(404)
+   return res.status(404).render('./shop/pages/404')
    }
        const products = await Product.find({isListed:true})
         res.render('./shop/pages/productDetail',{product:findProduct,products:products})

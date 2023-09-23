@@ -4,21 +4,25 @@ const User = require('../models/userModel'); // Import your User model
 
 passport.use(new LocalStrategy(
   {
-    usernameField: 'email', 
+    usernameField: 'email',
     passwordField: 'password'
   },
   async (email, password, done) => {
     try {
       // Find the user by their email (username)
       const user = await User.findOne({ email });
-      console.log('user data',user);
-      // If the user is not found or the password doesn't match, return false
-      if (!user || !await user.isPasswordMatched(password)) {
-        return done(null, false, {message: 'Invalid credentials' });
+       if (!user || !await user.isPasswordMatched(password)) {
+        return done(null, false, { message: 'Invalid credentials' });
       }
-      
-      // If the user is found and the password matches, return the user
-      return done(null, user);
+
+       if(user.isBlock) {          /* checking the user is blocked or not */
+        const messages = `OOPS! your Account ${user.email} is blocked for your suspicious acitivity,Please contact our customer team  for further assistance`
+        return done(null,false,{message:messages})
+      }else{
+        return done(null, user); // If the user is found and the password matches , not blocked, return the user
+      }
+
+     
     } catch (error) {
       return done(error);
     }
