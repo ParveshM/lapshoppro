@@ -44,6 +44,12 @@ userRoute.get('/wishlist', ensureAuthenticated, userController.wishlist);
 userRoute.get('/cart', ensureAuthenticated, cartController.loadCartPage);
 userRoute.get('/addtoCart/:id',validateID, ensureAuthenticated, cartController.addtoCart);
 userRoute.get('/removeProduct/:id',validateID, ensureAuthenticated, cartController.removeProductfromCart);
+userRoute.post('/updateCartItem/:id',
+validateID, ensureAuthenticated, 
+cartController.updateCartItemQuantity);
+userRoute.get('/getCartItemCount', ensureAuthenticated, cartController.getCartCount);
+
+
 
 
 

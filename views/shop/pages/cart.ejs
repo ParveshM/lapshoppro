@@ -77,15 +77,21 @@
                                                     <td class="product-quantity">
                                                         <div class="input-group">
                                                             <span class="input-group-btn">
-                                                                <button type="button" class="quantity-button minus" onclick="decrementQuantity(this)">-</button>
+                                                                <button type="button"
+                                                                    class="btn btn-danger quantity-button minus mx-2"
+                                                                    onclick="decrementQuantity(this, '<%= element.product._id %>')">-</button>
                                                             </span>
-                                                            <input value="<%= element.quantity %>" min="1"  class="quantity-input">
+                                                            <input id="quantity-<%= element.product._id %>"
+                                                                value="<%= element.quantity %>" min="1"
+                                                                class="form-control quantity-input"  style="max-width: 40px; max-height: 30px;">
                                                             <span class="input-group-btn">
-                                                                <button type="button" class="quantity-button plus" onclick="incrementQuantity(this)">+</button>
+                                                                <button type="button"
+                                                                    class="btn btn-success quantity-button plus mx-2"
+                                                                    onclick="incrementQuantity(this, '<%= element.product._id %>')">+</button>
                                                             </span>
                                                         </div>
                                                     </td>
-                                                    
+
                                                     <td class="product-subtotal">
                                                         <%= (element.quantity *
                                                             element.product.salePrice).toLocaleString() %>
@@ -96,55 +102,49 @@
                                     </tbody>
                                 </table>
                     </div>
-                    <% if (typeof message !=='undefined' ) { %>
-                        <div class="alert alert-danger fade show mt-3" id="message" role="alert">
-                            <%- message %>
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <div class="coupon-all">
+                                <div class="coupon">
+                                    <input id="coupon_code" class="input-text" name="coupon_code" value=""
+                                        placeholder="Coupon code" type="text">
+                                    <input class="button" name="apply_coupon" value="Apply coupon" type="submit">
+                                </div>
+                                <div class="coupon2">
+                                    <a href="/cart"><input class="button" name="update_cart" value="Update cart">
+                                        <!-- add type=submit to button when , using coupon section  -->
+                                    </a>
+                                </div>
+                            </div>
                         </div>
-                        <% } %>
-                            <div class="row">
-                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                    <div class="coupon-all">
-                                        <div class="coupon">
-                                            <input id="coupon_code" class="input-text" name="coupon_code" value=""
-                                                placeholder="Coupon code" type="text">
-                                            <input class="button" name="apply_coupon" value="Apply coupon"
-                                                type="submit">
-                                        </div>
-                                        <div class="coupon2">
-                                            <a href="/updateCart"><input class="button" name="update_cart" value="Update cart"
-                                                    type="submit">
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-5 ms-auto">
+                            <div class="cart-page-total">
+                                <h2>Cart totals</h2>
+                                <ul>
+                                    <li>Subtotal<span>
+                                            <%=(subtotal).toLocaleString() %>
+                                        </span></li>
+                                    <li>ProcessingFee<span>
+                                            <%=(processingFee).toLocaleString() %>
+                                        </span></li>
+                                    <li>Tax Amount<span>
+                                            <% if (taxAmount) { %>
+                                                <%= taxAmount %>
+                                                    <% } else { %>
+                                                        Nil
+                                                        <% } %>
+                                        </span></li>
+                                    <li>Total<span>
+                                            <%= (totalAmount).toLocaleString() %>
+                                        </span></li>
+                                </ul>
+                                <a href="#">Proceed to checkout</a>
                             </div>
-                            <div class="row">
-                                <div class="col-md-5 ms-auto">
-                                    <div class="cart-page-total">
-                                        <h2>Cart totals</h2>
-                                        <ul>
-                                            <li>Subtotal<span>
-                                                    <%=(subtotal).toLocaleString() %>
-                                                </span></li>
-                                            <li>ProcessingFee<span>
-                                                    <%=(processingFee).toLocaleString() %>
-                                                </span></li>
-                                            <li>Tax Amount<span>
-                                                    <% if (taxAmount) { %>
-                                                        <%= taxAmount %>
-                                                            <% } else { %>
-                                                                Nil
-                                                                <% } %>
-                                                </span></li>
-                                            <li>Total<span>
-                                                    <%= (totalAmount).toLocaleString() %>
-                                                </span></li>
-                                        </ul>
-                                        <a href="#">Proceed to checkout</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <% } %>
+                        </div>
+                    </div>
+                    <% } %>
             </div>
             </form>
         </div>
@@ -152,37 +152,4 @@
 </div>
 </div>
 
-<script>
-// function decrementQuantity(button) {
-//     const input = button.parentElement.parentElement.querySelector('.quantity-input');
-//     if (parseInt(input.value) > 1) {
-//         input.value = parseInt(input.value) - 1;
-//     }
-// }
-
-// function incrementQuantity(button) {
-//     const input = button.parentElement.parentElement.querySelector('.quantity-input');
-//     input.value = parseInt(input.value) + 1;
-// }
-    function showConfirmation(productId) {
-        Swal.fire({
-            title: 'Are you sure?',
-            text: 'You are about to remove this item from your cart.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, remove it!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // If the user clicks "Yes," redirect to the removeProduct endpoint
-                window.location.href = "/removeProduct/" + productId;
-            }
-        });
-    }
-    const alert = document.getElementById('message')
-    const hide = () => {
-        alert.style.display = 'none'
-    }
-    setTimeout(hide, 3000);
-</script>
+<script src="/assets/js/shop/cart.js"></script>
