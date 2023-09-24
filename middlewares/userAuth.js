@@ -1,14 +1,12 @@
 const User = require('../models/userModel')
 
 async function ensureAuthenticated(req, res, next) {
+
     if (req.isAuthenticated()) {
         if (req.user.id) {   /* checking the id of user  */
-
             const user = await isBlockCheck(req.user.id);
-            console.log('user stats', user.isBlock);
-
-            if (user.isBlock) {    /* if user status is blocked user will be redirected to
-                                              login page after clearing the session */
+            if(user.isBlock) {    /*** if user status is blocked user will be redirected to
+                                              login page after clearing the session ***/
                 req.logout(function (err) {
                     if (err) {
                         next(err);
@@ -16,10 +14,12 @@ async function ensureAuthenticated(req, res, next) {
                 })
                 res.redirect('/login')
 
-            }    else {
+            }else {
                 next();
             }
         }
+    }else{
+        res.redirect('/login')
     }
 }
 

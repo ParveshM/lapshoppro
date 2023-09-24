@@ -204,14 +204,6 @@ const viewProduct = asyncHandler(async (req, res) => {
     }
 })
 
-// cart page--
-const cart = asyncHandler(async (req, res) => {
-    try {
-        res.render('./shop/pages/cart')
-    } catch (error) {
-        throw new Error(error)
-    }
-})
 
 // wishlist--
 const wishlist = asyncHandler(async (req, res) => {
@@ -254,7 +246,6 @@ module.exports = {
     userProfile,
     shopping,
     viewProduct,
-    cart,
     wishlist,
     contact,
     aboutUs,

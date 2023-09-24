@@ -75,7 +75,7 @@
                             <% } %>
                             <div class="hanicraft-action-position">
                                 <div class="hanicraft-action">
-                                    <a class="action-cart" title="Add To Cart" href="">
+                                    <a class="action-cart" title="Add To Cart" href="/addtoCart/<%= element?._id %>">
                                         <i class="pe-7s-cart"></i>
                                     </a>
                                     <a class="action-like" title="Wishlist" href="#">
@@ -86,7 +86,8 @@
                             <div class="product-content-electro2 text-center card-title">
                                 <h3><a href="/viewProduct/<%= element._id%>" class="truncate-text"><%= element.title %></a></h3>
                                 <span><%= element.color %></span>
-                                <h5>₹<%= element.salePrice %></h5>
+                                    <p class="text-decoration-line-through">₹<%= (element.productPrice).toLocaleString() %></p>
+                                <h5>₹<%=( element.salePrice).toLocaleString() %></h5>
                             </div>
                         </div>
                     </div>
