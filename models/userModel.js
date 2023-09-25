@@ -2,7 +2,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const Product = require('../models/productModel');
-
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
@@ -48,6 +47,10 @@ userSchema.methods.addToCart = async function (productId, quantity) {
     const product = await Product.findById(productId); // Find the product by its ID
     if (!product) {
         throw new Error('Product not found');
+    }
+    if (quantity > product.quantity) {
+        
+        throw new Error('Not enough stock available');
     }
 
     const existingCartItem = this.cart.find(item => item.product.equals(product._id));

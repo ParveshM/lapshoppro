@@ -61,33 +61,26 @@
                                 title="View Cart">
 
                                 <i class="ti-shopping-cart"></i>
-
-                                <span class="shop-count-furniture green" id="cartItemCount"></span>
+                                <% if (user) { %>
+                                    <span class="shop-count-furniture green" id="cartItemCount"></span>
+                                    <% } %>
                             </a>
-
-
                         </div>
                     </div>
-
                 </div>
             </div>
-
 </header>
 <style>
     .icon-wishlist {
-
         font-size: 26px;
     }
-
     .logo-img {
         max-width: 100px;
         max-height: 100px;
     }
-
     #userDropdown:hover .dropdown-menu {
         display: block;
     }
-
     #userDropdown {
         color: #000000;
         display: inline-block;

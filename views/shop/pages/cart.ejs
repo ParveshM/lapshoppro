@@ -84,12 +84,14 @@
                                                             <input id="quantity-<%= element.product._id %>"
                                                                 value="<%= element.quantity %>" min="1"
                                                                 class="form-control quantity-input"  style="max-width: 40px; max-height: 30px;">
-                                                            <span class="input-group-btn">
-                                                                <button type="button"
+                                                                <span class="input-group-btn">
+                                                                    <button type="button"
                                                                     class="btn btn-success quantity-button plus mx-2"
                                                                     onclick="incrementQuantity(this, '<%= element.product._id %>')">+</button>
-                                                            </span>
-                                                        </div>
+                                                                </span>
+                                                                <span class="mt-1 mr-2 text-danger" id="out-of-stock-<%= element.product._id %>"></span>
+                                                            </div>
+                                                       
                                                     </td>
 
                                                     <td class="product-subtotal">

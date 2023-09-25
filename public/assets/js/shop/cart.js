@@ -17,48 +17,24 @@ function updateCartItemCount() {
 updateCartItemCount();
 /***********************************************/
 
-
-// // sending req for addtoCart
-// function updateButton(productId) {
-//     $(`.addToCartButton[data-productid="${productId}"]`).text('Added to Cart');
-// }
-// // Handle the button click event
-// $(document).on('click', '.addToCartButton', function() {
-//     const productId = $(this).data('productid');
-//     addToCart(productId);
-// });
-
-// function addToCart(productId) {
-//     $.ajax({
-//         type: "GET",
-//         url: `/addToCart/${productId}`,
-//         success: function (response) {
-//             // Update the buttons with the class "addToCartButton"
-//             updateButton(productId);
-//             console.log('Successfully added');
-//             console.log('Response is', response);
-//             updateCartItemCount();
-//         },
-//         error: function (error) {
-//             console.error("Error in addToCart: ", error);
-//         }
-//     });
-// }
-/**************************************************/
-
-
 /**** Sending an AJAX request to the backend to update the quantity ****/
-    function updateCartItemQuantity(productId, newQuantity) {
+function updateCartItemQuantity(productId, newQuantity) {
     $.ajax({
         type: "POST",
         url: `/updateCartItem/${productId}`,
         data: { quantity: newQuantity },
         success: function (response) {
-            // Update the quantity input field with the new quantity
             $(`#quantity-${productId}`).val(newQuantity);
+            $(`#out-of-stock-${productId}`).text(''); //clear if there is already a message        
         },
-        error: function (error) {
-            console.error("Error updating quantity: ", error);
+        error: function (jqXHR, textStatus, errorThrown) {
+            if (jqXHR.status === 400) {
+                $(`#out-of-stock-${productId}`).text('Out of Stock');
+                console.error("Request rejected:", jqXHR.responseJSON.message);
+            } else {
+                // Handle other error cases
+                console.error("Error:", textStatus, errorThrown);
+            }
         }
     });
 }
@@ -79,7 +55,7 @@ function decrementQuantity(button, productId) {
 /********************************************************************/
 
 // sweet Alert when deleting a product from the cart
-function showConfirmation(productId) {   
+function showConfirmation(productId) {
     Swal.fire({
         title: 'Are you sure?',
         text: 'You are about to remove this item from your cart.',

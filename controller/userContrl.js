@@ -178,27 +178,36 @@ const userProfile = async (req, res) => {
   
 // Shopping Page--
 const shopping = asyncHandler(async (req, res) => {
-    try { 
-        const category = await Category.find({isListed:true})
-        const findProducts = await Product.find({isListed:true})
-        console.log(findProducts); 
-        res.render('./shop/pages/shopping',{products:findProducts,category:category})
+    try {
+        const user = req.user
+        const listedCategories = await Category.find({ isListed: true });
+        // Get the IDs of the listed categories
+        const listedCategoryIds = listedCategories.map(category => category._id);
+        // Find products that belong to the listed categories
+        const findProducts = await Product.find({ categoryName: { $in: listedCategoryIds }, isListed: true });
+       
+        const cartProductIds = user.cart.map(cartItem => cartItem.product.toString());
+
+        res.render('./shop/pages/shopping', { products: findProducts, category: listedCategories, cartProductIds });
     } catch (error) {
-        throw new Error(error)
+        throw new Error(error);
     }
-})   
+});
+
+
 // view Product Page--
 const viewProduct = asyncHandler(async (req, res) => {
-    try {
-        
+    try {        
         const id = req.params.id
-        
+        const user = req.user
    const findProduct = await Product.findOne({_id:id}).populate('categoryName').exec()
    if(!findProduct){
    return res.status(404).render('./shop/pages/404')
    }
        const products = await Product.find({isListed:true})
-        res.render('./shop/pages/productDetail',{product:findProduct,products:products})
+       const cartProductIds = user.cart.map(cartItem => cartItem.product.toString());
+
+        res.render('./shop/pages/productDetail',{product:findProduct,products:products,cartProductIds})
     } catch (error) {
         throw new Error(error)
     }

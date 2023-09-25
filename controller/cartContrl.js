@@ -46,22 +46,21 @@ const loadCartPage = asyncHandler(async (req, res) => {
 
 // AddToCart---c    
 const addtoCart = asyncHandler(async (req, res) => {
-
     try {
         const productId = req.params.id;  /* values from user */
         const quantity = req.query.quantity || 1;
-        
+
         const user = req.user
+      
         const added = await user.addToCart(productId, quantity); /* calling function from model */
         if (added) {
-        res.redirect('/cart')
+            res.redirect('/cart')
         } else {
             console.log('Error in adding product into Cart');
         }
 
     } catch (error) {
-      throw new Error(error)
-        res.status(500)
+        throw new Error(error)
     }
 })
 
@@ -93,6 +92,13 @@ const updateCartItemQuantity = asyncHandler(async (req, res) => {
         if (!cartItem) {
             throw new Error('Cart item not found');
         }
+        const product = await Product.findById(productId)
+        console.log(product);
+        if (newQuantity > product.quantity) {
+            const message = 'Out of Stock';
+            return res.status(400).json({ success: false, message });
+        }
+
 
         // Update the quantity of the cart item
         cartItem.quantity = newQuantity;
