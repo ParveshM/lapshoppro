@@ -3,6 +3,8 @@ const userRoute = express.Router();
 const passport = require('passport')
 const userController = require("../controller/userContrl")
 const cartController = require('../controller/cartContrl')
+const orderController = require('../controller/orderContrl')
+
 const { ensureNotAuthenticated, ensureAuthenticated } = require('../middlewares/userAuth')
 const validateID = require('../middlewares/idValidation')
 
@@ -34,6 +36,7 @@ userRoute.get('/logout', ensureAuthenticated, userController.userLogout);
 userRoute.get('/contact', userController.contact);
 userRoute.get('/about', userController.aboutUs);
 userRoute.get('/profile', ensureAuthenticated, userController.userProfile);
+userRoute.get('/address',ensureAuthenticated,userController.loadAddressPage)
 
 // shopping_section--- 
 userRoute.get('/shop', userController.shopping);   /* shopping page */
@@ -48,7 +51,7 @@ userRoute.post('/updateCartItem/:id',
 validateID, ensureAuthenticated, 
 cartController.updateCartItemQuantity);
 userRoute.get('/getCartItemCount', ensureAuthenticated, cartController.getCartCount);
-
+userRoute.get('/checkout', ensureAuthenticated, orderController.checkoutPage); //checkout page
 
 
 

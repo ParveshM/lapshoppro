@@ -45,7 +45,7 @@
                                     <%= product.categoryName.categoryName %>
                                 </option>
                                 <% catList.forEach(category=> { %>
-                                    <option value="<%= category._id %>">
+                                    <option value="<%= category?._id %>">
                                         <%= category.categoryName %>
                                     </option>
                                     <% }) %>
@@ -117,10 +117,12 @@
                                     <span class="fw-bold">Select secondary images <br> <br>
 
                                         <% product.secondaryImages.forEach(image=> { %>
+
                                             <input type="file" accept=".jpg,.jpeg,.png,.webp,.svg"
                                                 class="form-control FilUploader" name="secondaryImage"
                                                 class="mb-3" /><br>
                                             <input type="hidden" name="idSecondaryImage" value="<%= image._id  %>">
+
                                             <img src="/admin/uploads/<%= image?.name %>" class="max-size-image mb-3"
                                                 alt="<%= image.name %>">
                                             <% }); %>

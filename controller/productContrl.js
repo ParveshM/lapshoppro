@@ -3,14 +3,14 @@ const Category = require('../models/categoryModel')
 const expressHandler = require('express-async-handler')
 const sharp = require('sharp')
 const path = require('path')
+const mongoose = require('mongoose')
+const { log } = require('console')
 
 // productManagement--
 const productManagement = expressHandler(async (req, res) => {
     try {
-
         const findProduct = await Product.find().populate('categoryName');
         res.render('./admin/pages/products', { title: 'Products', productList: findProduct })
-
     } catch (error) {
         throw new Error(error)
     }
@@ -120,7 +120,7 @@ const editProductPage = expressHandler(async (req, res) => {
     try {
         const id = req.params.id
         console.log(id);
-        const category = await Category.find({ isList: true })
+        const category = await Category.find({ isListed: true })
         const productFound = await Product.findById(id).populate('categoryName').exec()
         console.log(productFound);
         if (productFound) {
@@ -133,12 +133,11 @@ const editProductPage = expressHandler(async (req, res) => {
 })
 const updateProduct = expressHandler(async (req, res) => {
     try {
-
         const id = req.params.id;
+       
         const existingProduct = await Product.findById(id);
-        const { title, description, brand, color, categoryName, quantity, productPrice, salePrice } = req.body;
 
-
+        // Handle primary image
         let primaryImage;
         if (req.files.primaryImage) {
             const primaryImageFile = req.files.primaryImage[0];
@@ -148,43 +147,45 @@ const updateProduct = expressHandler(async (req, res) => {
             };
         } else {
             // No new primary image uploaded, retain the existing one
-            primaryImage = existingProduct.primaryImage[0];
+            primaryImage = existingProduct.primaryImage[0]; 
         }
 
-        const secondaryImageID = req.body.idSecondaryImage; /* hidden input image id */
-
+        // Handle secondary images
+        const secondaryImageIDs = req.body.idSecondaryImage; /* hidden input image id */
+        const secondaryImages = req.files.secondaryImage;
         const dbImage = existingProduct.secondaryImages;
-
-
-
-
-        let secondaryImages = req.files.secondaryImage;
-
-
         if (secondaryImages) {
             for (let i = 0; i < secondaryImages.length; i++) {
-                if (secondaryImageID[i] == dbImage[i]._id) {
+                if (secondaryImageIDs[i] === dbImage[i]._id.toString()) {
                     dbImage[i].name = secondaryImages[i].filename;
                     dbImage[i].path = secondaryImages[i].path;
                 }
-
             }
         }
-        const updatedProduct = await Product.findByIdAndUpdate(
-            id,
-            {
-                title,
-                description,
-                brand,
-                color,
-                categoryName,
-                quantity,
-                productPrice,
-                salePrice,
-                primaryImage: [primaryImage],
 
-            });
+        // Save the updated product back to the database
+        existingProduct.primaryImage = [primaryImage];
+        existingProduct.secondaryImages = dbImage;
+
+        await existingProduct.save(); // Assuming you are using Mongoose
+
+
+        const editingProduct = {
+            title: req.body.title,
+            description: req.body.description,
+            brand: req.body.brand,
+            color: req.body.color,
+            categoryName: req.body.categoryName,
+            quantity: req.body.quantity,
+            productPrice: req.body.productPrice,
+            salePrice: req.body.salePrice,
+            primaryImage: [primaryImage] // Include other fields you want to update
+
+        };
+
+        const updatedProduct = await Product.findByIdAndUpdate(id, editingProduct, { new: true });
         console.log('updated product', updatedProduct);
+
         res.redirect('/admin/products');
 
 

@@ -83,15 +83,21 @@
                                                             </span>
                                                             <input id="quantity-<%= element.product._id %>"
                                                                 value="<%= element.quantity %>" min="1"
-                                                                class="form-control quantity-input"  style="max-width: 40px; max-height: 30px;">
-                                                                <span class="input-group-btn">
-                                                                    <button type="button"
+                                                                class="form-control quantity-input"
+                                                                style="max-width: 40px; max-height: 30px;">
+                                                            <span class="input-group-btn">
+                                                                <button type="button"
                                                                     class="btn btn-success quantity-button plus mx-2"
                                                                     onclick="incrementQuantity(this, '<%= element.product._id %>')">+</button>
-                                                                </span>
-                                                                <span class="mt-1 mr-2 text-danger" id="out-of-stock-<%= element.product._id %>"></span>
-                                                            </div>
-                                                       
+                                                            </span>
+                                                            <span class="mt-1 mr-2 text-danger"
+                                                                id="out-of-stock-<%= element.product._id %>">
+                                                                <% if (element?.quantity > element.product.quantity) { %>
+                                                                    Out of Stock                                                                 
+                                                                <% } %>
+                                                            </span>
+                                                        </div>
+
                                                     </td>
 
                                                     <td class="product-subtotal">
@@ -142,8 +148,12 @@
                                             <%= (totalAmount).toLocaleString() %>
                                         </span></li>
                                 </ul>
-                                <a href="#">Proceed to checkout</a>
-                            </div>
+                               
+                                <a href="/checkout" id="checkout-link" >
+                                    Proceed to checkout
+                                </a>
+                                
+                                <!-- <a href="/checkout"> Proceed to checkout</a>  -->
                         </div>
                     </div>
                     <% } %>

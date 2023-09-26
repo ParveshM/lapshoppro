@@ -25,7 +25,7 @@ const loadCartPage = asyncHandler(async (req, res) => {
 
             const processingFee = 50;
             const taxRate = 0.01;
-
+                
             // Calculate Total
             let totalAmount = subtotal + processingFee + Math.ceil(subtotal * taxRate);
             let taxAmount = Math.ceil(subtotal * taxRate);
@@ -44,7 +44,7 @@ const loadCartPage = asyncHandler(async (req, res) => {
 
 
 
-// AddToCart---c    
+// AddToCart---
 const addtoCart = asyncHandler(async (req, res) => {
     try {
         const productId = req.params.id;  /* values from user */
@@ -136,5 +136,6 @@ module.exports = {
     addtoCart,
     removeProductfromCart,
     updateCartItemQuantity,
-    getCartCount
+    getCartCount,
+
 }

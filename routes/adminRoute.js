@@ -38,7 +38,7 @@ adminRoute.post('/category/search', isAdminLoggedIn, categoryController.searchCa
 
 // Product Management---
 adminRoute.get('/product/addProduct', isAdminLoggedIn, productController.addProduct)
-
+ 
 adminRoute.post('/product/addProduct',
     upload.fields([
         { name: "secondaryImage" }

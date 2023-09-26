@@ -1,4 +1,18 @@
 
+ 
+    // Function to hide/show "Proceed to checkout" link based on the message
+    function updateCheckoutLink(id) {
+        const message = $(`${id}`).text(); 
+        const checkoutLink = $("#checkout-link");
+
+        if (message.trim() === "") {
+            checkoutLink.attr("href", "/checkout");
+        } else {
+           checkoutLink.removeAttr("href"); 
+        }
+    }  
+   
+
 function updateCartItemCount() {
     $.ajax({
         type: "GET",
@@ -30,6 +44,8 @@ function updateCartItemQuantity(productId, newQuantity) {
         error: function (jqXHR, textStatus, errorThrown) {
             if (jqXHR.status === 400) {
                 $(`#out-of-stock-${productId}`).text('Out of Stock');
+
+                updateCheckoutLink(`#out-of-stock-${productId}`);
                 console.error("Request rejected:", jqXHR.responseJSON.message);
             } else {
                 // Handle other error cases
