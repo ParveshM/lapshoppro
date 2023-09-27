@@ -4,6 +4,7 @@ const passport = require('passport')
 const userController = require("../controller/userContrl")
 const cartController = require('../controller/cartContrl')
 const orderController = require('../controller/orderContrl')
+const addressController = require('../controller/addressContrl')
 
 const { ensureNotAuthenticated, ensureAuthenticated } = require('../middlewares/userAuth')
 const validateID = require('../middlewares/idValidation')
@@ -36,7 +37,7 @@ userRoute.get('/logout', ensureAuthenticated, userController.userLogout);
 userRoute.get('/contact', userController.contact);
 userRoute.get('/about', userController.aboutUs);
 userRoute.get('/profile', ensureAuthenticated, userController.userProfile);
-userRoute.get('/address',ensureAuthenticated,userController.loadAddressPage)
+
 
 // shopping_section--- 
 userRoute.get('/shop', userController.shopping);   /* shopping page */
@@ -51,10 +52,13 @@ userRoute.post('/updateCartItem/:id',
 validateID, ensureAuthenticated, 
 cartController.updateCartItemQuantity);
 userRoute.get('/getCartItemCount', ensureAuthenticated, cartController.getCartCount);
+userRoute.get('/checkProductAvailability', ensureAuthenticated, cartController.checkProductAvailability);
+
 userRoute.get('/checkout', ensureAuthenticated, orderController.checkoutPage); //checkout page
 
-
-
+// Address_Routes__
+userRoute.get('/address',ensureAuthenticated,addressController.loadAddressPage)
+userRoute.post('/address',ensureAuthenticated,addressController.insertAddress)
 
 // 404 notfound page--
 userRoute.get('*',(req,res)=>{res.render('./shop/pages/404')})

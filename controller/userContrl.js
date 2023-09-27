@@ -175,14 +175,6 @@ const userProfile = async (req, res) => {
         console.log(error.message);
     }
 }
-// loading address page---
-const loadAddressPage = async (req, res) => {
-    try {       
-        res.render('./shop/pages/addAddress')
-    } catch (error) {
-        console.log(error.message);
-    }
-}
 
 // Shopping Page--
 const shopping = asyncHandler(async (req, res) => {
@@ -260,7 +252,6 @@ module.exports = {
     loadLogin,
     userLogout,
     userProfile,
-    loadAddressPage,
     shopping,
     viewProduct,
     wishlist,

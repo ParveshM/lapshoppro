@@ -14,7 +14,7 @@ const loadCartPage = asyncHandler(async (req, res) => {
 
         if (userWithCart.cart.length === 0) {
             // User has an empty cart
-            res.render('./shop/pages/cart', { cartItems: [], subtotal: 0, processingFee: 0, taxAmount: 0, totalAmount: 0 });
+            res.render('./shop/pages/cart', { cartItems: [],totalAmount: 0 });
         } else {
             const userCart = userWithCart.cart;
 
@@ -23,19 +23,7 @@ const loadCartPage = asyncHandler(async (req, res) => {
                 return total + item.product.salePrice * item.quantity;
             }, 0);
 
-            const processingFee = 50;
-            const taxRate = 0.01;
-                
-            // Calculate Total
-            let totalAmount = subtotal + processingFee + Math.ceil(subtotal * taxRate);
-            let taxAmount = Math.ceil(subtotal * taxRate);
-
-            if (totalAmount < 100000) {
-                totalAmount -= subtotal * taxRate;
-                taxAmount = null;
-            }
-
-            res.render('./shop/pages/cart', { cartItems: userCart, subtotal, processingFee, taxAmount, totalAmount });
+            res.render('./shop/pages/cart', { cartItems: userCart,subtotal });
         }
     } catch (error) {
         throw new Error(error);
@@ -92,25 +80,41 @@ const updateCartItemQuantity = asyncHandler(async (req, res) => {
         if (!cartItem) {
             throw new Error('Cart item not found');
         }
-        const product = await Product.findById(productId)
-        console.log(product);
+
+        const product = await Product.findById(productId);
+
         if (newQuantity > product.quantity) {
             const message = 'Out of Stock';
             return res.status(400).json({ success: false, message });
         }
 
-
         // Update the quantity of the cart item
         cartItem.quantity = newQuantity;
         await user.save();
 
-        res.json({ success: true });
+        // Fetch the updated cart items (you may want to customize this part)
+        const updatedCartItems = user.cart;
 
+        res.json({ success: true, cartItems: updatedCartItems });
     } catch (error) {
         console.error('Error updating cart item quantity:', error);
         res.status(500).json({ success: false, error: 'Error updating cart item quantity' });
     }
 });
+
+// checkProductAvailability---
+const checkProductAvailability = asyncHandler(async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const user = await User.findById(userId).populate('cart.product').exec(); // Populate the product details
+        const cartItems = user.cart;
+
+        res.json({ cartItems });
+    } catch (error) {
+        throw new Error(error);
+    }
+});
+
 
 // counting cart items--
 const getCartCount = asyncHandler(async (req, res) => {
@@ -137,5 +141,6 @@ module.exports = {
     removeProductfromCart,
     updateCartItemQuantity,
     getCartCount,
+    checkProductAvailability
 
 }

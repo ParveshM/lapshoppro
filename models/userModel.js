@@ -1,4 +1,3 @@
-// Import necessary modules
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const Product = require('../models/productModel');
@@ -26,8 +25,8 @@ const userSchema = new Schema({
         product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
         quantity: Number,
     }],
-    address: { type: mongoose.Schema.Types.ObjectId, ref: 'Address' },
-    wishlist: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' }
+    addresses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Address' }],
+    wishlist:[{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }]
 }, { timestamps: true });
 
 userSchema.pre('save', async function (next) {

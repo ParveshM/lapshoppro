@@ -1,3 +1,10 @@
+<style>
+    .quantity-input {
+        max-width: 30px;
+        max-height: 30px;
+    }
+</style>
+
 <div class="breadcrumb-area" style="background-color: black; color: white;">
     <div class="container">
         <div class="breadcrumb-content text-center pt-1">
@@ -16,13 +23,13 @@
     </div>
 </div>
 <!-- shopping-cart-area start -->
-<div class="cart-main-area pt-40 pb-100">
+<div class="cart-main-area pt-40 pb-30">
     <div class="container ">
         <div class="row">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <h1 class="cart-heading">Cart</h1>
                 <form action="#">
-                    <div class="table-content">
+                    <div class="table-content mb-0">
                         <% if (cartItems && cartItems.length <=0) { %>
                             <div class="container text-center">
                                 <a href="/shop" class="btn btn-success mt-3" style="border-radius: 10px;">
@@ -69,12 +76,14 @@
                                                             <%= element.product.title %>
                                                         </a>
                                                     </td>
-                                                    <td class="product-price-cart">
+                                                    <td class="product-price-cart"
+                                                        id="price-<%= element.product._id %>">
                                                         <span class="amount">
                                                             ₹<%=(element.product.salePrice).toLocaleString() %>
                                                         </span>
                                                     </td>
                                                     <td class="product-quantity">
+
                                                         <div class="input-group">
                                                             <span class="input-group-btn">
                                                                 <button type="button"
@@ -83,26 +92,25 @@
                                                             </span>
                                                             <input id="quantity-<%= element.product._id %>"
                                                                 value="<%= element.quantity %>" min="1"
-                                                                class="form-control quantity-input"
-                                                                style="max-width: 40px; max-height: 30px;">
-                                                            <span class="input-group-btn">
-                                                                <button type="button"
-                                                                    class="btn btn-success quantity-button plus mx-2"
-                                                                    onclick="incrementQuantity(this, '<%= element.product._id %>')">+</button>
-                                                            </span>
-                                                            <span class="mt-1 mr-2 text-danger"
-                                                                id="out-of-stock-<%= element.product._id %>">
-                                                                <% if (element?.quantity > element.product.quantity) { %>
-                                                                    Out of Stock                                                                 
-                                                                <% } %>
-                                                            </span>
+                                                                class="form-control quantity-input" <% if
+                                                                (element.quantity> element.product.quantity) { %>
+                                                            style="pointer-events:none; max-width:30px ;" <% } %> >
+
+                                                                <span class="input-group-btn">
+                                                                    <button type="button"
+                                                                        class="btn btn-success quantity-button plus mx-2"
+                                                                        onclick="incrementQuantity(this, '<%= element.product._id %>')">+</button>
+                                                                </span>
                                                         </div>
+                                                        <h4 style="color: red; font-size: 20px; margin-right: 41px;
+                                                         margin-top: 2px; margin-bottom: -25px;"
+                                                            id="outOfStock-<%= element.product._id %>"></h4>
 
                                                     </td>
-
-                                                    <td class="product-subtotal">
-                                                        <%= (element.quantity *
-                                                            element.product.salePrice).toLocaleString() %>
+                                                    <td class="product-subtotal"
+                                                        id="subtotal-<%= element.product._id %>">
+                                                        <%= (element.product.salePrice *
+                                                            element.quantity).toLocaleString() %>
                                                     </td>
                                                 </tr>
                                                 <% }) %>
@@ -110,58 +118,28 @@
                                     </tbody>
                                 </table>
                     </div>
-                    <div class="row">
-                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                            <div class="coupon-all">
-                                <div class="coupon">
-                                    <input id="coupon_code" class="input-text" name="coupon_code" value=""
-                                        placeholder="Coupon code" type="text">
-                                    <input class="button" name="apply_coupon" value="Apply coupon" type="submit">
-                                </div>
-                                <div class="coupon2">
-                                    <a href="/cart"><input class="button" name="update_cart" value="Update cart">
-                                        <!-- add type=submit to button when , using coupon section  -->
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-5 ms-auto">
-                            <div class="cart-page-total">
-                                <h2>Cart totals</h2>
-                                <ul>
-                                    <li>Subtotal<span>
-                                            <%=(subtotal).toLocaleString() %>
-                                        </span></li>
-                                    <li>ProcessingFee<span>
-                                            <%=(processingFee).toLocaleString() %>
-                                        </span></li>
-                                    <li>Tax Amount<span>
-                                            <% if (taxAmount) { %>
-                                                <%= taxAmount %>
-                                                    <% } else { %>
-                                                        Nil
-                                                        <% } %>
-                                        </span></li>
-                                    <li>Total<span>
-                                            <%= (totalAmount).toLocaleString() %>
-                                        </span></li>
-                                </ul>
-                               
-                                <a href="/checkout" id="checkout-link" >
-                                    Proceed to checkout
-                                </a>
-                                
-                                <!-- <a href="/checkout"> Proceed to checkout</a>  -->
-                        </div>
-                    </div>
-                    <% } %>
             </div>
             </form>
+            <div class="row ">
+                <div class="col-md-5 ms-auto ">
+                    <div class="cart-page-total mt-0">
+                        <h2>Cart totals</h2>
+                        <ul>
+                            <li>Subtotal<span id="total-amount">₹<%= subtotal.toLocaleString() %></span>
+
+                            </li>
+                        </ul>
+
+                        <a href="/checkout" id="checkout-link" class="checkout-tag">
+                            Proceed to checkout
+                        </a>
+                    </div>
+                </div>
+                <% } %>
+            </div>
         </div>
     </div>
 </div>
-</div>
+
 
 <script src="/assets/js/shop/cart.js"></script>
