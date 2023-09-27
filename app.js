@@ -37,7 +37,7 @@ app.use(session({
     saveUninitialized: false,
     cookie: {
         httpOnly: true,
-        maxAge: 3600000 // Set the expiration time to 1 hour (in milliseconds)
+        maxAge: 24 * 60 * 60 * 1000  
     },
     store: new mongoStore({ mongooseConnection: mongoose.connection })
 }))

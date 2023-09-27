@@ -57,8 +57,13 @@ userRoute.get('/checkProductAvailability', ensureAuthenticated, cartController.c
 userRoute.get('/checkout', ensureAuthenticated, orderController.checkoutPage); //checkout page
 
 // Address_Routes__
-userRoute.get('/address',ensureAuthenticated,addressController.loadAddressPage)
-userRoute.post('/address',ensureAuthenticated,addressController.insertAddress)
+userRoute.get('/savedAddress',ensureAuthenticated,addressController.savedAddress)
+userRoute.get('/addAddress',ensureAuthenticated,addressController.addAddressPage)
+userRoute.post('/addAddress',ensureAuthenticated,addressController.insertAddress)
+userRoute.get('/editAddress/:id',validateID,ensureAuthenticated,addressController.editAddressPage)
+userRoute.post('/editAddress/:id',validateID,ensureAuthenticated,addressController.updateAddress)
+userRoute.get('/deleteAddress/:id',validateID,ensureAuthenticated,addressController.deleteAddress)
+
 
 // 404 notfound page--
 userRoute.get('*',(req,res)=>{res.render('./shop/pages/404')})

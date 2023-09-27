@@ -25,7 +25,7 @@ const userSchema = new Schema({
         product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
         quantity: Number,
     }],
-    addresses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Address' }],
+    addresses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Address'}],
     wishlist:[{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }]
 }, { timestamps: true });
 

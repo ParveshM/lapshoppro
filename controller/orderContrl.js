@@ -7,7 +7,10 @@ const checkoutPage = asyncHandler(async (req, res) => {
     try {
         const user = req.user;
         const userWithCart = await User.findById(user).populate('cart.product');
-
+       
+        const userWithAddresses = await User.findById(user).populate('addresses');
+        const addresses = userWithAddresses.addresses
+        
         // Access the cart items and their quantities
         const cartItems = userWithCart.cart.map(cartItem => ({
             product: cartItem.product,
@@ -31,6 +34,7 @@ const checkoutPage = asyncHandler(async (req, res) => {
             processingFee,
             taxAmount,
             orderTotal,
+            addresses
         });
     } catch (error) {
         throw new Error(error);

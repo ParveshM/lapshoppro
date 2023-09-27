@@ -41,67 +41,31 @@
             <div class="col-lg-6 col-md-12 col-12">
                 <form action="#">
                     <div class="checkbox-form">
-                        <h3>Billing Details</h3>
+                        <h3>Billing Address</h3>
                         <div class="row">
-                            <div class="col-md-6">
-                                <div class="checkout-form-list">
-                                    <label>First Name <span class="required">*</span></label>
-                                    <input type="text" placeholder="" />
+                            <% if (addresses ) { %>
+                             
+                                <% addresses.forEach(address => { %>
+                                    <div class="card mb-3">
+                                    <div class="card-body">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="selectedAddress" value="<%= address._id %>">
+                                            <label class="form-check-label">
+                                                <%= address.addressType %>  %><br>
+                                                <%= address.name %><br>
+                                                <%= address.town %>, <%= address.state %> , <%= address.postCode %><br>
+                                                Phone: <%= address.phone %>
+                                            </label>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="checkout-form-list">
-                                    <label>Last Name <span class="required">*</span></label>
-                                    <input type="text" placeholder="" />
+                                <% }); %>
+                               <% } else { %>
+                                <div class="d-flex justify-content-between">
+                                    <h4 class="mb-4">No address found</h4>
+                                    <a class="btn-hover list-btn-style" href="/addAddress">Add Address</a>
                                 </div>
-                            </div>
-                            <div class="col-md-12">
-                                <div class="checkout-form-list">
-                                    <label>Company Name</label>
-                                    <input type="text" placeholder="" />
-                                </div>
-                            </div>
-                            <div class="col-md-12">
-                                <div class="checkout-form-list">
-                                    <label>Address <span class="required">*</span></label>
-                                    <input type="text" placeholder="Street address" />
-                                </div>
-                            </div>
-                            <div class="col-md-12">
-                                <div class="checkout-form-list">
-                                    <input type="text" placeholder="Apartment, suite, unit etc. (optional)" />
-                                </div>
-                            </div>
-                            <div class="col-md-12">
-                                <div class="checkout-form-list">
-                                    <label>Town / City <span class="required">*</span></label>
-                                    <input type="text" />
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="checkout-form-list">
-                                    <label>State / County <span class="required">*</span></label>
-                                    <input type="text" placeholder="" />
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="checkout-form-list">
-                                    <label>Postcode / Zip <span class="required">*</span></label>
-                                    <input type="text" />
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="checkout-form-list">
-                                    <label>Email Address <span class="required">*</span></label>
-                                    <input type="email" />
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="checkout-form-list">
-                                    <label>Phone <span class="required">*</span></label>
-                                    <input type="text" />
-                                </div>
-                            </div>
+                                  <% } %>
                         </div>
                     </div>
                 </form>
@@ -205,3 +169,9 @@
             </div>
         </div>
     </div>
+    <style>
+       .list-btn-style {
+            max-width: 137px;
+            max-height: 43px;
+        }
+    </style>
