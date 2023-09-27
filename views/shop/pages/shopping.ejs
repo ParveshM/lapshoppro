@@ -50,17 +50,19 @@
                             <h3 class="sidebar-title">Categories</h3>
                             <div class="sidebar-categories">
                                 <ul>
-                                    <% if (category.length >0) { %>
-                                     
-                                   
-                                    <% category.forEach(element => { %>
-                                        
-                                 <li><a href="#"><%= element.categoryName %></a></li>
-                                      <% });   %>
-                                        
-                                        <% } else { %>
-                                            <h3>NOOOOO</h3>
-                                         <% } %>
+                                    <% if (category.length>0) { %>
+
+
+                                        <% category.forEach(element=> { %>
+
+                                            <li><a href="#">
+                                                    <%= element.categoryName %>
+                                                </a></li>
+                                            <% }); %>
+
+                                                <% } else { %>
+                                                    <h3>NOOOOO</h3>
+                                                    <% } %>
 
                                 </ul>
                             </div>
@@ -77,38 +79,6 @@
                                     </ul>
                                 </div>
                             </div>
-
-                            <!-- related Products -->
-                            
-                            <!-- <div class="sidebar-widget mb-50">
-                                <h3 class="sidebar-title">Top rated products</h3>
-                                <div class="sidebar-top-rated-all">
-                                    <div class="sidebar-top-rated mb-30">
-
-                                        <div class="single-top-rated">
-                                            <div class="top-rated-img">
-                                                <a href="#"><img src="/assets/img/product/sidebar-product/1.jpg"
-                                                        alt=""></a>
-                                            </div>
-                                            <div class="top-rated-text">
-                                                <h4><a href="#">Flying Drone</a></h4>
-                                                <div class="top-rated-rating">
-                                                    <ul>
-                                                        <li><i class="pe-7s-star"></i></li>
-                                                        <li><i class="pe-7s-star"></i></li>
-                                                        <li><i class="pe-7s-star"></i></li>
-                                                        <li><i class="pe-7s-star"></i></li>
-                                                        <li><i class="pe-7s-star"></i></li>
-                                                    </ul>
-                                                </div>
-                                                <span>$140.00</span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div> -->
-
                 </div>
             </div>
             <div class="col-lg-9 order-1 order-lg-2">
@@ -187,23 +157,30 @@
                                                                     <%= element.title %>
                                                                 </a></h4>
                                                             <span class="text-decoration-line-through">
-                                                                ₹<%= element.productPrice %></span>
-                                                            <span>₹<%= element.salePrice %></span>
+                                                                ₹<%= (element.productPrice).toLocaleString() %></span>
+                                                            <span>₹<%= (element.salePrice).toLocaleString() %></span>
                                                             <p>
-                                                           
-                                                                <ul class="row">
-                                                                    <li class="col-auto"><label>Color : </label></li>
-                                                                    <li class="col-auto">
-                                                                        <%= element.color %>
-                                                                    </li>
-                                                                </ul>
-                                                            
+                                                            <ul class="row">
+                                                                <li class="col-auto "><label>Color:</label></li>
+                                                                <li class="col-auto">
+                                                                    <%= element.color %>
+                                                                </li>
+                                                            </ul>
                                                             </p>
                                                         </div>
                                                         <div class="product-list-cart-wishlist">
                                                             <div class="product-list-cart">
-                                                                <a class="btn-hover list-btn-style" href="#">add to
-                                                                    cart</a>
+                                                                <% if (cartProductIds.includes(element._id.toString())) { %>
+                                                                    <a class="btn-hover list-btn-style"
+                                                                           href="/cart">Go to Cart
+                                                                     </a>
+                                                                    <% } else if (element.quantity> 0) { %>
+                                                                        <a class="btn-hover list-btn-style"
+                                                                            href="/addtoCart/<%= element._id %>">Add to
+                                                                            Cart</a>
+                                                                        <% } else { %>
+                                                                            <h3>Out of Stock</h3>
+                                                                            <% } %>
                                                             </div>
                                                             <div class="product-list-wishlist">
                                                                 <a class="btn-hover list-btn-wishlist" href="#">

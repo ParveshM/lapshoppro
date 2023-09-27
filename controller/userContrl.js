@@ -4,12 +4,11 @@ const Category = require('../models/categoryModel')
 const asyncHandler = require('express-async-handler')
 const { sendOtp, generateOTP } = require('../utility/nodeMailer')
 
-
 // loadLandingPage---
 const loadLandingPage = asyncHandler(async (req, res) => {
     try {
-        const products = await Product.find({isListed:true})
-        res.render('./shop/pages/index',{products:products})
+        const products = await Product.find({ isListed: true })
+        res.render('./shop/pages/index', { products: products })
     } catch (error) {
         throw new Error(error)
     }
@@ -31,7 +30,7 @@ const insertUser = async (req, res) => {
         const checkData = await User.findOne({ email: emailCheck });
         if (checkData) {
             return res.render('./shop/pages/register', { userCheck: "User already exists, please try with a new email" });
-        }else {
+        } else {
             const UserData = {
                 userName: req.body.userName,
                 email: req.body.email,
@@ -39,12 +38,12 @@ const insertUser = async (req, res) => {
             };
 
             const OTP = generateOTP() /** otp generating **/
-           req.session.otpUser = { ...UserData, otp: OTP };
+            req.session.otpUser = { ...UserData, otp: OTP };
             // req.session.mail = req.body.email;  
 
-             /***** otp sending ******/
+            /***** otp sending ******/
             try {
-                sendOtp(req.body.email, OTP, req.body.userName); 
+                sendOtp(req.body.email, OTP, req.body.userName);
                 return res.redirect('/sendOTP');
             } catch (error) {
                 console.error('Error sending OTP:', error);
@@ -60,7 +59,7 @@ const insertUser = async (req, res) => {
 const sendOTPpage = asyncHandler(async (req, res) => {
     try {
         const email = req.session.otpUser.email
-        res.render('./shop/pages/verifyOTP',{email})
+        res.render('./shop/pages/verifyOTP', { email })
     } catch (error) {
         throw new Error(error)
     }
@@ -70,24 +69,24 @@ const sendOTPpage = asyncHandler(async (req, res) => {
 // verifyOTP route handler
 const verifyOTP = asyncHandler(async (req, res) => {
     try {
-       
-        const enteredOTP = req.body.otp; 
+
+        const enteredOTP = req.body.otp;
         const storedOTP = req.session.otpUser.otp; // Getting the stored OTP from the session
         const user = req.session.otpUser;
 
         if (enteredOTP == storedOTP) {
-            const newUser = await User.create(user);  
-      
-             delete req.session.otpUser.otp;  
+            const newUser = await User.create(user);
+
+            delete req.session.otpUser.otp;
             res.redirect('/login');
         } else {
             messages = 'Verification failed, please check the OTP or resend it.';
             console.log('verification failed');
-            
-        }
-        res.render('./shop/pages/verifyOTP',{messages})
 
-       
+        }
+        res.render('./shop/pages/verifyOTP', { messages })
+
+
     } catch (error) {
         throw new Error(error);
     }
@@ -98,22 +97,22 @@ const verifyOTP = asyncHandler(async (req, res) => {
 const reSendOTP = async (req, res) => {
     try {
         const OTP = generateOTP() /** otp generating **/
-           req.session.otpUser.otp = { otp: OTP };
-           
-           const email = req.session.otpUser.email
-           const userName = req.session.otpUser.userName
-         
+        req.session.otpUser.otp = { otp: OTP };
 
-             /***** otp resending ******/
-            try {
-                sendOtp(email, OTP,userName); 
-                console.log('otp is sent');
-                return res.render('./shop/pages/reSendOTP',{email});
-            } catch (error) {
-                console.error('Error sending OTP:', error);
-                return res.status(500).send('Error sending OTP');
-            }
-        
+        const email = req.session.otpUser.email
+        const userName = req.session.otpUser.userName
+
+
+        /***** otp resending ******/
+        try {
+            sendOtp(email, OTP, userName);
+            console.log('otp is sent');
+            return res.render('./shop/pages/reSendOTP', { email });
+        } catch (error) {
+            console.error('Error sending OTP:', error);
+            return res.status(500).send('Error sending OTP');
+        }
+
     } catch (error) {
         throw new Error(error)
     }
@@ -122,17 +121,17 @@ const reSendOTP = async (req, res) => {
 // verify resendOTP--
 const verifyResendOTP = asyncHandler(async (req, res) => {
     try {
-        const enteredOTP = req.body.otp; 
-        const storedOTP = req.session.otpUser.otp; 
+        const enteredOTP = req.body.otp;
+        const storedOTP = req.session.otpUser.otp;
         const user = req.session.otpUser;
-        
-             if (enteredOTP == storedOTP.otp) {
+
+        if (enteredOTP == storedOTP.otp) {
             console.log('inside verification');
-            const newUser = await User.create(user); 
-        if (newUser) {
-                console.log('new user insert in resend page',newUser);
-        } else { console.log('error in insert user') }        
-             delete req.session.otpUser.otp;  
+            const newUser = await User.create(user);
+            if (newUser) {
+                console.log('new user insert in resend page', newUser);
+            } else { console.log('error in insert user') }
+            delete req.session.otpUser.otp;
             res.redirect('/login');
         } else {
             console.log('verification failed');
@@ -142,7 +141,7 @@ const verifyResendOTP = asyncHandler(async (req, res) => {
     }
 });
 
-    
+
 // loading Login Page---
 const loadLogin = async (req, res) => {
     try {
@@ -176,39 +175,44 @@ const userProfile = async (req, res) => {
         console.log(error.message);
     }
 }
-  
+
 // Shopping Page--
 const shopping = asyncHandler(async (req, res) => {
-    try { 
-        const category = await Category.find({isListed:true})
-        const findProducts = await Product.find({isListed:true})
-        console.log(findProducts); 
-        res.render('./shop/pages/shopping',{products:findProducts,category:category})
+    try {
+        const user = req.user
+        const listedCategories = await Category.find({ isListed: true });
+        // Get the IDs of the listed categories
+        const listedCategoryIds = listedCategories.map(category => category._id);
+        // Find products that belong to the listed categories
+        const findProducts = await Product.find({ categoryName: { $in: listedCategoryIds }, isListed: true });
+
+        const cartProductIds = user.cart.map(cartItem => cartItem.product.toString());
+
+        res.render('./shop/pages/shopping', { products: findProducts, category: listedCategories, cartProductIds });
     } catch (error) {
-        throw new Error(error)
+        throw new Error(error);
     }
-})   
+});
+
+
 // view Product Page--
 const viewProduct = asyncHandler(async (req, res) => {
     try {
-        
         const id = req.params.id
-   const findProduct = await Product.findOne({_id:id}).populate('categoryName').exec()
-       const products = await Product.find({isListed:true})
-        res.render('./shop/pages/productDetail',{product:findProduct,products:products})
+        const user = req.user
+        const findProduct = await Product.findOne({ _id: id }).populate('categoryName').exec()
+        if (!findProduct) {
+            return res.status(404).render('./shop/pages/404')
+        }
+        const products = await Product.find({ isListed: true })
+        const cartProductIds = user.cart.map(cartItem => cartItem.product.toString());
+
+        res.render('./shop/pages/productDetail', { product: findProduct, products: products, cartProductIds })
     } catch (error) {
         throw new Error(error)
     }
 })
 
-// cart page--
-const cart = asyncHandler(async (req, res) => {
-    try {
-        res.render('./shop/pages/cart')
-    } catch (error) {
-        throw new Error(error)
-    }
-})
 
 // wishlist--
 const wishlist = asyncHandler(async (req, res) => {
@@ -229,7 +233,6 @@ const contact = asyncHandler(async (req, res) => {
 })
 
 // About Us----
-
 const aboutUs = asyncHandler(async (req, res) => {
     try {
         res.render('./shop/pages/about')
@@ -251,7 +254,6 @@ module.exports = {
     userProfile,
     shopping,
     viewProduct,
-    cart,
     wishlist,
     contact,
     aboutUs,

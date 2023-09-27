@@ -37,7 +37,7 @@ app.use(session({
     saveUninitialized: false,
     cookie: {
         httpOnly: true,
-        maxAge: 3600000 // Set the expiration time to 1 hour (in milliseconds)
+        maxAge: 24 * 60 * 60 * 1000  
     },
     store: new mongoStore({ mongooseConnection: mongoose.connection })
 }))
@@ -74,15 +74,17 @@ app.set('views', path.join(__dirname, 'views'));
 
 
 // UserRoutes-----
+app.use('/admin', adminRoute)
 app.use('/', userRoute);
 // AdminRoutes---
-app.use('/admin', adminRoute)
 
 
 
 // error Handling---
 app.use(notFound);
 app.use(errorHandler);
+
+
 
 // server setup--
 const PORT = process.env.PORT

@@ -1,0 +1,89 @@
+<div class="container mt-5">
+    <div class="d-flex justify-content-between">
+        <h1 class="mb-4">Address List</h1>
+        <a class="btn-hover list-btn-style" href="/addAddress">Add Address</a>
+    </div>
+    <div class="row">
+        <% if (address.length>= 0) { %>
+            <% address.forEach((element, index)=> { %>
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <!-- Card Header with Edit and Delete buttons -->
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="card-title">Address <%= index + 1 %>
+                            </h5>
+                            <div>
+                                <a href="/editAddress/<%= element._id %>" class="btn btn-info btn-sm mr-2 ">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <% if (index>0) { %>
+                                    <a href="#" onclick="showConfirmation('<%= element._id %>')"
+                                        class="btn btn-danger btn-sm">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                    <% } %>
+
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="p-3 mb-2 bg-light text-dark ">
+                                <p class="card-text bg-color-info ">
+                                    <%= element.addressType %>
+                                </p>
+                            </div>
+                            <p class="card-text">
+                                <%= element.name %>
+                            </p>
+                            <p class="card-text">
+                                <%= element.address %>
+                            </p>
+                            <p class="card-text">
+                                <%= element.town %>
+                            </p>
+                            <p class="card-text">
+                                <%= element.state %>
+                            </p>
+                            <p class="card-text">
+                                <%= element.postCode %>
+                            </p>
+                            <p class="card-text">
+                                <%= element.phone %>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <% }) %>
+                    <% }%>
+
+    </div>
+
+    <style>
+        .list-btn-style {
+            max-width: 137px;
+            max-height: 43px;
+        }
+
+        .fa-edit,
+        .fa-trash {
+            font-size: 14px;
+        }
+       
+    </style>
+    <script>
+        function showConfirmation(addressId) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You are about to delete this address.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // If the user clicks "Yes," redirect to the removeProduct endpoint
+                    window.location.href = "/deleteAddress/" + addressId;
+                }
+            });
+        }
+    </script>

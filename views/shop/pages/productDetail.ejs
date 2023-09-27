@@ -102,9 +102,9 @@
                         </div>
                     </div>
                     <span class="text-decoration-line-through">
-                        ₹<%= product.productPrice %></span>
+                        ₹<%= (product.productPrice).toLocaleString() %></span>
                     <div class="details-price">
-                        <span>₹<%= product.salePrice %></span>
+                        <span>₹<%= (product.salePrice).toLocaleString() %></span>
                     </div>
 
                     <div class="quick-view-select">
@@ -119,12 +119,18 @@
                         </div>
                     </div>
                     <div class="quickview-plus-minus">
-                        <div class="cart-plus-minus">
-                            <input type="text" value="02" name="qtybutton" class="cart-plus-minus-box">
+                        <div class="product-list-cart">
+                            <% if (cartProductIds.includes(product._id.toString())) { %>
+                                <a class="btn-hover list-btn-style" href="/cart">Go Cart
+                                </a>
+                                <% } else if (product.quantity> 0) { %>
+                                    <a class="btn-hover list-btn-style" href="/addtoCart/<%= product._id %>">Add to
+                                        Cart</a>
+                                    <% } else { %>
+                                        <h3>Out of Stock</h3>
+                                        <% } %>
                         </div>
-                        <div class="quickview-btn-cart">
-                            <a class="btn-hover-black" href="#">add to cart</a>
-                        </div>
+
                         <div class="quickview-btn-wishlist">
                             <a class="btn-hover" href="#"><i class="pe-7s-like"></i></a>
                         </div>

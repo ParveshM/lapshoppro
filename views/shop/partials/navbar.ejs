@@ -15,30 +15,39 @@
                             </li>
                             <li><a href="/about">About Us</a>
                             </li>
-                            <!-- <li><a href="#">blog</a></li> -->
                             <li><a href="/contact">contact</a></li>
+                            <li>
+                                <div class="dropdown" id="userDropdown">
+                                    <a class="dropdown-toggle" id="userMenu" data-toggle="dropdown" aria-haspopup="true"
+                                        aria-expanded="false">
+                                        <% if (!user) { %>
+                                            Account
+                                            <% } else {%>
+                                                <%= user.userName %>
+                                                    <% } %>
+                                    </a>
+                                    <div class="dropdown-menu" aria-labelledby="userMenu">
+                                        <% if (!user) { %>
+                                            <a class="dropdown-item" href="/login">Login</a>
+                                            <a class="dropdown-item" href="/register">Register</a>
+                                            <% } else { %>
+                                                <a class="dropdown-item" href="/logout">Logout</a>
+                                                <a class="dropdown-item" href="/profile">Profile</a>
+                                                <a class="dropdown-item" href="/savedAddress">Addresses</a>
+                                                <% } %>
+                                    </div>
+                                </div>
+                            </li>
+
                         </ul>
                     </nav>
                 </div>
                 <div class="col-md-3">
                     <div class="d-flex justify-content-end align-items-center">
                         <div class="user-avatar">
-                            <div class="dropdown">
-                                <a class="dropdown-toggle" id="userMenu" data-toggle="dropdown" aria-haspopup="true"
-                                    aria-expanded="false">
-                                    <i class="ti-user"></i>
-                                </a>
-                                <div class="dropdown-menu" aria-labelledby="userMenu">
-                                    <% if (!user) { %>
-                                        <a class="dropdown-item" href="/login">Login</a>
-                                        <a class="dropdown-item" href="/register">Register</a>
-                                        <% } else {%>
-                                            <a class="dropdown-item" href="/logout">Logout</a>
-                                            <a class="dropdown-item" href="/profile">Profile</a>
-                                            <% } %>
-                                </div>
-                            </div>
+
                         </div>
+
 
                         <div class="header-cart">
                             <a class="icon-wishlist" href="/wishlist" data-toggle="tooltip" data-placement="top"
@@ -52,35 +61,43 @@
                                 title="View Cart">
 
                                 <i class="ti-shopping-cart"></i>
-
-                                <span class="shop-count-furniture green">02</span>
+                                <% if (user) { %>
+                                    <span class="shop-count-furniture green" id="cartItemCount"></span>
+                                    <% } %>
                             </a>
-
-
                         </div>
                     </div>
-
                 </div>
             </div>
-
 </header>
 <style>
-    .ti-user,
     .icon-wishlist {
-
         font-size: 26px;
-    }
-
-    .user-avatar {
-        margin-top: 5px;
-
     }
 
     .logo-img {
         max-width: 100px;
         max-height: 100px;
     }
+
+    #userDropdown:hover .dropdown-menu {
+        display: block;
+    }
+
+    #userDropdown {
+        color: #000000;
+        display: inline-block;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 50px 0 51px;
+        text-transform: capitalize;
+    }
+
+    .dropdown-toggle::after {
+        display: none;
+    }
 </style>
+<script src="/assets/js/shop/cart.js"></script>
 <script>
     $(function () {
         $('[data-toggle="tooltip"]').tooltip();
