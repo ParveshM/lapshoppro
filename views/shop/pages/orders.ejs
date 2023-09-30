@@ -1,0 +1,58 @@
+<div class="container mt-4 mb-4">
+    <h2>My Orders</h2>
+    <ul class="list-group mt-5">
+        <% if (orders.length> 0) { %>
+
+            <% orders.forEach(orders=> { %>
+                <% orders.items.forEach(item=> { %>
+
+                    <li class="list-group-item">
+                        <div class="row">
+                            <div class="col-md-3 aspect-ratio aspect-ratio-1x1">
+                                <a href="/viewProduct/<%= item.product._id %>"> <img class="img-fluid"
+                                        src="/admin/uploads/<%= item.product.primaryImage[0].name %>"
+                                        alt="Ordered Image" />
+                                </a>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card-body text-start mt-2">
+                                    <h6 class="card-title mb-3">Order ID: <%= orders.orderId %>
+                                            </h5>
+                                            <p class="card-text mb-2">Order Date: <%=
+                                                    orders.orderDate.toLocaleDateString('en-IN', { weekday: 'long' ,
+                                                    year: 'numeric' , month: 'long' , day: 'numeric' }) %>
+                                            </p>
+                                            <p class="card-text">Ship To Name: <%= orders.billingAddress.name %> <strong
+                                                        class="text-primary"></strong>
+                                            </p>
+                                            <p class="card-text">
+                                                <span>Order Status:</span>
+                                                <strong
+                                                    class="<%= orders.status === 'pending'
+                                                            ? 'text-warning' : (orders.status === 'shipped' ? 'text-primary' :
+                                                            (orders.status === 'cancelled' ? 'text-danger' :
+                                                            (orders.status === 'delivered' ? 'text-success' : '' ))) %>">
+                                                    <%= orders.status %>
+                                                </strong>
+                                            </p>
+                                            <p class="card-text">Product Name: <%= item.product.title %><strong
+                                                        class="text-danger"></strong></p>
+                                            <p class="card-text">Product Price: <strong class="text-dark">₹
+                                                    <%=item.price %>
+                                                </strong></p>
+                                            <form action="/viewOrder/<%= orders._id %>" method="post">
+                                                <input type="hidden" name="productId" value="<%= item.product._id  %>">
+                                                <button type="submit" class="btn btn-dark h-auto">View Order</button>
+                                            </form>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <% }) %>
+                        <% }) %>
+                            <% } else { %>
+                                <li class="list-group-item">No Orders Found</li>
+
+                                <% } %>
+    </ul>
+</div>

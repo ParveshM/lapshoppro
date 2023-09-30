@@ -1,0 +1,93 @@
+<!-- login-area start -->
+<div class="register-area ptb-100">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 col-12 col-lg-6 col-xl-6 ms-auto me-auto">
+                <div class="card shadow p-3">
+                    <div class="row no-gutters">
+                        <!-- Product Image -->
+                        <div class="col-md-4 d-flex align-items-center justify-content-center">
+                            <img src="/admin/uploads/<%= product.primaryImage[0].name %>" class="card-img"
+                                alt="Product Image" />
+                        </div>
+
+                        <div class="col-md-8">
+                            <div class="card-body">
+
+                                <h5 class="card-title">
+                                    <strong>Product Name:<%= product.title %></strong>
+                                </h5>
+
+
+                                <p class="card-text">
+                                    <strong>Ordered Date: <%= order.orderDate.toLocaleDateString('en-IN', {
+                                            weekday: 'long' , year: 'numeric' , month: 'long' , day: 'numeric' }) %>
+                                    </strong>
+                                </p>
+                                <!-- Ship To Name -->
+                                <p class="card-text"><strong>Ship To Name: <%= order.billingAddress.name %> </strong>
+                                </p>
+
+                                <p class="card-text">
+                                    <strong>Order Status:</strong>
+                                    <span class="<%= order.status === 'pending'
+                                    ? 'text-warning' : (order.status === 'shipped' ? 'text-primary' :
+                                    (order.status === 'cancelled' ? 'text-danger' :
+                                    (order.status === 'delivered' ? 'text-success' : '' ))) %>">
+                                        <%= order.status %>
+                                    </span>
+                                </p>
+                                <p class="card-text">
+                                    <strong>Product Price:</strong> ₹ <%= price %>
+                                </p>
+                                <p class="card-text"><strong>Quantity: <%= quantity %></strong> </p>
+
+                                <!-- Cancel Button -->
+                                <form action="/cancelOrder/<%= order._id %>?_method=PUT" method="POST">
+                                    <input type="hidden" name="productId" value="<%= product._id %>">
+                                    <input type="hidden" name="quantity" value="<%= quantity %>">
+                                    <input type="hidden" name="newStatus" value="cancelled">
+                                    <button type="submit" class="btn btn-danger h-auto">Cancel Order</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <!-- Review Section -->
+                    <!-- <div class="container mt-5">
+                        <hr class="border-2 border-secondary" />
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h3>Write a Review</h3>
+                                <form action="/user/review/add/Replace with product ID" method="post">
+                                    
+                                    <div class="form-group">
+                                        <label for="rating">Rating:</label>
+                                        <select class="form-control" id="rating" name="rating">
+                                            <option value="5">5 stars</option>
+                                            <option value="4">4 stars</option>
+                                            <option value="3">3 stars</option>
+                                            <option value="2">2 stars</option>
+                                            <option value="1">1 star</option>
+                                        </select>
+                                    </div>
+                                  
+                                    <div class="form-group">
+                                        <label for="reviewText">Review:</label>
+                                        <textarea class="form-control" id="reviewText" name="review" rows="4"></textarea>
+                                    </div>
+                                  
+                                    <button type="submit" class="btn btn-primary h-auto">Submit Review</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div> -->
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- login-area end -->

@@ -10,12 +10,15 @@ const connectMongo = require('connect-mongo')
 const mongoose = require('mongoose')
 const nocache = require('nocache')
 const expressLayouts = require('express-ejs-layouts')
+const methodOverride = require('method-override');
 
 // importing files--
 const adminRoute = require('./routes/adminRoute')
 const userRoute = require('./routes/userRoute');
 const dataBase = require('./config/dataBase')
 const { notFound, errorHandler } = require('./middlewares/errorHandler');
+
+
 
 
 // using functions--
@@ -72,6 +75,8 @@ app.use(expressLayouts)
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
+// Use method-override middleware
+app.use(methodOverride('_method'));
 
 // UserRoutes-----
 app.use('/admin', adminRoute)

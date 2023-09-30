@@ -1,6 +1,7 @@
 const express = require('express');
 const userRoute = express.Router();
 const passport = require('passport')
+
 const userController = require("../controller/userContrl")
 const cartController = require('../controller/cartContrl')
 const orderController = require('../controller/orderContrl')
@@ -37,7 +38,7 @@ userRoute.get('/logout', ensureAuthenticated, userController.userLogout);
 userRoute.get('/contact', userController.contact);
 userRoute.get('/about', userController.aboutUs);
 userRoute.get('/profile', ensureAuthenticated, userController.userProfile);
-
+ ` `
 
 // shopping_section--- 
 userRoute.get('/shop', userController.shopping);   /* shopping page */
@@ -51,10 +52,8 @@ userRoute.get('/removeProduct/:id',validateID, ensureAuthenticated, cartControll
 userRoute.post('/updateCartItem/:id',
 validateID, ensureAuthenticated, 
 cartController.updateCartItemQuantity);
-userRoute.get('/getCartItemCount', ensureAuthenticated, cartController.getCartCount);
+userRoute.get('/getCartItemCount',  cartController.getCartCount);
 userRoute.get('/checkProductAvailability', ensureAuthenticated, cartController.checkProductAvailability);
-
-userRoute.get('/checkout', ensureAuthenticated, orderController.checkoutPage); //checkout page
 
 // Address_Routes__
 userRoute.get('/savedAddress',ensureAuthenticated,addressController.savedAddress)
@@ -64,6 +63,12 @@ userRoute.get('/editAddress/:id',validateID,ensureAuthenticated,addressControlle
 userRoute.post('/editAddress/:id',validateID,ensureAuthenticated,addressController.updateAddress)
 userRoute.get('/deleteAddress/:id',validateID,ensureAuthenticated,addressController.deleteAddress)
 
+//checkout and order section
+userRoute.get('/checkout', ensureAuthenticated, orderController.checkoutPage); //checkout page
+userRoute.post('/placeOrder', ensureAuthenticated, orderController.placeOrder); 
+userRoute.get('/orders', ensureAuthenticated, orderController.orders); 
+userRoute.post('/viewOrder/:id', ensureAuthenticated, orderController.viewOrder); 
+userRoute.put('/cancelOrder/:id', ensureAuthenticated, orderController.cancelOrder);
 
 // 404 notfound page--
 userRoute.get('*',(req,res)=>{res.render('./shop/pages/404')})
