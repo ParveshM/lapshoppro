@@ -9,14 +9,11 @@ function calculateSubtotal(userWithCart) {
     const cartSubtotal = cartItems.reduce((total, item) => {
         return total + item.product.salePrice * item.quantity;
     }, 0);
-
-    // const processingFee = 50;
-    let taxAmount = Math.ceil(0.01 * cartSubtotal);
-    const orderTotal = cartSubtotal + taxAmount;
-    if (cartSubtotal < 100000) {
-        taxAmount = 0;
-    }
-    result.push(cartItems, cartSubtotal, taxAmount, orderTotal);
+    
+    const processingFee = 50;
+    const orderTotal = cartSubtotal + processingFee;
+    
+    result.push(cartItems, cartSubtotal, processingFee, orderTotal);
     return result;
 }
 

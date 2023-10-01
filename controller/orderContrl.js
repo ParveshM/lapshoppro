@@ -2,12 +2,11 @@ const User = require('../models/userModel')
 const Product = require('../models/productModel')
 const Order = require('../models/orderModel')
 const Address = require('../models/addressModel')
-const Orders = require('../models/orderModel')
-const mongoose = require('mongoose')
 const asyncHandler = require('express-async-handler');
-const { calculateSubtotal } = require('../utility/orderFunctions')
-const { v4: uuidv4 } = require('uuid');
+const { calculateSubtotal } = require('../utility/ordercalculation')
 
+
+/******** User Side *******/
 //checkout page loading
 const checkoutPage = asyncHandler(async (req, res) => {
     try {
@@ -19,11 +18,11 @@ const checkoutPage = asyncHandler(async (req, res) => {
         console.log('adsdd', addresses);
 
         const totalArray = calculateSubtotal(userWithCart);
-        const [cartItems, cartSubtotal, taxAmount, orderTotal] = [...totalArray];
+        const [cartItems, cartSubtotal, processingFee, orderTotal] = [...totalArray];
         res.render('./shop/pages/checkout', {
             cartItems,
             cartSubtotal,
-            taxAmount,
+            processingFee,
             orderTotal,
             addresses
         });
@@ -35,14 +34,13 @@ const checkoutPage = asyncHandler(async (req, res) => {
 // orderPlacing---
 const placeOrder = asyncHandler(async (req, res) => {
     try {
-        const uuid = uuidv4();
         const user = req.user;
         const { coupon, address, paymentMethod } = req.body
         const userWithCart = await User.findById(user).populate('cart.product'); //finding products in the cart
 
         if (userWithCart.cart && userWithCart.cart.length > 0) {
             const totalArray = calculateSubtotal(userWithCart);
-            const [cartItems, cartSubtotal, taxAmount, orderTotal] = [...totalArray]; //calculating 
+            const [cartItems, cartSubtotal, processingFee, orderTotal] = [...totalArray]; //calculating 
 
 
             const orderItems = cartItems.map(item => ({ //get the productId and quantity in the cart
@@ -54,11 +52,11 @@ const placeOrder = asyncHandler(async (req, res) => {
             const newOrder = new Order({
                 items: orderItems,
                 user: user,
+                orderDate: Date.now(),
                 billingAddress: address,
                 paymentMethod: paymentMethod,
-                orderId: uuid,
                 subtotal: cartSubtotal,
-                taxAmount: taxAmount,
+                processingFee: processingFee,
                 total: orderTotal
             });
 
@@ -87,7 +85,7 @@ const placeOrder = asyncHandler(async (req, res) => {
     }
 })
 
-// order list in user profile--
+// orders list in user profile--    
 const orders = asyncHandler(async (req, res) => {
     try {
         const userId = req.user
@@ -108,7 +106,6 @@ const orders = asyncHandler(async (req, res) => {
 //view order
 const viewOrder = asyncHandler(async (req, res) => {
     try {
-        const userId = req.user;
         const orderId = req.params.id;
         const productId = req.body.productId
 
@@ -121,14 +118,13 @@ const viewOrder = asyncHandler(async (req, res) => {
 
         const productIdString = String(productId); //finding matching productId from orderDb
         const productItem = order.items.find(item => String(item.product._id) === productIdString);
-        console.log('orders', order);
-        // console.log('orders.items',order.items);
-        console.log('item', productItem);
+
         if (productItem) { // if there is product 
             const matchedProduct = productItem.product;
             const quantity = productItem.quantity
             const price = productItem.price
-            res.render('./shop/pages/viewOrder', { order, product: matchedProduct, quantity, price })
+            const status = productItem.status
+            res.render('./shop/pages/viewOrder', { order, product: matchedProduct, quantity, price, status })
         } else {
             res.render('./shop/pages/404')
         }
@@ -137,35 +133,118 @@ const viewOrder = asyncHandler(async (req, res) => {
     }
 });
 
-//Cancle Order--- and also increase the quantity once cancelled 
+//Cancel Order--- and also increase the quantity once cancelled 
 const cancelOrder = asyncHandler(async (req, res) => {
     try {
-        const userId = req.user;
+
         const orderId = req.params.id;
         const productId = req.body.productId
-        const incQuantity = req.body.quantity
         const newStatus = req.body.newStatus
-        console.log('orderid', orderId);
-        console.log('produId', productId);
-        console.log('incquan', incQuantity);
-        console.log('newSta', newStatus);
-        const order = await Order.findOne({ user: userId, _id: orderId });
+        const order = await Order.findOne({ _id: orderId })
+            .populate({
+                path: 'items.product',
+                model: 'Product'
+            })
+            .populate('billingAddress');
 
-        if (!order) {
+        const productIdString = String(productId); //finding matching productId from orderDb
+        const productItem = order.items.find(item => String(item.product._id) === productIdString);
+
+        if (!productItem) {
             return res.status(404).render('./shop/pages/404');
-        }
-        if (order.status !== 'cancelled') {
-            order.status = newStatus
-            console.log('order', order);
+        } else {
+            if (productItem.status !== 'cancelled') {
+                productItem.status = newStatus
+                const incQuantity = productItem.quantity
 
-            await Product.findByIdAndUpdate(productId, { $inc: { quantity: incQuantity } });
-            await order.save();
-            return res.redirect(`/orders`);
+                await Product.findByIdAndUpdate(productId, { $inc: { quantity: incQuantity } });
+                const saved = await order.save();
+                console.log('after update', saved);
+                return res.redirect(`/orders`);
+            } else {
+                res.render('./shop/pages/404')
+            }
         }
+
     } catch (error) {
         throw new Error(error);
     }
 });
+/******************************************************/
+
+
+/************************************/
+/********* adiminSide *************/
+
+// ordersPage---
+const ordersPage = asyncHandler(async (req, res) => {
+    try {
+        const listOrder = await Order.find().populate({
+            path: 'items.product',
+            model: 'Product'
+        }).populate('billingAddress').sort({ orderDate: -1 });
+
+
+        res.render('./admin/pages/orders', { title: 'Orders', orders: listOrder })
+    } catch (error) {
+        throw new Error(error)
+    }
+})
+
+// editOrder---
+const editOrderPage = asyncHandler(async (req, res) => {
+    try {
+        const orderId = req.params.id
+        console.log('orderid', orderId);
+        const findOrder = await Order.findOne({ _id: orderId })
+            .populate('items.product')
+            .populate('billingAddress')
+            .populate('user')
+
+        res.render('./admin/pages/editOrder', { title: 'editOrder', viewOrder: findOrder })
+    } catch (error) {
+        throw new Error(error)
+    }
+})
+// update Order status--
+const updateOrder = asyncHandler(async (req, res) => {
+    try {
+        const orderId = req.params.id;
+        const status = req.body.status;
+        const productId = req.body.productId;
+
+        // Update the status of a specific product within the order
+        const update = await Order.findOneAndUpdate(
+            { _id: orderId, 'items.product': productId }, // Match the order and the product
+            { $set: { 'items.$.status': status } } // Update the status of the matched product
+        );
+
+        if (update) { //if update is success            
+            if (status == 'cancelled') { //if the admin updates the status to cancelled ,increase the quantity.
+
+                const order = await Order.findOne({ _id: orderId })
+                    .populate({
+                        path: 'items.product',
+                        model: 'Product'
+                    })
+
+                const productIdString = String(productId); //finding matching productId from orderDb
+                const productItem = order.items.find(item => String(item.product._id) === productIdString);
+
+                const incQuantity = productItem.quantity
+                const pro = await Product.findByIdAndUpdate(productId, { $inc: { quantity: incQuantity } });
+                res.json(pro)
+            }
+
+            res.redirect('/admin/orders')
+        } else {
+            res.status(404).render('./admin/404');
+        }
+
+    } catch (error) {
+        throw new Error(error)
+    }
+})
 
 
 module.exports = {
@@ -173,5 +252,8 @@ module.exports = {
     placeOrder,
     orders,
     viewOrder,
-    cancelOrder
+    cancelOrder,
+    ordersPage,
+    editOrderPage,
+    updateOrder
 }

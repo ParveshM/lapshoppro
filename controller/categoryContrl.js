@@ -24,22 +24,26 @@ const addCategory = expressHandler(async (req, res) => {
 // inserting  categories--
 const insertCategory = expressHandler(async (req, res) => {
     try {
+
         const categoryName = req.body.addCategory;
-        const findCat = await category.findOne({ categoryName });
+        const regexCategoryName = new RegExp(`^${categoryName}$`, 'i');
+        const findCat = await category.findOne({ categoryName: regexCategoryName });
+
         if (findCat) {
             const catCheck = `Category ${categoryName} Already existing`;
             res.render('./admin/pages/addCategory', { catCheck, title: 'addCategory' });
         } else {
             const result = new category({
-                categoryName: req.body.addCategory
-            })
-            const save = await result.save();
-            console.log(save);
+                categoryName: categoryName,
+            });
+            await result.save();
+
             res.render('./admin/pages/addCategory', {
                 message: `Category ${categoryName} added successfully`,
                 title: 'addCategory',
             });
         }
+
     } catch (error) {
         throw new Error(error);
     }

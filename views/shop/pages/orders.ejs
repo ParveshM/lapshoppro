@@ -20,26 +20,26 @@
                                             </h5>
                                             <p class="card-text mb-2">Order Date: <%=
                                                     orders.orderDate.toLocaleDateString('en-IN', { weekday: 'long' ,
-                                                    year: 'numeric' , month: 'long' , day: 'numeric' }) %>
+                                                    year: 'numeric' , month: 'long' , day: 'numeric' }) + ' ' +
+                                                    orders.orderDate.toLocaleTimeString('en-IN', { hour: 'numeric' ,
+                                                    minute: 'numeric' }) %>
                                             </p>
+
                                             <p class="card-text">Ship To Name: <%= orders.billingAddress.name %> <strong
                                                         class="text-primary"></strong>
                                             </p>
                                             <p class="card-text">
                                                 <span>Order Status:</span>
-                                                <strong
-                                                    class="<%= orders.status === 'pending'
-                                                            ? 'text-warning' : (orders.status === 'shipped' ? 'text-primary' :
-                                                            (orders.status === 'cancelled' ? 'text-danger' :
-                                                            (orders.status === 'delivered' ? 'text-success' : '' ))) %>">
-                                                    <%= orders.status %>
+                                                <strong class="<%= item.status === 'pending'
+                                                            ? 'text-warning' : (item.status === 'shipped' ? 'text-primary' :
+                                                            (item.status === 'cancelled' ? 'text-danger' :
+                                                            (item.status === 'delivered' ? 'text-success' : '' ))) %>">
+                                                    <%= item.status %>
                                                 </strong>
                                             </p>
                                             <p class="card-text">Product Name: <%= item.product.title %><strong
                                                         class="text-danger"></strong></p>
-                                            <p class="card-text">Product Price: <strong class="text-dark">₹
-                                                    <%=item.price %>
-                                                </strong></p>
+                                            
                                             <form action="/viewOrder/<%= orders._id %>" method="post">
                                                 <input type="hidden" name="productId" value="<%= item.product._id  %>">
                                                 <button type="submit" class="btn btn-dark h-auto">View Order</button>
@@ -51,8 +51,12 @@
                     <% }) %>
                         <% }) %>
                             <% } else { %>
-                                <li class="list-group-item">No Orders Found</li>
-
+                                <div class="container text-center">
+                                    <h3 class="text-muted"> No Orders Found</h3>
+                                    <a href="/shop" class="btn btn-success mt-3" style="border-radius: 10px;">
+                                        <i class="ti-shopping-cart"></i> Start Shopping
+                                    </a>
+                                </div>
                                 <% } %>
     </ul>
 </div>

@@ -1,24 +1,31 @@
 const mongoose = require('mongoose');
-
 const orderSchema = new mongoose.Schema({
     items: [
         {
-        product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
-        quantity: Number,
-        price:{
-            type:Number,
-            required:true
-        }
+            product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
+            quantity: Number,
+            price: {
+                type: Number,
+                required: true
+            },
+            status: {
+                type: String,
+                enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'],
+                default: 'pending',
+            },
         }
     ],
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     orderId: {
         type: String,
-        required: true
+        default: function () {
+            return `ORD-${new Date().getTime().toString()}-${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`;
+        },
+        unique: true,
     },
     orderDate: {
         type: Date,
-        default: Date.now(),
+        default: Date.now()
     },
     estimatedDelivery: {
         type: Date,
@@ -38,18 +45,13 @@ const orderSchema = new mongoose.Schema({
         default: Date,
     },
     billingAddress: { type: mongoose.Schema.Types.ObjectId, ref: 'Address' },
-    status: {
-        type: String,
-        enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'],
-        default: 'pending',
-    },
     paymentMethod: {
         type: String,
         required: true,
     },
     discount: Number,
+    processingFee: Number,
     subtotal: Number,
-    taxAmount: Number,
     total: Number,
 });
 

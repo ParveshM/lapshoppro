@@ -25,30 +25,51 @@
                                     </strong>
                                 </p>
                                 <!-- Ship To Name -->
-                                <p class="card-text"><strong>Ship To Name: <%= order.billingAddress.name %> </strong>
+                                <p class="card-text">
+                                    <strong>Ship To :</strong>
+                                    <strong>
+                                        <%= order.billingAddress.name %>,
+                                            <%= order.billingAddress.addressType %>,
+                                                <%= order.billingAddress.address %>,
+                                                    <%= order.billingAddress.town %>,
+                                                        <%= order.billingAddress.state %>,
+                                                            <%= order.billingAddress.postCode %>,
+                                                                <%= order.billingAddress.phone %>
+                                    </strong>
                                 </p>
 
                                 <p class="card-text">
                                     <strong>Order Status:</strong>
-                                    <span class="<%= order.status === 'pending'
-                                    ? 'text-warning' : (order.status === 'shipped' ? 'text-primary' :
-                                    (order.status === 'cancelled' ? 'text-danger' :
-                                    (order.status === 'delivered' ? 'text-success' : '' ))) %>">
-                                        <%= order.status %>
+                                    <span class="<%= status === 'pending'
+                                    ? 'text-warning' : (status === 'shipped' ? 'text-primary' :
+                                    (status === 'cancelled' ? 'text-danger' :
+                                    (status === 'delivered' ? 'text-success' : '' ))) %>">
+                                        <%= status %>
                                     </span>
                                 </p>
                                 <p class="card-text">
-                                    <strong>Product Price:</strong> ₹ <%= price %>
+                                    <strong>Product Price:</strong> ₹<%= price %>
+                                </p>
+                                <p class="card-text">
+                                    <strong>processingFee:</strong> ₹ <%= order.processingFee %>
                                 </p>
                                 <p class="card-text"><strong>Quantity: <%= quantity %></strong> </p>
-
-                                <!-- Cancel Button -->
-                                <form action="/cancelOrder/<%= order._id %>?_method=PUT" method="POST">
-                                    <input type="hidden" name="productId" value="<%= product._id %>">
-                                    <input type="hidden" name="quantity" value="<%= quantity %>">
-                                    <input type="hidden" name="newStatus" value="cancelled">
-                                    <button type="submit" class="btn btn-danger h-auto">Cancel Order</button>
-                                </form>
+                                <% if (status=='delivered' ) { %>
+                                    <% } else { %>
+                                        <% if (status !=='cancelled' ) { %>
+                                            <!-- Cancel Button -->
+                                            <form action="/cancelOrder/<%= order._id %>?_method=PUT" method="POST">
+                                                <input type="hidden" name="productId" value="<%= product._id %>">
+                                                <input type="hidden" name="newStatus" value="cancelled">
+                                                <button type="submit" class="btn btn-danger h-auto">Cancel
+                                                    Order</button>
+                                            </form>
+                                            <% } else { %>
+                                                <p class="card-text text-danger">
+                                                    <strong>Order Cancelled</strong>
+                                                </p>
+                                                <% } %>
+                                                    <% } %>
                             </div>
                         </div>
                     </div>
