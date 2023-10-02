@@ -25,12 +25,12 @@
                     <h3>Have a coupon? <span id="showcoupon">Click here to enter your code</span></h3>
                     <div id="checkout_coupon" class="coupon-checkout-content">
                         <div class="coupon-info">
-                            <form action="#">
+                            <form action="/placeOrder" method="POST">
                                 <p class="checkout-coupon">
-                                    <input type="text" placeholder="Coupon code" />
-                                    <input type="submit" value="Apply Coupon" />
+                                    <input type="text" placeholder="Coupon code" name="coupon" />
+                                    <!-- <input type="submit" value="Apply Coupon" /> -->
                                 </p>
-                            </form>
+
                         </div>
                     </div>
                     <!-- ACCORDION END -->
@@ -39,36 +39,37 @@
         </div>
         <div class="row">
             <div class="col-lg-6 col-md-12 col-12">
-                <form action="#">
-                    <div class="checkbox-form">
-                        <h3>Billing Address</h3>
-                        <div class="row">
-                            <% if (addresses ) { %>
-                             
-                                <% addresses.forEach(address => { %>
-                                    <div class="card mb-3">
+
+                <div class="checkbox-form">
+                    <h3>Billing Address</h3>
+                    <div class="row">
+                        <% if (addresses.length>0 ){ %>
+
+                            <% addresses.forEach(address=> { %>
+                                <div class="card mb-3">
                                     <div class="card-body">
                                         <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="selectedAddress" value="<%= address._id %>">
+                                            <input class="form-check-input" type="radio" name="address"
+                                                value="<%= address._id %>" required>
                                             <label class="form-check-label">
-                                                <%= address.addressType %>  %><br>
-                                                <%= address.name %><br>
-                                                <%= address.town %>, <%= address.state %> , <%= address.postCode %><br>
-                                                Phone: <%= address.phone %>
+                                                <%= address.addressType %> %><br>
+                                                    <%= address.name %><br>
+                                                        <%= address.town %>, <%= address.state %> , <%= address.postCode
+                                                                    %><br>
+                                                                    Phone: <%= address.phone %>
                                             </label>
                                         </div>
                                     </div>
                                 </div>
                                 <% }); %>
-                               <% } else { %>
-                                <div class="d-flex justify-content-between">
-                                    <h4 class="mb-4">No address found</h4>
-                                    <a class="btn-hover list-btn-style" href="/addAddress">Add Address</a>
-                                </div>
-                                  <% } %>
-                        </div>
+                                    <% } else { %>
+                                        <div class="d-flex justify-content-between">
+                                            <h4 class="mb-4">No address found</h4>
+                                            <a class="btn-hover list-btn-style" href="/addAddress">Add Address</a>
+                                        </div>
+                                        <% } %>
                     </div>
-                </form>
+                </div>
             </div>
             <div class="col-lg-6 col-md-12 col-12">
                 <div class="your-order">
@@ -105,22 +106,16 @@
                                             <%= (cartSubtotal).toLocaleString() %>
                                         </span></td>
                                 </tr>
-                                <tr class="cart-processingfee">
-                                    <th>ProcessingFee</th>
-                                    <td><span class="amount">
-                                            <%= (processingFee).toLocaleString() %>
-                                        </span></td>
-                                </tr>
                                 <tr class="tax-amount">
-                                    <th>Tax Amount</th>
+                                    <th>Processing Fee</th>
                                     <td><span class="amount">
-                                            <%= (taxAmount).toLocaleString() %>
+                                            ₹<%= processingFee %>
                                         </span></td>
                                 </tr>
                                 <tr class="order-total">
                                     <th>Order Total</th>
                                     <td><strong><span class="amount">
-                                                <%= (orderTotal).toLocaleString() %>
+                                                ₹<%= (orderTotal).toLocaleString() %>
                                             </span></strong>
                                     </td>
                                 </tr>
@@ -142,13 +137,14 @@
                                                     <div class="panel-body">
                                                         <div class="form-check">
                                                             <input class="form-check-input" type="radio"
-                                                                name="paymentMethod" id="cashOnDelivery">
+                                                                value="Cash On Delivery(COD)" name="paymentMethod"
+                                                                id="cashOnDelivery" required>
                                                             <label class="form-check-label" for="cashOnDelivery">Cash On
                                                                 Delivery (COD)</label>
                                                         </div>
                                                         <div class="form-check">
-                                                            <input class="form-check-input" type="radio"
-                                                                name="paymentMethod" id="paypal">
+                                                            <input class="form-check-input" type="radio" value="PayPal"
+                                                                name="paymentMethod" id="paypal" required>
                                                             <label class="form-check-label" for="paypal">PayPal</label>
                                                         </div>
                                                     </div>
@@ -157,10 +153,9 @@
                                         </div>
                                     </div>
                                 </div>
-
-
                                 <div class="order-button-payment">
                                     <input type="submit" value="Place order" />
+                                    </form>
                                 </div>
                             </div>
                         </div>
@@ -170,7 +165,7 @@
         </div>
     </div>
     <style>
-       .list-btn-style {
+        .list-btn-style {
             max-width: 137px;
             max-height: 43px;
         }

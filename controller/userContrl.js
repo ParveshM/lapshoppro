@@ -178,17 +178,29 @@ const userProfile = async (req, res) => {
 
 // Shopping Page--
 const shopping = asyncHandler(async (req, res) => {
+    console.log('request from unauth user ');
     try {
         const user = req.user
+        console.log('user ', user);
         const listedCategories = await Category.find({ isListed: true });
         // Get the IDs of the listed categories
         const listedCategoryIds = listedCategories.map(category => category._id);
         // Find products that belong to the listed categories
         const findProducts = await Product.find({ categoryName: { $in: listedCategoryIds }, isListed: true });
+        let cartProductIds ;
+        if (user) {
+           if(user.cart){
+            console.log('cartsdfaaaaa',user.cart);
+                cartProductIds = user.cart.map(cartItem => cartItem.product.toString());
+               console.log(cartProductIds,'idsdklfj');
+           }
+          
+        } else {
+            cartProductIds = null;
 
-        const cartProductIds = user.cart.map(cartItem => cartItem.product.toString());
+        }
 
-        res.render('./shop/pages/shopping', { products: findProducts, category: listedCategories, cartProductIds });
+        res.render('./shop/pages/shopping', { products: findProducts, category: listedCategories, cartProductIds, user });
     } catch (error) {
         throw new Error(error);
     }
@@ -205,8 +217,13 @@ const viewProduct = asyncHandler(async (req, res) => {
             return res.status(404).render('./shop/pages/404')
         }
         const products = await Product.find({ isListed: true })
-        const cartProductIds = user.cart.map(cartItem => cartItem.product.toString());
+        let cartProductIds;
+        if (user) {
+         cartProductIds = user.cart.map(cartItem => cartItem.product.toString());
+        } else {
+            cartProductIds = null;
 
+        }
         res.render('./shop/pages/productDetail', { product: findProduct, products: products, cartProductIds })
     } catch (error) {
         throw new Error(error)

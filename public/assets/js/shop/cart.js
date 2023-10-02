@@ -43,7 +43,7 @@ if (window.location.pathname.includes('/cart') || $('#checkout-link').length > 0
         });
     }
     setInterval(checkProductAvailability, 500);
-}
+} 
 
 
 function updateCartItemCount() {

@@ -106,9 +106,15 @@
                     <div class="details-price">
                         <span>₹<%= (product.salePrice).toLocaleString() %></span>
                     </div>
+                    <div class="stock mb-3 text-warning">
+                        <% if (product.quantity < 5) { %>
+                            <span>
+                                Hurry Only <%= product.quantity%> left!
+                            </span>
+                            <% }%>
+                    </div>
 
                     <div class="quick-view-select">
-
                         <div class="select-option-part">
                             <ul class="row">
                                 <li class="col-auto"><label>Color*</label></li>
@@ -120,15 +126,21 @@
                     </div>
                     <div class="quickview-plus-minus">
                         <div class="product-list-cart">
-                            <% if (cartProductIds.includes(product._id.toString())) { %>
-                                <a class="btn-hover list-btn-style" href="/cart">Go Cart
-                                </a>
-                                <% } else if (product.quantity> 0) { %>
-                                    <a class="btn-hover list-btn-style" href="/addtoCart/<%= product._id %>">Add to
-                                        Cart</a>
-                                    <% } else { %>
-                                        <h3>Out of Stock</h3>
-                                        <% } %>
+                            <% if (!user) { %>
+                                <a class="btn-hover list-btn-style" href="/login">Add to
+                                    Cart</a>
+                                <% }else { %>
+                                    <% if (cartProductIds.includes(product._id.toString())) { %>
+                                        <a class="btn-hover list-btn-style" href="/cart">Go Cart
+                                        </a>
+                                        <% } else if (product.quantity> 0) { %>
+                                            <a class="btn-hover list-btn-style" href="/addtoCart/<%= product._id %>">Add
+                                                to
+                                                Cart</a>
+                                            <% } else { %>
+                                                <h3>Out of Stock</h3>
+                                                <% } %>
+                                                    <% } %>
                         </div>
 
                         <div class="quickview-btn-wishlist">

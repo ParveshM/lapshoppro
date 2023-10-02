@@ -170,17 +170,25 @@
                                                         </div>
                                                         <div class="product-list-cart-wishlist">
                                                             <div class="product-list-cart">
-                                                                <% if (cartProductIds.includes(element._id.toString())) { %>
+                                                          
+                                                                <% if (!user) { %>
                                                                     <a class="btn-hover list-btn-style"
-                                                                           href="/cart">Go to Cart
-                                                                     </a>
-                                                                    <% } else if (element.quantity> 0) { %>
-                                                                        <a class="btn-hover list-btn-style"
-                                                                            href="/addtoCart/<%= element._id %>">Add to
-                                                                            Cart</a>
-                                                                        <% } else { %>
-                                                                            <h3>Out of Stock</h3>
-                                                                            <% } %>
+                                                                        href="/login">Add to
+                                                                        Cart</a>
+                                                                    <% }else { %>
+                                                                        <% if(cartProductIds.includes(element._id.toString())){ %>
+                                                                            <a class="btn-hover list-btn-style"
+                                                                                href="/cart">Go to Cart
+                                                                            </a>
+                                                                            <% } else if (element.quantity> 0) { %>
+                                                                                <a class="btn-hover list-btn-style"
+                                                                                    href="/addtoCart/<%= element._id %>">Add
+                                                                                    to
+                                                                                    Cart</a>
+                                                                                <% } else { %>
+                                                                                    <h3>Out of Stock</h3>
+                                                                                    <% } %>
+                                                                                        <% } %>
                                                             </div>
                                                             <div class="product-list-wishlist">
                                                                 <a class="btn-hover list-btn-wishlist" href="#">

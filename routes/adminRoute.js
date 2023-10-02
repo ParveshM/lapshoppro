@@ -3,6 +3,7 @@ const adminRoute = express.Router();
 const adminController = require("../controller/adminContrl")
 const categoryController = require('../controller/categoryContrl')
 const productController = require('../controller/productContrl')
+const orderController = require('../controller/orderContrl')
 const { upload } = require('../config/upload')
 const { isAdminLoggedIn, isAdminLoggedOut } = require('../middlewares/adminAuth')
 const nocache = require('nocache')
@@ -53,6 +54,17 @@ adminRoute.post('/product/editproduct/:id',
         { name: "secondaryImage" }
         , { name: "primaryImage" }]),
     productController.updateProduct)
+
+
+// OrderManagement--
+adminRoute.get('/orders', isAdminLoggedIn, orderController.ordersPage)
+adminRoute.get('/orders/editOrder/:id', isAdminLoggedIn, orderController.editOrderPage)
+adminRoute.post('/orders/editOrder/:id', isAdminLoggedIn, orderController.updateOrder)
+
+
+
+
+
 
 adminRoute.get('*', (req, res) => { res.render('./admin/page404', { title: 'Error' }) })
 

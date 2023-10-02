@@ -17,16 +17,16 @@
     <div class="row">
       <div class="col-md-12 col-12 col-lg-12 col-xl-6 ms-auto me-auto">
 
-        <div class="alert alert-danger fade show mt-3" id="error-message" role="alert" style="display: none;"></div>
         
         <% if (typeof userCheck !== 'undefined') { %>
           <div class="alert alert-danger fade show mt-3" id="message" role="alert">
-              <%- userCheck %>
+            <%- userCheck %>
           </div>
           <% } %>
           <div class="login">
-          <h2 style="color:black">Register</h2>
-          <div class="login-form-container">
+            <h2 style="color:black">Register</h2>
+            <div class="login-form-container">
+            <div class="alert alert-danger fade show mt-3" id="error-message" role="alert" style="display: none;"></div>
             <div class="login-form">
               <form action="" method="post" onsubmit="return validateForm()">
                 <label for="user-name">Username:</label>

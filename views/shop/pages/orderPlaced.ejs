@@ -1,0 +1,56 @@
+<div class="checkout-area pt-5 pb-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 col-md-12">
+                <div class="text-center">
+                    <h2 class="display-3 text-success mb-4">Thank you for your order!</h2>
+
+                    <div class="order-details mt-4">
+                        <p class="lead"><strong class="text-success">Order Details:</strong></p>
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <strong>Order ID:</strong> <span class="text-primary">
+                                    <%= order.orderId %>
+                                </span>
+                            </li>
+                            <li class="mb-2">
+                                <strong>Total Amount:</strong> <span class="text-primary">
+                                    <%= (order.total).toLocaleString() %>
+                                </span>
+                            </li>
+                            <li class="mb-2">
+                                <strong>Delivery Address:</strong>
+                                <span class="text-primary">
+                                    <%= billAddress.name %>,
+                                        <%= billAddress.address %>,
+                                            <%= billAddress.town %>,
+                                                <%= billAddress.state %>,
+                                                    <%= billAddress.postCode %>,
+                                                        <%= billAddress.phone %>
+                                </span>
+                            </li>
+                            <li class="mb-2">
+                                <strong>Estimated Arrival Date:</strong>    
+                                <span class="text-primary">
+                                    <%= order.estimatedDelivery.toLocaleDateString('en-IN', { weekday: 'long' ,
+                                        year: 'numeric' , month: 'long' , day: 'numeric' }) %>
+                                </span>
+                            </li>
+                            <li class="mb-2">
+                                <strong>Payment Method:</strong>
+                                <span class="text-primary">
+                                    <%= order.paymentMethod %>
+                                </span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="quickview-btn-cart mt-3">
+                        <a class="btn-hover-black" href="/shop">Continue Shopping</a>
+                        <a class="btn-hover-black" href="/orders">View Orders</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
