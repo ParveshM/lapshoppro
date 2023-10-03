@@ -21,6 +21,11 @@ const userSchema = new Schema({
         type: Boolean,
         default: false
     },
+    token:{
+        type:String,
+        default:'',
+        expires:3600
+    },
     cart: [{
         product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
         quantity: Number,
@@ -28,6 +33,7 @@ const userSchema = new Schema({
     addresses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Address'}],
     wishlist:[{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }]
 }, { timestamps: true });
+
 
 userSchema.pre('save', async function (next) {
     if (this.isNew) {

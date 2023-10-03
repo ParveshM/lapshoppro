@@ -35,6 +35,13 @@ userRoute.post('/login', ensureNotAuthenticated,
     failureFlash: true, // enable flash messages
   }));
 userRoute.get('/logout', ensureAuthenticated, userController.userLogout);
+
+userRoute.get('/forgetPassword', ensureNotAuthenticated, userController.emailInputPage);
+userRoute.post('/forgetPassword', ensureNotAuthenticated, userController.sendResetLink);
+
+userRoute.get('/resetPassword', ensureNotAuthenticated, userController.resetPassPage);
+userRoute.post('/resetPassword', ensureNotAuthenticated, userController.resetPassword);
+
 userRoute.get('/contact', userController.contact);
 userRoute.get('/about', userController.aboutUs);
 userRoute.get('/profile', ensureAuthenticated, userController.userProfile);

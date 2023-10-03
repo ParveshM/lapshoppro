@@ -63,9 +63,6 @@ adminRoute.post('/orders/editOrder/:id', isAdminLoggedIn, orderController.update
 
 
 
-
-
-
 adminRoute.get('*', (req, res) => { res.render('./admin/page404', { title: 'Error' }) })
 
 

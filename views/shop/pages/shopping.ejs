@@ -68,17 +68,7 @@
                             </div>
                         </div>
                         <% } %>
-                            <div class="sidebar-widget sidebar-overflow mb-45">
-                                <h3 class="sidebar-title">color</h3>
-                                <div class="product-color">
-                                    <ul>
-                                        <li class="red">b</li>
-                                        <li class="pink">p</li>
-                                        <li class="blue">b</li>
 
-                                    </ul>
-                                </div>
-                            </div>
                 </div>
             </div>
             <div class="col-lg-9 order-1 order-lg-2">
@@ -170,13 +160,14 @@
                                                         </div>
                                                         <div class="product-list-cart-wishlist">
                                                             <div class="product-list-cart">
-                                                          
+
                                                                 <% if (!user) { %>
                                                                     <a class="btn-hover list-btn-style"
                                                                         href="/login">Add to
                                                                         Cart</a>
                                                                     <% }else { %>
-                                                                        <% if(cartProductIds.includes(element._id.toString())){ %>
+                                                                        <% if(cartProductIds.includes(element._id.toString())){
+                                                                            %>
                                                                             <a class="btn-hover list-btn-style"
                                                                                 href="/cart">Go to Cart
                                                                             </a>

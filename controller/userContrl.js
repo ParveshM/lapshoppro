@@ -3,6 +3,9 @@ const Product = require('../models/productModel')
 const Category = require('../models/categoryModel')
 const asyncHandler = require('express-async-handler')
 const { sendOtp, generateOTP } = require('../utility/nodeMailer')
+const { forgetPassMail } = require('../utility/forgetPassMail')
+const crypto = require('crypto')
+const bcrypt = require('bcrypt')
 
 // loadLandingPage---
 const loadLandingPage = asyncHandler(async (req, res) => {
@@ -187,14 +190,14 @@ const shopping = asyncHandler(async (req, res) => {
         const listedCategoryIds = listedCategories.map(category => category._id);
         // Find products that belong to the listed categories
         const findProducts = await Product.find({ categoryName: { $in: listedCategoryIds }, isListed: true });
-        let cartProductIds ;
+        let cartProductIds;
         if (user) {
-           if(user.cart){
-            console.log('cartsdfaaaaa',user.cart);
+            if (user.cart) {
+                console.log('cartsdfaaaaa', user.cart);
                 cartProductIds = user.cart.map(cartItem => cartItem.product.toString());
-               console.log(cartProductIds,'idsdklfj');
-           }
-          
+                console.log(cartProductIds, 'idsdklfj');
+            }
+
         } else {
             cartProductIds = null;
 
@@ -219,7 +222,7 @@ const viewProduct = asyncHandler(async (req, res) => {
         const products = await Product.find({ isListed: true })
         let cartProductIds;
         if (user) {
-         cartProductIds = user.cart.map(cartItem => cartItem.product.toString());
+            cartProductIds = user.cart.map(cartItem => cartItem.product.toString());
         } else {
             cartProductIds = null;
 
@@ -229,6 +232,69 @@ const viewProduct = asyncHandler(async (req, res) => {
         throw new Error(error)
     }
 })
+
+// forgetPassword_ email inputPage--
+const emailInputPage = asyncHandler(async (req, res) => {
+    try {
+        res.render('./shop/pages/forgetPassEmail')
+    } catch (error) {
+        throw new Error(error)
+    }
+})
+
+// sendEmail to reset password--
+const sendResetLink = asyncHandler(async (req, res) => {
+    try {
+        const email = req.body.email;
+        const userData = await User.findOne({ email: email })
+        if (!userData) {
+            res.render('./shop/pages/forgetPassEmail', { message: `No user existing in this${email} email` })
+        } else {
+            const token = crypto.randomBytes(32).toString("hex");
+            const data = await User.updateOne({ email: email }, { $set: { token: token } })
+
+            forgetPassMail(email, token, userData._id) //sending link to this mail
+            const message = `Link for resetting password is sent your ${email}`;
+            res.render('./shop/pages/forgetPassEmail', { email: message })
+
+        }
+
+    } catch (error) {
+        throw new Error(error)
+    }
+})
+
+// Reset Password page
+const resetPassPage = asyncHandler(async (req, res) => {
+    try {
+        const userId = req.query.id;
+        res.render('./shop/pages/resetPassword', { userId })
+    } catch (error) {
+        throw new Error(error)
+    }
+})
+
+// Resetting the password--
+const resetPassword = asyncHandler(async (req, res) => {
+    try {
+
+        const userId = req.body.userId;
+        const password = req.body.password;
+
+        const user = await User.findOne({ _id: userId })
+        if (user) {
+            const salt = bcrypt.genSaltSync(10);
+            const hashedPassword = await bcrypt.hash(password, salt);
+
+            await User.findByIdAndUpdate({ _id: userId }, { $set: { token: '', password: hashedPassword } })
+            res.redirect('/login')
+        }
+
+    } catch (error) {
+        throw new Error(error)
+    }
+})
+
 
 
 // wishlist--
@@ -274,6 +340,11 @@ module.exports = {
     wishlist,
     contact,
     aboutUs,
+    emailInputPage,
+    sendResetLink,
+    resetPassPage,
+    resetPassword
+
 
 }
 
