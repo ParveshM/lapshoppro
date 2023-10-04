@@ -52,7 +52,7 @@ const placeOrder = asyncHandler(async (req, res) => {
             const newOrder = new Order({
                 items: orderItems,
                 user: user,
-                orderDate: Date.now(),
+                orderDate: new Date(),
                 billingAddress: address,
                 paymentMethod: paymentMethod,
                 subtotal: cartSubtotal,
@@ -182,8 +182,8 @@ const ordersPage = asyncHandler(async (req, res) => {
         const listOrder = await Order.find().populate({
             path: 'items.product',
             model: 'Product'
-        }).populate('billingAddress').sort({ orderDate: -1 });
-
+        }).populate('billingAddress')
+        .sort({ orderDate: -1 });
 
         res.render('./admin/pages/orders', { title: 'Orders', orders: listOrder })
     } catch (error) {
@@ -218,7 +218,17 @@ const updateOrder = asyncHandler(async (req, res) => {
             { _id: orderId, 'items.product': productId }, // Match the order and the product
             { $set: { 'items.$.status': status } } // Update the status of the matched product
         );
-
+        if (status == 'shipped') { // Update shippedDate date
+            const shippedDate = await Order.findOneAndUpdate(
+                { _id: orderId },
+                { $set: { shippedDate: new Date() } }
+            );
+        } else if (status == 'delivered') { // Update delivered date
+            const deliverDate = await Order.findOneAndUpdate(
+                { _id: orderId },
+                { $set: { deliveredDate: new Date() } }
+            );
+        }
         if (update) { //if update is success            
             if (status == 'cancelled') { //if the admin updates the status to cancelled ,increase the quantity.
 
@@ -232,8 +242,8 @@ const updateOrder = asyncHandler(async (req, res) => {
                 const productItem = order.items.find(item => String(item.product._id) === productIdString);
 
                 const incQuantity = productItem.quantity
-                const pro = await Product.findByIdAndUpdate(productId, { $inc: { quantity: incQuantity } });
-                res.json(pro)
+                await Product.findByIdAndUpdate(productId, { $inc: { quantity: incQuantity } });
+
             }
 
             res.redirect('/admin/orders')
