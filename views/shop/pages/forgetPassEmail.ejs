@@ -1,0 +1,37 @@
+<div class="register-area ptb-100">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 col-12 col-lg-6 col-xl-6 ms-auto me-auto">
+                <%- include('../partials/flash.ejs') %>
+
+                    <h1 class="cart-heading">forgot password</h1>
+                    <div class="login">
+                        <div class="login-form-container ">
+                            <div class="login-form ">
+                                <form action="/forgetPassword" method="post">
+                                    <input type="email" name="email" placeholder="Email" required />
+                                    <div class="d-flex gap-5">
+
+                                        <div class="button-box">
+                                            <button type="submit" class="default-btn floatright">Reset
+                                                Password</button>
+                                        </div>
+                                </form>
+                                <div class="button-box">
+                                    <a href="/login"><button type="button" class="default-btn ">Login
+                                            now</button></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<script>
+    const alert = document.getElementById('message')
+    setTimeout(() => {
+        alert.style.display = 'none'
+    }, 3000);
+</script>

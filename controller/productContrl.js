@@ -3,8 +3,7 @@ const Category = require('../models/categoryModel')
 const expressHandler = require('express-async-handler')
 const sharp = require('sharp')
 const path = require('path')
-const mongoose = require('mongoose')
-const { log } = require('console')
+
 
 // productManagement--
 const productManagement = expressHandler(async (req, res) => {
@@ -31,23 +30,33 @@ const addProduct = expressHandler(async (req, res) => {
 // inserting a product--- 
 const insertProduct = expressHandler(async (req, res) => {
     try {
-
-        let primaryImage = []
-        req.files.primaryImage.forEach((e) => {
+        const primaryImage = [];
+        for (const e of req.files.primaryImage) {
+            const croppedImage = path.join(__dirname, '../public/admin/uploads', `cropped_${e.filename}`);
+            await sharp(e.path)
+                .resize(1000, 1000, {
+                    kernel: sharp.kernel.nearest,
+                    fit: 'fill',
+                    position: 'right top',
+                })
+                .toFile(croppedImage)
             primaryImage.push({
-                name: e.filename,
-                path: e.path
-            })
-        });
-        console.log(req.files?.primaryImage?.filename);
+                name: `cropped_${e.filename}`,
+                path: croppedImage,
+            });
 
+        }
 
         const secondaryImages = [];      /* Secondary images cropping area */
         for (const e of req.files.secondaryImage) {
             const croppedImage = path.join(__dirname, '../public/admin/uploads', `cropped_${e.filename}`);
 
             await sharp(e.path)
-                .resize(600, 600, { fit: "cover" })
+                .resize(1000, 1000, {
+                    kernel: sharp.kernel.nearest,
+                    fit: 'fill',
+                    position: 'right top',
+                })
                 .toFile(croppedImage);
 
             secondaryImages.push({
@@ -134,7 +143,7 @@ const editProductPage = expressHandler(async (req, res) => {
 const updateProduct = expressHandler(async (req, res) => {
     try {
         const id = req.params.id;
-       
+
         const existingProduct = await Product.findById(id);
 
         // Handle primary image
@@ -147,7 +156,7 @@ const updateProduct = expressHandler(async (req, res) => {
             };
         } else {
             // No new primary image uploaded, retain the existing one
-            primaryImage = existingProduct.primaryImage[0]; 
+            primaryImage = existingProduct.primaryImage[0];
         }
 
         // Handle secondary images

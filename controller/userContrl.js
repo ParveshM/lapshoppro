@@ -3,6 +3,9 @@ const Product = require('../models/productModel')
 const Category = require('../models/categoryModel')
 const asyncHandler = require('express-async-handler')
 const { sendOtp, generateOTP } = require('../utility/nodeMailer')
+const { forgetPassMail } = require('../utility/forgetPassMail')
+const crypto = require('crypto')
+const bcrypt = require('bcrypt')
 
 // loadLandingPage---
 const loadLandingPage = asyncHandler(async (req, res) => {
@@ -187,14 +190,14 @@ const shopping = asyncHandler(async (req, res) => {
         const listedCategoryIds = listedCategories.map(category => category._id);
         // Find products that belong to the listed categories
         const findProducts = await Product.find({ categoryName: { $in: listedCategoryIds }, isListed: true });
-        let cartProductIds ;
+        let cartProductIds;
         if (user) {
-           if(user.cart){
-            console.log('cartsdfaaaaa',user.cart);
+            if (user.cart) {
+                console.log('cartsdfaaaaa', user.cart);
                 cartProductIds = user.cart.map(cartItem => cartItem.product.toString());
-               console.log(cartProductIds,'idsdklfj');
-           }
-          
+                console.log(cartProductIds, 'idsdklfj');
+            }
+
         } else {
             cartProductIds = null;
 
@@ -219,7 +222,7 @@ const viewProduct = asyncHandler(async (req, res) => {
         const products = await Product.find({ isListed: true })
         let cartProductIds;
         if (user) {
-         cartProductIds = user.cart.map(cartItem => cartItem.product.toString());
+            cartProductIds = user.cart.map(cartItem => cartItem.product.toString());
         } else {
             cartProductIds = null;
 
@@ -229,6 +232,104 @@ const viewProduct = asyncHandler(async (req, res) => {
         throw new Error(error)
     }
 })
+
+// forgetPassword_ email inputPage--
+const forgotPasswordpage = asyncHandler(async (req, res) => {
+    try {
+        res.render('./shop/pages/forgetPassEmail')
+    } catch (error) {
+        throw new Error(error)
+    }
+})
+
+// sendEmail to reset password--
+const sendResetLink = asyncHandler(async (req, res) => {
+    try {
+        console.log('use', req.body.email);
+        const email = req.body.email;
+        const user = await User.findOne({ email: email });
+
+        if (!user) {
+            req.flash('danger', `User Not found for this ${email}`)
+            res.redirect("/forgetPassword");
+           
+        }
+
+        const resetToken = await user.createResetPasswordToken();
+        await user.save();
+
+        const resetUrl = `${req.protocol}://${req.get("host")}/resetPassword/${resetToken}`;
+
+        try {
+            forgetPassMail(email, resetUrl, user.userName);
+            req.flash('info', `Reset Link sent to this ${email}`)
+            res.redirect("/forgetPassword");
+           
+        } catch (error) {
+            user.passwordResetToken = undefined;
+            user.passwordResetTokenExpires = undefined;
+            console.error(error);
+            console.log("There was an error sending the password reset email, please try again later");
+            
+            req.flash('Warning', 'Error in sending Email')
+            return res.redirect("/forgetPassword");
+        }
+
+    } catch (error) {
+        throw new Error(error)
+    }
+})
+
+// Reset Password page GET
+const resetPassPage = asyncHandler(async (req, res) => {
+    try {
+
+        const token = crypto.createHash("sha256").update(req.params.token).digest("hex");
+        const user = await User.findOne({ passwordResetToken: token, passwordResetTokenExpires: { $gt: Date.now() } });
+
+        if (!user) {
+            req.flash('warning', 'Token expired or Invalid')
+            res.redirect("/forgetPassword");
+        }
+
+        res.render("./shop/pages/resetPassword", { token });
+
+    } catch (error) {
+        throw new Error(error)
+    }
+})
+
+// Resetting the password-- POST
+const resetPassword = asyncHandler(async (req, res) => {
+
+    const token = req.params.token;
+    try {
+        const user = await User.findOne({ passwordResetToken: token, passwordResetTokenExpires: { $gt: Date.now() } });
+
+        if (!user) {
+
+            req.flash('warning', 'Token expired or Invalid')
+            res.redirect("/forgetPassword");
+        }
+        const salt = bcrypt.genSaltSync(10);
+        hashedPassword = await bcrypt.hash(req.body.password, salt);
+
+        user.password = hashedPassword;
+        user.passwordResetToken = null;
+        user.passwordResetTokenExpires = null;
+        user.passwordChangedAt = Date.now();
+
+        await user.save();
+
+        console.log('password vhange', user.password)
+        req.flash("success", "Password changed");
+        res.redirect("/login");
+
+    } catch (error) {
+        throw new Error(error)
+    }
+})
+
 
 
 // wishlist--
@@ -274,6 +375,11 @@ module.exports = {
     wishlist,
     contact,
     aboutUs,
+    forgotPasswordpage,
+    sendResetLink,
+    resetPassPage,
+    resetPassword
+
 
 }
 
