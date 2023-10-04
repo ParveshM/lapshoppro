@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const Product = require('../models/productModel');
+const crypto = require('crypto');
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
@@ -21,17 +22,15 @@ const userSchema = new Schema({
         type: Boolean,
         default: false
     },
-    token:{
-        type:String,
-        default:'',
-        expires:3600
-    },
     cart: [{
         product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
         quantity: Number,
     }],
-    addresses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Address'}],
-    wishlist:[{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }]
+    addresses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Address' }],
+    wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }],
+    passwordChangedAt: Date,
+    passwordResetToken: String,
+    passwordResetTokenExpires: Date,
 }, { timestamps: true });
 
 
@@ -48,13 +47,22 @@ userSchema.methods.isPasswordMatched = async function (enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password);
 };
 
+// resetPassword
+userSchema.methods.createResetPasswordToken = async function () {
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    this.passwordResetToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+    this.passwordResetTokenExpires = Date.now() + 10 * 60 * 1000;
+    return resetToken;
+};
+
+
 userSchema.methods.addToCart = async function (productId, quantity) {
     const product = await Product.findById(productId); // Find the product by its ID
     if (!product) {
         throw new Error('Product not found');
     }
     if (quantity > product.quantity) {
-        
+
         throw new Error('Not enough stock available');
     }
 
