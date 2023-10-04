@@ -17,7 +17,6 @@
                             <th scope="col">Products</th>
                             <th scope="col">CutomerName</th>
                             <th scope="col">Price</th>
-                            <th scope="col">Status</th>
                             <th scope="col">Date</th>
                             <th scope="col"> Action </th>
                         </tr>
@@ -43,11 +42,10 @@
                                         <%= (orders.total).toLocaleString() %>
                                     </td>
                                     <td>
-                                        status
-                                    </td>
-                                    <td>
                                         <%= orders.orderDate.toLocaleDateString('en-IN', { year: 'numeric' ,
-                                            month: 'numeric' , day: 'numeric' }) %>
+                                            month: 'numeric' , day: 'numeric' }) + ' ' +
+                                            orders.orderDate.toLocaleTimeString('en-IN', { hour: 'numeric' ,
+                                            minute: 'numeric' }) %>
                                     </td>
                                     <td>
                                         <a href="/admin/orders/editOrder/<%= orders._id %>"
@@ -70,7 +68,9 @@
 
 <script>
     $(document).ready(function () {
-        new DataTable('#example');
+        new DataTable('#example',{
+            order: [[4, 'desc']]
+        });
 
     })
 </script>
