@@ -173,7 +173,7 @@ const userLogout = async (req, res) => {
 const userProfile = asyncHandler(async (req, res) => {
     try {
         const user = req.user;
-        res.render('./shop/pages/profile',{user})
+        res.render('./shop/pages/profile', { user })
     } catch (error) {
         throw new Error(error);
     }
@@ -183,19 +183,24 @@ const userProfile = asyncHandler(async (req, res) => {
 const shopping = asyncHandler(async (req, res) => {
     console.log('request from unauth user ');
     try {
-        const user = req.user
-        console.log('user ', user);
+        const user = req.user;
+        const page = req.query.p || 1;
+        const limit = 1;
+
         const listedCategories = await Category.find({ isListed: true });
         // Get the IDs of the listed categories
         const listedCategoryIds = listedCategories.map(category => category._id);
+
         // Find products that belong to the listed categories
-        const findProducts = await Product.find({ categoryName: { $in: listedCategoryIds }, isListed: true });
+        const findProducts = await Product.find(
+            { categoryName: { $in: listedCategoryIds }, isListed: true })
+            .skip((page - 1) * limit)
+            .limit(limit)
+
         let cartProductIds;
         if (user) {
             if (user.cart) {
-                console.log('cartsdfaaaaa', user.cart);
                 cartProductIds = user.cart.map(cartItem => cartItem.product.toString());
-                console.log(cartProductIds, 'idsdklfj');
             }
 
         } else {
@@ -203,7 +208,19 @@ const shopping = asyncHandler(async (req, res) => {
 
         }
 
-        res.render('./shop/pages/shopping', { products: findProducts, category: listedCategories, cartProductIds, user });
+        const count = await Product.find(
+            { categoryName: { $in: listedCategoryIds }, isListed: true })
+            .countDocuments();
+           
+
+        res.render('./shop/pages/shopping', {
+            products: findProducts,
+            category: listedCategories,
+            cartProductIds,
+            user,
+            currentPage: page,
+            totalPages: Math.ceil(count / limit) // Calculating total pages
+        });
     } catch (error) {
         throw new Error(error);
     }
