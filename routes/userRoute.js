@@ -73,11 +73,14 @@ userRoute.get('/deleteAddress/:id', validateID, ensureAuthenticated, addressCont
 
 //checkout and palceOrder section
 userRoute.get('/checkout', ensureAuthenticated, orderController.checkoutPage); //checkout page
+userRoute.get('/checkCart', ensureAuthenticated, orderController.checkCart); 
 userRoute.post('/placeOrder', ensureAuthenticated, orderController.placeOrder);
 userRoute.get('/orderPlaced', ensureAuthenticated, orderController.orderPlacedPage);
 
 // PaymentSection--
 userRoute.post('/verifyPayment', ensureAuthenticated, orderController.verifyPayment);
+userRoute.post('/payment-failed', ensureAuthenticated, orderController.paymentFailed);
+userRoute.post('/payment-modelClose', ensureAuthenticated, orderController.razorpayModalClose);
 
 
 

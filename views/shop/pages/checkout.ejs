@@ -80,6 +80,8 @@
             <div class="col-lg-6 col-md-12 col-12">
                 <div class="your-order">
                     <h3>Your order</h3>
+                    <input type="hidden" id="originalCartData" name="currentCartData"
+                        value="<%= cartItems %>" />
                     <div class="your-order-table table-responsive">
                         <table>
                             <thead>
@@ -161,7 +163,7 @@
                                     </div>
                                 </div>
                                 <div class="order-button-payment">
-                                    <input type="submit" value="Place order" />
+                                    <input type="submit" value="Place order" id="submitButton" />
                                     </form>
                                 </div>
                             </div>
@@ -174,6 +176,30 @@
 
     <script>
         $(document).ready(function () {
+
+            // const form = document.querySelector("form");
+            // const originalCartInput = document.getElementById("originalCartData").value()
+
+            // form.addEventListener("submit", (e) => {
+                   
+
+            //     $.ajax({
+            //         url: '/checkCart',
+            //         method: 'GET',
+            //         data: {
+            //             originalCartData
+            //         },
+            //         success: function (response) {
+            //             if (response.success) {
+            //                console.log(response);
+            //             }
+            //         },
+            //         error: function (err) {
+            //             console.error(err);
+            //         }
+            //     });
+            // })
+
             $('#checkout-form').submit(function (e) {
                 e.preventDefault();
                 $.ajax({
@@ -194,105 +220,92 @@
                 });
 
             });
+            function razorpayPayment(order) {
+                // const currentOrder = order;
+                var options = {
+                    "key": 'rzp_test_oBJwT2WxizNLSF',
+                    "amount": order.response.amount,
+                    "currency": "INR",
+                    "name": "Lapshop Pro", //your business name
+                    "description": "Test Transaction",
+                    "image": "/assets/img/logo/favicon-32x32.png",
+                    "order_id": order.response.id,
+                    "handler": function (response) {
+
+                        verifyPayment(response, order)
+                    },
+                    "modal": {
+                        "ondismiss": function () {
+                            cancelOrder(order)
+                        }
+                    },
+                    "prefill": {
+                        "name": `${order.userData.userName}`,
+                        "email": `${order.userData.email}`,
+                    },
+                    "notes": {
+                        "address": "Kochi Maradu,ABC pvt.limited"
+                    },
+                    "theme": {
+                        "color": "#3399cc"
+                    }
+                };
+                var rzp1 = new Razorpay(options);
+                rzp1.on('payment.failed', function (response) {
+                    console.log('response in failure', order)
+                    cancelOrder(order)
+                });
+                rzp1.open();
+
+            }
+
+            // verifying the payment after success ---
+            function verifyPayment(payment, order) {
+                $.ajax({
+                    url: '/verifyPayment',
+                    method: 'POST',
+                    data: {
+                        payment,
+                        order
+                    },
+                    success: (response) => {
+                        if (response.status) {
+                            window.location.href = `/orderPlaced?id=${response.orderID}`;
+                        } else {
+                            console.log('inside the error');
+                            console.log(response);
+                            alert(response.errMsg)
+                        }
+                    },
+                    error: function (err) {
+                        console.error(err);
+                        console.log('Error in verifying the payment');
+                    }
+
+                })
+            }
+
+            // cancel order when payment is failed or ----
+            // when payment Model is closed without making payment ------
+            function cancelOrder(order) {
+                $.ajax({
+                    url: '/payment-failed',
+                    method: 'POST',
+                    data: {
+                        order
+                    },
+                    success: (response) => {
+                        if (response.status) {
+                            window.location.href = `/checkout`;
+                            console.log('order cancelled after payment failed');
+                        }
+                    },
+                    error: function (err) {
+                        console.error(err);
+                        console.log('Error in verifying the payment');
+                    }
+
+                })
+            }
         });
-        function razorpayPayment(order) {
-
-            var options = {
-                "key": 'rzp_test_oBJwT2WxizNLSF',
-                "amount": order.response.amount,
-                "currency": "INR",
-                "name": "Lapshop Pro", //your business name
-                "description": "Test Transaction",
-                "image": "/assets/img/logo/favicon-32x32.png",
-                "order_id": order.response.id,
-                "handler": function (response) {
-
-                    verifyPayment(response, order)
-                },
-                "modal": {
-                    "ondismiss": function() {
-                        alert('dismissed')
-                    }
-                },
-                "prefill": {
-                    "name": `${order.userData.userName}`, //your customer's name
-                    "email": `${order.userData.email}`,
-                },
-                "notes": {
-                    "address": "Kochi Maradu,ABC pvt.limited"
-                },
-                "theme": {
-                    "color": "#3399cc"
-                }
-            };
-            var rzp1 = new Razorpay(options);
-            rzp1.on('payment.failed', function (response) {
-                alert(response.error.code);
-                alert(response.error.description);
-                alert(response.error.source);
-                alert(response.error.step);
-                alert(response.error.reason);
-                alert(response.error.metadata.order_id);
-                alert(response.error.metadata.payment_id);
-                console.log('response in failure',response)
-                // cancellOrder(response)
-            });
-            rzp1.open();
-
-        }
-        // verifying the payment after success--
-        function verifyPayment(payment, order) {
-            $.ajax({
-                url: '/verifyPayment',
-                method: 'POST',
-                data: {
-                    payment,
-                    order
-                },
-                success: (response) => {
-                    if (response.status) {
-                        window.location.href = `/orderPlaced?id=${response.orderID}`;
-                    } else {
-                        console.log('inside the error');
-                        console.log(response);
-                        alert(response.errMsg)
-                    }
-                },
-                error: function (err) {
-                    console.error(err);
-                    console.log('Error in verifying the payment');
-                }
-
-            })
-        }
-
-        function cancellOrder(response) {
-            $.ajax({
-                url: '/verifyPayment',
-                method: 'POST',
-                data: {
-                   response
-                },
-                success: (response) => {
-                    if (response.status) {
-                        window.location.href = `/orderPlaced?id=${response.orderID}`;
-                    } else {
-                        console.log('inside the error');
-                        console.log(response);
-                        alert(response.errMsg)
-                    }
-                },
-                error: function (err) {
-                    console.error(err);
-                    console.log('Error in verifying the payment');
-                }
-
-            })
-        }
-
-
-
-
-
-
     </script>

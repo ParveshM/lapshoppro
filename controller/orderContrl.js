@@ -33,6 +33,32 @@ const checkoutPage = asyncHandler(async (req, res) => {
     }
 });
 
+// checking Cart for any changes---
+const checkCart = asyncHandler(async (req, res) => {
+    try {
+        console.log('body',req.body)
+
+        // const user = req.user;
+        // const userWithCart = await User.findById(user).populate('cart.product'); //finding users cart
+
+        // const userWithAddresses = await User.findById(user).populate('addresses'); // finding user address
+        // const addresses = userWithAddresses.addresses;
+
+        // const totalArray = calculateSubtotal(userWithCart);
+        // const [cartItems, cartSubtotal, processingFee, orderTotal] = [...totalArray];
+        // res.render('./shop/pages/checkout', {
+        //     cartItems,
+        //     cartSubtotal,
+        //     processingFee,
+        //     orderTotal,
+        //     addresses
+        // });
+    } catch (error) {
+        throw new Error(error);
+    }
+});
+
+
 // orderPlacing---
 const placeOrder = asyncHandler(async (req, res) => {
     try {
@@ -95,7 +121,7 @@ const placeOrder = asyncHandler(async (req, res) => {
                             await product.save();
                         }
                     }
-                    await user.clearCart()
+                    
                     const userData = await User.findOne({ _id: user });
 
                     generateRazorPay(orderTotal, createOrder._id) //genereting razorpay order--
@@ -122,27 +148,73 @@ const changePaymentStatus = (orderId) => {
 // verifyPayment
 const verifyPayment = asyncHandler(async (req, res) => {
     try {
-        verifyingPayment(req.body) //verifying the payment--
+        const user = req.user;
+        verifyingPayment(req.body) // Verifying the payment--
             .then(() => {
-                const details = req.body
+                const details = req.body;
                 const orderId = details.order.response.receipt;
-                return changePaymentStatus(orderId);
+
+                // Clear the user's cart once the promise is resolved
+                return user.clearCart()
+            .then(() => changePaymentStatus(orderId)); // Chain this with the next then block
             })
             .then((changeStatus) => { // payment success and payment status changed to paid
                 console.log('status updated', changeStatus);
                 console.log('Payment success');
-                return res.json({ status: true, orderID: `${changeStatus._id}` })
+                return res.json({ status: true, orderID: `${changeStatus._id}` });
             })
             .catch((err) => { // payment verification failed 
                 console.log('Error in payment verification', err);
-                res.json({ status: false, errMsg: 'Payment verification failed' })
+                res.json({ status: false, errMsg: 'Payment verification failed' });
             });
     } catch (error) {
         throw new Error(error);
     }
 });
 
+// payment failed---
+const paymentFailed = asyncHandler(async (req, res) => {
+    try {
+        const order = req.body.order.response;
+        const orderId = order.receipt;
 
+        const findOrder = await Order.findById({ _id: orderId }).populate('items.product');
+
+        if (findOrder) {
+            const orderItems = findOrder.items;
+
+            for (const item of orderItems) {
+                const orderQuantity = item.quantity;
+
+                const product = await Product.findById(item.product);
+
+                if (product) {
+                    item.status = 'cancelled'; // Update the status of the item
+                    const newQuantity = product.quantity + orderQuantity;
+                    const proId = item.product._id
+                    await Product.findByIdAndUpdate({ _id: proId }, { $set: { quantity: newQuantity } })
+                }
+            }
+
+            await findOrder.save();
+        }
+
+        res.json({ status: true });
+    } catch (error) {
+        throw new Error(error);
+    }
+});
+
+// when user closed the model without making payment--
+const razorpayModalClose = asyncHandler(async (req, res) => {
+    try {
+
+
+
+    } catch (error) {
+        throw new Error(error);
+    }
+});
 
 // orderPlaced successPage--
 const orderPlacedPage = asyncHandler(async (req, res) => {
@@ -333,9 +405,12 @@ const updateOrder = asyncHandler(async (req, res) => {
 
 module.exports = {
     checkoutPage,
+    checkCart,
     placeOrder,
     orderPlacedPage,
     verifyPayment,
+    paymentFailed,
+    razorpayModalClose,
     orders,
     viewOrder,
     cancelOrder,
