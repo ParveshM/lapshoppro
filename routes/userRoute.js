@@ -71,9 +71,16 @@ userRoute.get('/editAddress/:id', validateID, ensureAuthenticated, addressContro
 userRoute.post('/editAddress/:id', validateID, ensureAuthenticated, addressController.updateAddress)
 userRoute.get('/deleteAddress/:id', validateID, ensureAuthenticated, addressController.deleteAddress)
 
-//checkout and order section
+//checkout and palceOrder section
 userRoute.get('/checkout', ensureAuthenticated, orderController.checkoutPage); //checkout page
 userRoute.post('/placeOrder', ensureAuthenticated, orderController.placeOrder);
+userRoute.get('/orderPlaced', ensureAuthenticated, orderController.orderPlacedPage);
+
+// PaymentSection--
+userRoute.post('/verifyPayment', ensureAuthenticated, orderController.verifyPayment);
+
+
+
 userRoute.get('/orders', ensureAuthenticated, orderController.orders);
 userRoute.post('/viewOrder/:id', ensureAuthenticated, orderController.viewOrder);
 userRoute.put('/cancelOrder/:id', ensureAuthenticated, orderController.cancelOrder);

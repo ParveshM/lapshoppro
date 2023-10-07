@@ -185,7 +185,7 @@ const shopping = asyncHandler(async (req, res) => {
     try {
         const user = req.user;
         const page = req.query.p || 1;
-        const limit = 1;
+        const limit = 2;
 
         const listedCategories = await Category.find({ isListed: true });
         // Get the IDs of the listed categories

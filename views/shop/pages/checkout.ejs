@@ -1,3 +1,9 @@
+<style>
+    .list-btn-style {
+        max-width: 137px;
+        max-height: 43px;
+    }
+</style>
 <div class="breadcrumb-area" style="background-color: black; color: white;">
     <div class="container">
         <div class="breadcrumb-content text-center pt-1">
@@ -25,7 +31,7 @@
                     <h3>Have a coupon? <span id="showcoupon">Click here to enter your code</span></h3>
                     <div id="checkout_coupon" class="coupon-checkout-content">
                         <div class="coupon-info">
-                            <form action="/placeOrder" method="POST">
+                            <form action="/placeOrder" method="POST" id="checkout-form">
                                 <p class="checkout-coupon">
                                     <input type="text" placeholder="Coupon code" name="coupon" />
                                     <!-- <input type="submit" value="Apply Coupon" /> -->
@@ -136,16 +142,17 @@
                                                     data-bs-parent="#paymentMethods">
                                                     <div class="panel-body">
                                                         <div class="form-check">
-                                                            <input class="form-check-input" type="radio"
-                                                                value="Cash On Delivery(COD)" name="paymentMethod"
-                                                                id="cashOnDelivery" required>
+                                                            <input class="form-check-input" type="radio" value="COD"
+                                                                name="paymentMethod" id="cashOnDelivery" required>
                                                             <label class="form-check-label" for="cashOnDelivery">Cash On
                                                                 Delivery (COD)</label>
                                                         </div>
                                                         <div class="form-check">
-                                                            <input class="form-check-input" type="radio" value="PayPal"
-                                                                name="paymentMethod" id="paypal" required>
-                                                            <label class="form-check-label" for="paypal">PayPal</label>
+                                                            <input class="form-check-input" type="radio"
+                                                                value="RazorPay" name="paymentMethod" id="razorPay"
+                                                                required>
+                                                            <label class="form-check-label"
+                                                                for="razorPay">RazorPay</label>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -164,9 +171,128 @@
             </div>
         </div>
     </div>
-    <style>
-        .list-btn-style {
-            max-width: 137px;
-            max-height: 43px;
+
+    <script>
+        $(document).ready(function () {
+            $('#checkout-form').submit(function (e) {
+                e.preventDefault();
+                $.ajax({
+                    url: '/placeOrder',
+                    method: 'POST',
+                    data: $('#checkout-form').serialize(),
+                    success: function (response) {
+                        if (response.codSuccess) {
+                            window.location.href = `/orderPlaced?id=${response.orderID}`;
+                        } else {
+                            console.log(response);
+                            razorpayPayment(response);
+                        }
+                    },
+                    error: function (err) {
+                        console.error(err);
+                    }
+                });
+
+            });
+        });
+        function razorpayPayment(order) {
+
+            var options = {
+                "key": 'rzp_test_oBJwT2WxizNLSF',
+                "amount": order.response.amount,
+                "currency": "INR",
+                "name": "Lapshop Pro", //your business name
+                "description": "Test Transaction",
+                "image": "/assets/img/logo/favicon-32x32.png",
+                "order_id": order.response.id,
+                "handler": function (response) {
+
+                    verifyPayment(response, order)
+                },
+                "modal": {
+                    "ondismiss": function() {
+                        alert('dismissed')
+                    }
+                },
+                "prefill": {
+                    "name": `${order.userData.userName}`, //your customer's name
+                    "email": `${order.userData.email}`,
+                },
+                "notes": {
+                    "address": "Kochi Maradu,ABC pvt.limited"
+                },
+                "theme": {
+                    "color": "#3399cc"
+                }
+            };
+            var rzp1 = new Razorpay(options);
+            rzp1.on('payment.failed', function (response) {
+                alert(response.error.code);
+                alert(response.error.description);
+                alert(response.error.source);
+                alert(response.error.step);
+                alert(response.error.reason);
+                alert(response.error.metadata.order_id);
+                alert(response.error.metadata.payment_id);
+                console.log('response in failure',response)
+                // cancellOrder(response)
+            });
+            rzp1.open();
+
         }
-    </style>
+        // verifying the payment after success--
+        function verifyPayment(payment, order) {
+            $.ajax({
+                url: '/verifyPayment',
+                method: 'POST',
+                data: {
+                    payment,
+                    order
+                },
+                success: (response) => {
+                    if (response.status) {
+                        window.location.href = `/orderPlaced?id=${response.orderID}`;
+                    } else {
+                        console.log('inside the error');
+                        console.log(response);
+                        alert(response.errMsg)
+                    }
+                },
+                error: function (err) {
+                    console.error(err);
+                    console.log('Error in verifying the payment');
+                }
+
+            })
+        }
+
+        function cancellOrder(response) {
+            $.ajax({
+                url: '/verifyPayment',
+                method: 'POST',
+                data: {
+                   response
+                },
+                success: (response) => {
+                    if (response.status) {
+                        window.location.href = `/orderPlaced?id=${response.orderID}`;
+                    } else {
+                        console.log('inside the error');
+                        console.log(response);
+                        alert(response.errMsg)
+                    }
+                },
+                error: function (err) {
+                    console.error(err);
+                    console.log('Error in verifying the payment');
+                }
+
+            })
+        }
+
+
+
+
+
+
+    </script>
