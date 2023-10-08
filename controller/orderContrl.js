@@ -36,23 +36,9 @@ const checkoutPage = asyncHandler(async (req, res) => {
 // checking Cart for any changes---
 const checkCart = asyncHandler(async (req, res) => {
     try {
-        console.log('body',req.body)
+        console.log('body', req.body)
 
-        // const user = req.user;
-        // const userWithCart = await User.findById(user).populate('cart.product'); //finding users cart
 
-        // const userWithAddresses = await User.findById(user).populate('addresses'); // finding user address
-        // const addresses = userWithAddresses.addresses;
-
-        // const totalArray = calculateSubtotal(userWithCart);
-        // const [cartItems, cartSubtotal, processingFee, orderTotal] = [...totalArray];
-        // res.render('./shop/pages/checkout', {
-        //     cartItems,
-        //     cartSubtotal,
-        //     processingFee,
-        //     orderTotal,
-        //     addresses
-        // });
     } catch (error) {
         throw new Error(error);
     }
@@ -121,7 +107,7 @@ const placeOrder = asyncHandler(async (req, res) => {
                             await product.save();
                         }
                     }
-                    
+
                     const userData = await User.findOne({ _id: user });
 
                     generateRazorPay(orderTotal, createOrder._id) //genereting razorpay order--
@@ -156,7 +142,7 @@ const verifyPayment = asyncHandler(async (req, res) => {
 
                 // Clear the user's cart once the promise is resolved
                 return user.clearCart()
-            .then(() => changePaymentStatus(orderId)); // Chain this with the next then block
+                    .then(() => changePaymentStatus(orderId)); // Chain this with the next then block
             })
             .then((changeStatus) => { // payment success and payment status changed to paid
                 console.log('status updated', changeStatus);
@@ -187,15 +173,15 @@ const paymentFailed = asyncHandler(async (req, res) => {
                 const orderQuantity = item.quantity;
 
                 const product = await Product.findById(item.product);
-
-                if (product) {
-                    item.status = 'cancelled'; // Update the status of the item
-                    const newQuantity = product.quantity + orderQuantity;
-                    const proId = item.product._id
-                    await Product.findByIdAndUpdate({ _id: proId }, { $set: { quantity: newQuantity } })
+                if (item.status !== 'Cancelled') {
+                    if (product) {
+                        item.status = 'Cancelled'; // Update the status of the item
+                        const newQuantity = product.quantity + orderQuantity;
+                        const proId = item.product._id
+                        await Product.findByIdAndUpdate({ _id: proId }, { $set: { quantity: newQuantity } })
+                    }
                 }
             }
-
             await findOrder.save();
         }
 
