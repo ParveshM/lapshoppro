@@ -30,16 +30,16 @@
                                             </p>
                                             <p class="card-text">
                                                 <span>Order Status:</span>
-                                                <strong class="<%= item.status === 'pending'
-                                                            ? 'text-warning' : (item.status === 'shipped' ? 'text-primary' :
-                                                            (item.status === 'cancelled' ? 'text-danger' :
-                                                            (item.status === 'delivered' ? 'text-success' : '' ))) %>">
+                                                <strong class="<%= item.status === 'Pending'
+                                                            ? 'text-warning' : (item.status === 'Shipped' ? 'text-primary' :
+                                                            (item.status === 'Cancelled' ? 'text-danger' :
+                                                            (item.status === 'Delivered' ? 'text-success' : '' ))) %>">
                                                     <%= item.status %>
                                                 </strong>
                                             </p>
                                             <p class="card-text">Product Name: <%= item.product.title %><strong
                                                         class="text-danger"></strong></p>
-                                            
+
                                             <form action="/viewOrder/<%= orders._id %>" method="post">
                                                 <input type="hidden" name="productId" value="<%= item.product._id  %>">
                                                 <button type="submit" class="btn btn-dark h-auto">View Order</button>

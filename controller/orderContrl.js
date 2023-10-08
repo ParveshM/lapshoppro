@@ -4,6 +4,9 @@ const Order = require('../models/orderModel')
 const Address = require('../models/addressModel')
 const asyncHandler = require('express-async-handler');
 const { calculateSubtotal } = require('../utility/ordercalculation')
+const { generateRazorPay, verifyingPayment } = require('../config/razorpay')
+
+
 
 
 /******** User Side *******/
@@ -14,8 +17,7 @@ const checkoutPage = asyncHandler(async (req, res) => {
         const userWithCart = await User.findById(user).populate('cart.product'); //finding users cart
 
         const userWithAddresses = await User.findById(user).populate('addresses'); // finding user address
-        const addresses = userWithAddresses.addresses
-        console.log('adsdd', addresses);
+        const addresses = userWithAddresses.addresses;
 
         const totalArray = calculateSubtotal(userWithCart);
         const [cartItems, cartSubtotal, processingFee, orderTotal] = [...totalArray];
@@ -31,11 +33,26 @@ const checkoutPage = asyncHandler(async (req, res) => {
     }
 });
 
+// checking Cart for any changes---
+const checkCart = asyncHandler(async (req, res) => {
+    try {
+        console.log('body', req.body)
+
+
+    } catch (error) {
+        throw new Error(error);
+    }
+});
+
+
 // orderPlacing---
 const placeOrder = asyncHandler(async (req, res) => {
     try {
         const user = req.user;
         const { coupon, address, paymentMethod } = req.body
+
+        console.log('body of user', req.body);
+
         const userWithCart = await User.findById(user).populate('cart.product'); //finding products in the cart
 
         if (userWithCart.cart && userWithCart.cart.length > 0) {
@@ -49,7 +66,7 @@ const placeOrder = asyncHandler(async (req, res) => {
                 price: item.product.salePrice
             }))
 
-            const newOrder = new Order({
+            const newOrder = {
                 items: orderItems,
                 user: user,
                 orderDate: new Date(),
@@ -58,32 +75,147 @@ const placeOrder = asyncHandler(async (req, res) => {
                 subtotal: cartSubtotal,
                 processingFee: processingFee,
                 total: orderTotal
+            }
+
+            if (paymentMethod === 'COD' || paymentMethod === 'wallet') {
+
+                const createOrder = await Order.create(newOrder);
+                // const billAddress = await Address.findById(address); //find address
+
+                if (createOrder) { //if order is created
+
+                    for (const item of orderItems) {
+                        const product = await Product.findById(item.product);
+                        if (product) {
+                            product.quantity -= item.quantity; //decrease the product quantity
+                            await product.save();
+                        }
+                    }
+                    await user.clearCart()
+                    res.json({ codSuccess: true, orderID: createOrder._id, payment: 'COD' });
+                }
+
+            } else if (paymentMethod == 'RazorPay') {  // if payment is done using razorPay
+
+                const createOrder = await Order.create(newOrder);
+                if (createOrder) { //if order is created
+
+                    for (const item of orderItems) {
+                        const product = await Product.findById(item.product);
+                        if (product) {
+                            product.quantity -= item.quantity; //decrease the product quantity
+                            await product.save();
+                        }
+                    }
+
+                    const userData = await User.findOne({ _id: user });
+
+                    generateRazorPay(orderTotal, createOrder._id) //genereting razorpay order--
+                        .then((response) => {
+                            return res.json({ status: 'success', response, userData });
+                        })
+                        .catch((err) => { console.log(err) })
+                }
+
+
+            } else {
+                res.render('./shop/pages/404') // in the case of cart not found
+            }
+        }
+    } catch (error) {
+        throw new Error(error);
+    }
+})
+
+const changePaymentStatus = (orderId) => {
+    return Order.findByIdAndUpdate({ _id: orderId }, { paymentStatus: 'Paid' });
+};
+
+// verifyPayment
+const verifyPayment = asyncHandler(async (req, res) => {
+    try {
+        const user = req.user;
+        verifyingPayment(req.body) // Verifying the payment--
+            .then(() => {
+                const details = req.body;
+                const orderId = details.order.response.receipt;
+
+                // Clear the user's cart once the promise is resolved
+                return user.clearCart()
+                    .then(() => changePaymentStatus(orderId)); // Chain this with the next then block
+            })
+            .then((changeStatus) => { // payment success and payment status changed to paid
+                console.log('status updated', changeStatus);
+                console.log('Payment success');
+                return res.json({ status: true, orderID: `${changeStatus._id}` });
+            })
+            .catch((err) => { // payment verification failed 
+                console.log('Error in payment verification', err);
+                res.json({ status: false, errMsg: 'Payment verification failed' });
             });
+    } catch (error) {
+        throw new Error(error);
+    }
+});
 
-            // Save the order to the database
-            const orderDetails = await newOrder.save();
-            const billAddress = await Address.findById(address); //find address
-            if (orderDetails) { //if order is created
+// payment failed---
+const paymentFailed = asyncHandler(async (req, res) => {
+    try {
+        const order = req.body.order.response;
+        const orderId = order.receipt;
 
-                for (const item of orderItems) {
-                    const product = await Product.findById(item.product);
+        const findOrder = await Order.findById({ _id: orderId }).populate('items.product');
+
+        if (findOrder) {
+            const orderItems = findOrder.items;
+
+            for (const item of orderItems) {
+                const orderQuantity = item.quantity;
+
+                const product = await Product.findById(item.product);
+                if (item.status !== 'Cancelled') {
                     if (product) {
-                        product.quantity -= item.quantity; //decrease the product quantity
-                        await product.save();
+                        item.status = 'Cancelled'; // Update the status of the item
+                        const newQuantity = product.quantity + orderQuantity;
+                        const proId = item.product._id
+                        await Product.findByIdAndUpdate({ _id: proId }, { $set: { quantity: newQuantity } })
                     }
                 }
-                await user.clearCart()
-                res.render('./shop/pages/orderPlaced', { order: orderDetails, billAddress })
             }
-        } else {
-            res.render('./shop/pages/404')
+            await findOrder.save();
         }
+
+        res.json({ status: true });
+    } catch (error) {
+        throw new Error(error);
+    }
+});
+
+// when user closed the model without making payment--
+const razorpayModalClose = asyncHandler(async (req, res) => {
+    try {
+
 
 
     } catch (error) {
         throw new Error(error);
     }
-})
+});
+
+// orderPlaced successPage--
+const orderPlacedPage = asyncHandler(async (req, res) => {
+    try {
+
+        const orderId = req.query.id
+        const findOrder = await Order.findOne({ _id: orderId }).populate('billingAddress')
+        console.log(findOrder);
+
+        res.render('./shop/pages/orderPlaced', { order: findOrder, billAddress: findOrder.billingAddress });
+
+    } catch (error) {
+        throw new Error(error);
+    }
+});
 
 // orders list in user profile--    
 const orders = asyncHandler(async (req, res) => {
@@ -183,7 +315,7 @@ const ordersPage = asyncHandler(async (req, res) => {
             path: 'items.product',
             model: 'Product'
         }).populate('billingAddress')
-        .sort({ orderDate: -1 });
+            .sort({ orderDate: -1 });
 
         res.render('./admin/pages/orders', { title: 'Orders', orders: listOrder })
     } catch (error) {
@@ -259,7 +391,12 @@ const updateOrder = asyncHandler(async (req, res) => {
 
 module.exports = {
     checkoutPage,
+    checkCart,
     placeOrder,
+    orderPlacedPage,
+    verifyPayment,
+    paymentFailed,
+    razorpayModalClose,
     orders,
     viewOrder,
     cancelOrder,

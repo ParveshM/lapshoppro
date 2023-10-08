@@ -40,10 +40,10 @@
 
                                 <p class="card-text">
                                     <strong>Order Status:</strong>
-                                    <span class="<%= status === 'pending'
-                                    ? 'text-warning' : (status === 'shipped' ? 'text-primary' :
-                                    (status === 'cancelled' ? 'text-danger' :
-                                    (status === 'delivered' ? 'text-success' : '' ))) %>">
+                                    <span class="<%= status === 'Pending'
+                                    ? 'text-warning' : (status === 'Shipped' ? 'text-primary' :
+                                    (status === 'Cancelled' ? 'text-danger' :
+                                    (status === 'Delivered' ? 'text-success' : '' ))) %>">
                                         <%= status %>
                                     </span>
                                 </p>
@@ -51,16 +51,27 @@
                                     <strong>Product Price:</strong> ₹<%= price %>
                                 </p>
                                 <p class="card-text">
-                                    <strong>processingFee:</strong> ₹ <%= order.processingFee %>
+                                    <strong>ProcessingFee:</strong> ₹ <%= order.processingFee %>
                                 </p>
                                 <p class="card-text"><strong>Quantity: <%= quantity %></strong> </p>
+                                <p class="card-text"><strong>Order Total: </strong>₹<%= (order.total).toLocaleString() %> </p>
+                                <p class="card-text">
+                                    <strong>Payment Method: </strong>
+                                    <%= order.paymentMethod %>
+                                </p>
+                                <p class="card-text"><strong>Payment Status:</strong>
+                                    <span class="<%= order.paymentStatus === 'Pending'? 'text-warning' :
+                                    (order.paymentStatus === 'Paid' ? 'text-success' : '' ) %>">
+                                        <%= order.paymentStatus %>
+                                    </span>
+                                </p>
                                 <% if (status=='delivered' ) { %>
                                     <% } else { %>
                                         <% if (status !=='cancelled' ) { %>
                                             <!-- Cancel Button -->
                                             <form action="/cancelOrder/<%= order._id %>?_method=PUT" method="POST">
                                                 <input type="hidden" name="productId" value="<%= product._id %>">
-                                                <input type="hidden" name="newStatus" value="cancelled">
+                                                <input type="hidden" name="newStatus" value="Cancelled">
                                                 <button type="submit" class="btn btn-danger h-auto">Cancel
                                                     Order</button>
                                             </form>
