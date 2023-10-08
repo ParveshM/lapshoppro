@@ -5,6 +5,8 @@ const Address = require('../models/addressModel')
 const asyncHandler = require('express-async-handler');
 const { calculateSubtotal } = require('../utility/ordercalculation')
 const { generateRazorPay, verifyingPayment } = require('../config/razorpay')
+const { checkCartItemsMatch } = require('../helpers/checkCartHelper');
+const { raw } = require('express');
 
 
 
@@ -33,10 +35,30 @@ const checkoutPage = asyncHandler(async (req, res) => {
     }
 });
 
-// checking Cart for any changes---
+// checking Cart for any changes before placing the order---
 const checkCart = asyncHandler(async (req, res) => {
     try {
-        console.log('body', req.body)
+        console.log('req recieved in checkcart');
+        const user = req.user;
+        const cartItems = req.query.originalCartInput;
+        console.log('cart items from ajax', cartItems);
+
+        const userWithCart = await User.findById(user).populate('cart.product');
+
+        const cartProduct = userWithCart.cart.map(cartItem => ({
+            product: cartItem.product,
+            quantity: cartItem.quantity,
+        }));
+        console.log('cart products in server', cartProduct);
+
+        // Compare the arrays
+        const cartItemsMatch = checkCartItemsMatch(cartItems, cartProduct);
+
+        if (cartItemsMatch) {
+            res.json({ success: true, message: 'Cart items match' });
+        } else {
+            res.json({ success: false, message: 'Cart items do not match' });
+        }
 
 
     } catch (error) {
@@ -80,16 +102,15 @@ const placeOrder = asyncHandler(async (req, res) => {
             if (paymentMethod === 'COD' || paymentMethod === 'wallet') {
 
                 const createOrder = await Order.create(newOrder);
-                // const billAddress = await Address.findById(address); //find address
 
                 if (createOrder) { //if order is created
 
                     for (const item of orderItems) {
-                        const product = await Product.findById(item.product);
-                        if (product) {
-                            product.quantity -= item.quantity; //decrease the product quantity
-                            await product.save();
-                        }
+                        const orderQuantity = item.quantity
+
+                        await Product.findByIdAndUpdate(item.product,
+                            { $inc: { quantity: -orderQuantity, sold: orderQuantity } }
+                        );
                     }
                     await user.clearCart()
                     res.json({ codSuccess: true, orderID: createOrder._id, payment: 'COD' });
@@ -101,11 +122,11 @@ const placeOrder = asyncHandler(async (req, res) => {
                 if (createOrder) { //if order is created
 
                     for (const item of orderItems) {
-                        const product = await Product.findById(item.product);
-                        if (product) {
-                            product.quantity -= item.quantity; //decrease the product quantity
-                            await product.save();
-                        }
+                        const orderQuantity = item.quantity;
+
+                        await Product.findByIdAndUpdate(item.product,
+                            { $inc: { quantity: -orderQuantity, sold: orderQuantity } }
+                        );
                     }
 
                     const userData = await User.findOne({ _id: user });
@@ -121,6 +142,8 @@ const placeOrder = asyncHandler(async (req, res) => {
             } else {
                 res.render('./shop/pages/404') // in the case of cart not found
             }
+        } else {
+            res.redirect('/shop')
         }
     } catch (error) {
         throw new Error(error);
@@ -176,9 +199,16 @@ const paymentFailed = asyncHandler(async (req, res) => {
                 if (item.status !== 'Cancelled') {
                     if (product) {
                         item.status = 'Cancelled'; // Update the status of the item
-                        const newQuantity = product.quantity + orderQuantity;
+                        // const newQuantity = product.quantity + orderQuantity;
                         const proId = item.product._id
-                        await Product.findByIdAndUpdate({ _id: proId }, { $set: { quantity: newQuantity } })
+                        // await Product.findByIdAndUpdate(
+                        //     { _id: proId },
+                        //      { $set: { quantity: newQuantity } },
+                        //       { $inc: {sold: -orderQuantity } })
+
+                        await Product.findByIdAndUpdate(proId,
+                            { $inc: { quantity: orderQuantity, sold: -orderQuantity } }
+                        );
                     }
                 }
             }
@@ -186,17 +216,6 @@ const paymentFailed = asyncHandler(async (req, res) => {
         }
 
         res.json({ status: true });
-    } catch (error) {
-        throw new Error(error);
-    }
-});
-
-// when user closed the model without making payment--
-const razorpayModalClose = asyncHandler(async (req, res) => {
-    try {
-
-
-
     } catch (error) {
         throw new Error(error);
     }
@@ -265,7 +284,7 @@ const viewOrder = asyncHandler(async (req, res) => {
     }
 });
 
-//Cancel Order--- and also increase the quantity once cancelled 
+//Cancel Order--- ,increase the quantity , decrease sold - once cancelled 
 const cancelOrder = asyncHandler(async (req, res) => {
     try {
 
@@ -289,7 +308,9 @@ const cancelOrder = asyncHandler(async (req, res) => {
                 productItem.status = newStatus
                 const incQuantity = productItem.quantity
 
-                await Product.findByIdAndUpdate(productId, { $inc: { quantity: incQuantity } });
+                await Product.findByIdAndUpdate(productId,
+                    { $inc: { quantity: incQuantity, sold: -incQuantity } });
+                    
                 const saved = await order.save();
                 console.log('after update', saved);
                 return res.redirect(`/orders`);
@@ -345,24 +366,24 @@ const updateOrder = asyncHandler(async (req, res) => {
         const status = req.body.status;
         const productId = req.body.productId;
 
-        // Update the status of a specific product within the order
         const update = await Order.findOneAndUpdate(
             { _id: orderId, 'items.product': productId }, // Match the order and the product
             { $set: { 'items.$.status': status } } // Update the status of the matched product
         );
-        if (status == 'shipped') { // Update shippedDate date
-            const shippedDate = await Order.findOneAndUpdate(
+        if (status == 'Shipped') { // Update shippedDate date
+            await Order.findOneAndUpdate(
                 { _id: orderId },
                 { $set: { shippedDate: new Date() } }
             );
-        } else if (status == 'delivered') { // Update delivered date
-            const deliverDate = await Order.findOneAndUpdate(
+        } else if (status == 'Delivered') { // Update delivered date
+            if (update.paymentStatus == '') { }
+            await Order.findOneAndUpdate(
                 { _id: orderId },
-                { $set: { deliveredDate: new Date() } }
+                { $set: { deliveredDate: new Date(), paymentStatus: 'Paid' } }
             );
         }
         if (update) { //if update is success            
-            if (status == 'cancelled') { //if the admin updates the status to cancelled ,increase the quantity.
+            if (status == 'Cancelled') { //if the admin updates the status to cancelled ,increase the quantity.
 
                 const order = await Order.findOne({ _id: orderId })
                     .populate({
@@ -374,7 +395,8 @@ const updateOrder = asyncHandler(async (req, res) => {
                 const productItem = order.items.find(item => String(item.product._id) === productIdString);
 
                 const incQuantity = productItem.quantity
-                await Product.findByIdAndUpdate(productId, { $inc: { quantity: incQuantity } });
+                await Product.findByIdAndUpdate(productId,
+                    { $inc: { quantity: incQuantity, sold: -incQuantity } });
 
             }
 
@@ -396,7 +418,6 @@ module.exports = {
     orderPlacedPage,
     verifyPayment,
     paymentFailed,
-    razorpayModalClose,
     orders,
     viewOrder,
     cancelOrder,

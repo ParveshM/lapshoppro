@@ -80,7 +80,7 @@ userRoute.get('/orderPlaced', ensureAuthenticated, orderController.orderPlacedPa
 // PaymentSection--
 userRoute.post('/verifyPayment', ensureAuthenticated, orderController.verifyPayment);
 userRoute.post('/payment-failed', ensureAuthenticated, orderController.paymentFailed);
-userRoute.post('/payment-modelClose', ensureAuthenticated, orderController.razorpayModalClose);
+
 
 
 

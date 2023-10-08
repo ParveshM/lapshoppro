@@ -36,12 +36,11 @@
                                         <option value="<%= item.status %>">
                                             <%= item.status %>
                                         </option>
-                                        <% if (item.status!=='cancelled') { %>
-                                            <option value="pending">Pending</option>
-                                            <option value="processing">Processing</option>
-                                            <option value="shipped">Shipped</option>
-                                            <option value="delivered">Delivered</option>
-                                            <option value="cancelled">Cancelled</option>
+                                        <% if (item.status!=='Cancelled' && item.status!=='Delivered' ) { %>
+                                            <option value="Pending">Pending</option>
+                                            <option value="Shipped">Shipped</option>
+                                            <option value="Delivered">Delivered</option>
+                                            <option value="Cancelled">Cancelled</option>
                                             <% } %>
                                     </select>
                                     <h5 class="mb-2 ">Product Details:</h5>
@@ -61,13 +60,13 @@
                                             <div class="mb-2 d-flex flex-column justify-content-between align-middle">
                                                 <h6>Price:</h6>
                                                 <p>
-                                                    ₹<%= (item.price).toLocaleString()%>        
+                                                    ₹<%= (item.price).toLocaleString()%>
                                                 </p>
                                             </div>
                                         </div>
                                         <div class="col-md-6 ">
                                             <div class="mb-2 d-flex flex-column justify-content-between align-middle">
-                                                <h6>Shipping Fee:</h6>
+                                                <h6>Processing Fee:</h6>
                                                 <p>
                                                     ₹<%= viewOrder.processingFee%>
                                                 </p>
