@@ -6,8 +6,6 @@ const asyncHandler = require('express-async-handler');
 const { calculateSubtotal } = require('../utility/ordercalculation')
 const { generateRazorPay, verifyingPayment } = require('../config/razorpay')
 const { checkCartItemsMatch } = require('../helpers/checkCartHelper');
-const { raw } = require('express');
-
 
 
 
@@ -18,11 +16,15 @@ const checkoutPage = asyncHandler(async (req, res) => {
         const user = req.user;
         const userWithCart = await User.findById(user).populate('cart.product'); //finding users cart
 
+        if (!userWithCart.cart.length) { //if cart has no products
+            return res.redirect('/cart')
+        }
         const userWithAddresses = await User.findById(user).populate('addresses'); // finding user address
         const addresses = userWithAddresses.addresses;
 
         const totalArray = calculateSubtotal(userWithCart);
         const [cartItems, cartSubtotal, processingFee, orderTotal] = [...totalArray];
+
         res.render('./shop/pages/checkout', {
             cartItems,
             cartSubtotal,
@@ -199,12 +201,7 @@ const paymentFailed = asyncHandler(async (req, res) => {
                 if (item.status !== 'Cancelled') {
                     if (product) {
                         item.status = 'Cancelled'; // Update the status of the item
-                        // const newQuantity = product.quantity + orderQuantity;
                         const proId = item.product._id
-                        // await Product.findByIdAndUpdate(
-                        //     { _id: proId },
-                        //      { $set: { quantity: newQuantity } },
-                        //       { $inc: {sold: -orderQuantity } })
 
                         await Product.findByIdAndUpdate(proId,
                             { $inc: { quantity: orderQuantity, sold: -orderQuantity } }
@@ -310,7 +307,7 @@ const cancelOrder = asyncHandler(async (req, res) => {
 
                 await Product.findByIdAndUpdate(productId,
                     { $inc: { quantity: incQuantity, sold: -incQuantity } });
-                    
+
                 const saved = await order.save();
                 console.log('after update', saved);
                 return res.redirect(`/orders`);
@@ -326,8 +323,8 @@ const cancelOrder = asyncHandler(async (req, res) => {
 /******************************************************/
 
 
-/************************************/
-/********* adiminSide *************/
+/*******************************************************/
+/**************** adiminSide *********************/
 
 // ordersPage---
 const ordersPage = asyncHandler(async (req, res) => {
@@ -371,6 +368,7 @@ const updateOrder = asyncHandler(async (req, res) => {
             { $set: { 'items.$.status': status } } // Update the status of the matched product
         );
         if (status == 'Shipped') { // Update shippedDate date
+
             await Order.findOneAndUpdate(
                 { _id: orderId },
                 { $set: { shippedDate: new Date() } }
@@ -409,7 +407,8 @@ const updateOrder = asyncHandler(async (req, res) => {
         throw new Error(error)
     }
 })
-
+/****************************************************************/
+/************************ Admind end ****************************/
 
 module.exports = {
     checkoutPage,

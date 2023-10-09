@@ -54,7 +54,9 @@
                                     <strong>ProcessingFee:</strong> ₹ <%= order.processingFee %>
                                 </p>
                                 <p class="card-text"><strong>Quantity: <%= quantity %></strong> </p>
-                                <p class="card-text"><strong>Order Total: </strong>₹<%= (order.total).toLocaleString() %> </p>
+                                <p class="card-text"><strong>Order Total: </strong>₹<%= (order.total).toLocaleString()
+                                        %>
+                                </p>
                                 <p class="card-text">
                                     <strong>Payment Method: </strong>
                                     <%= order.paymentMethod %>
@@ -65,9 +67,17 @@
                                         <%= order.paymentStatus %>
                                     </span>
                                 </p>
-                                <% if (status=='delivered' ) { %>
+                                <% if (status=='Delivered' ) { %>
+                                    <p class="card-text text-muted">
+                                        <span>Didn't like the product ? , you can return it within 7 days.</span>
+                                    </p>
+                                    <form action="/?_method=PUT" method="POST">
+                                        <input type="hidden" name="productId" value="<%= product._id %>">
+                                        <button type="submit" class="btn btn-success h-auto">Return
+                                            Product</button>
+                                    </form>
                                     <% } else { %>
-                                        <% if (status !=='cancelled' ) { %>
+                                        <% if (status !=='Cancelled' ) { %>
                                             <!-- Cancel Button -->
                                             <form action="/cancelOrder/<%= order._id %>?_method=PUT" method="POST">
                                                 <input type="hidden" name="productId" value="<%= product._id %>">

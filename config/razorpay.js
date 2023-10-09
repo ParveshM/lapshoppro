@@ -11,7 +11,7 @@ const generateRazorPay = (total, orderId) => {
     return new Promise((resolve, reject) => {
         console.log('total and orderId', total, orderId);
         var options = {
-            amount: 1000 * 100,
+            amount: total * 100,
             currency: "INR",
             receipt: "" + orderId
         };
