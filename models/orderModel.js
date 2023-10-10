@@ -10,9 +10,10 @@ const orderSchema = new mongoose.Schema({
             },
             status: {
                 type: String,
-                enum: ['Pending', 'Shipped', 'Delivered', 'Cancelled'],
+                enum: ['Pending', 'Shipped', 'Delivered', 'Cancelled','Return requested','Refunded'],
                 default: 'Pending',
             },
+            returnDate:Date
         }
     ],
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },

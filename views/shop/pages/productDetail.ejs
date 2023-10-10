@@ -193,12 +193,11 @@
                 <a class="active" data-bs-toggle="collapse" href="#pro-dec" role="tab" aria-selected="true">
                     Description
                 </a>
-                <a data-bs-toggle="collapse" href="#pro-review" role="tab" aria-selected="false">
-                    Reviews (0)
-                </a>
+                
             </div>
             <div class="description-review-text">
-                <div class="collapse show" id="pro-dec" role="tabpanel"> <!-- Add "show" to initially show the Description -->
+                <!-- Add "show" to initially show the Description -->
+                <div class="collapse show" id="pro-dec" role="tabpanel"> 
                     <% const sections = product.description.split('\n\n'); sections.forEach(section => {
                         const lines = section.split('\n');
                         const title = lines[0];
@@ -218,9 +217,7 @@
                     </div>
                     <% }); %>
                 </div>
-                <div class="collapse" id="pro-review" role="tabpanel">
-                    <a href="#">Be the first to write your review!</a>
-                </div>
+             
             </div>
         </div>
     </div>
@@ -235,21 +232,24 @@
         </div>
         <div class="row">
             <% if (products.length> 0) { %>
-                <% products.forEach(element=> { %>
+                <% for (let i = 0; i < 3; i++) {   %>
+                    
+                    
+              
                     <div class="col-md-4">
                         <div class="card">
-                            <a href="/viewProduct/<%= element._id%>">
+                            <a href="/viewProduct/<%= products[i]._id%>">
                                 <img class="card-img-top img-size"
-                                    src="/admin/uploads/<%= element.primaryImage[0].name %>"
-                                    alt="<%= element?.title %>">
+                                    src="/admin/uploads/<%= products[i].primaryImage[0].name %>"
+                                    alt="<%= products[i]?.title %>">
                             </a>
                             <div class="card-body">
                                 <h5 class="card-title">
-                                    <a href="/viewProduct/<%= element._id%>" class="truncate-text">
-                                        <%= element?.title %>
+                                    <a href="/viewProduct/<%= products[i]._id%>" class="truncate-text">
+                                        <%= products[i]?.title %>
                                     </a>
                                 </h5>
-                                <p class="card-text">₹<%= element?.salePrice %>
+                                <p class="card-text">₹<%= products[i]?.salePrice %>
                                 </p>
                                 <div class="product-action">
                                     <a class="animate-left" title="Wishlist" href="#">
@@ -262,7 +262,7 @@
                             </div>
                         </div>
                     </div>
-                    <% }); %>
+                    <% } %>
                         <% } %>
         </div>
     </div>

@@ -2,14 +2,17 @@ const User = require('../models/userModel')
 const Product = require('../models/productModel')
 const Order = require('../models/orderModel')
 const Address = require('../models/addressModel')
+const Wallet = require('../models/walletModel')
+const Transaction = require('../models/transactionModel')
 const asyncHandler = require('express-async-handler');
 const { calculateSubtotal } = require('../utility/ordercalculation')
 const { generateRazorPay, verifyingPayment } = require('../config/razorpay')
 const { checkCartItemsMatch } = require('../helpers/checkCartHelper');
+const { decreaseQuantity, updateWalletAmount, decreaseWalletAmount } = require('../helpers/productReturnHelper')
 
 
-
-/******** User Side *******/
+/*********** User Side **************/
+/************************************/
 //checkout page loading
 const checkoutPage = asyncHandler(async (req, res) => {
     try {
@@ -25,12 +28,17 @@ const checkoutPage = asyncHandler(async (req, res) => {
         const totalArray = calculateSubtotal(userWithCart);
         const [cartItems, cartSubtotal, processingFee, orderTotal] = [...totalArray];
 
+        const findWallet = await User.findById(user).populate('wallet')
+        const walletBalance = findWallet.wallet.balance;
+
+
         res.render('./shop/pages/checkout', {
             cartItems,
             cartSubtotal,
             processingFee,
             orderTotal,
-            addresses
+            addresses,
+            walletBalance
         });
     } catch (error) {
         throw new Error(error);
@@ -101,7 +109,7 @@ const placeOrder = asyncHandler(async (req, res) => {
                 total: orderTotal
             }
 
-            if (paymentMethod === 'COD' || paymentMethod === 'wallet') {
+            if (paymentMethod === 'COD' || paymentMethod === 'Wallet') {
 
                 const createOrder = await Order.create(newOrder);
 
@@ -115,7 +123,16 @@ const placeOrder = asyncHandler(async (req, res) => {
                         );
                     }
                     await user.clearCart()
-                    res.json({ codSuccess: true, orderID: createOrder._id, payment: 'COD' });
+                    if (paymentMethod == 'Wallet') {
+                        await Order.findByIdAndUpdate({ _id: createOrder._id }, { paymentStatus: 'Paid' });
+                        const description = 'Product purchased';
+                        const type = 'debit'
+                        await decreaseWalletAmount(user, orderTotal, description, type)
+
+                        res.json({ walletSuccess: true, orderID: createOrder._id, payment: 'Wallet' });
+                    } else {
+                        res.json({ codSuccess: true, orderID: createOrder._id, payment: 'COD' });
+                    }
                 }
 
             } else if (paymentMethod == 'RazorPay') {  // if payment is done using razorPay
@@ -139,7 +156,6 @@ const placeOrder = asyncHandler(async (req, res) => {
                         })
                         .catch((err) => { console.log(err) })
                 }
-
 
             } else {
                 res.render('./shop/pages/404') // in the case of cart not found
@@ -284,7 +300,8 @@ const viewOrder = asyncHandler(async (req, res) => {
 //Cancel Order--- ,increase the quantity , decrease sold - once cancelled 
 const cancelOrder = asyncHandler(async (req, res) => {
     try {
-
+        console.log('request recieve');
+        const userId = req.user
         const orderId = req.params.id;
         const productId = req.body.productId
         const newStatus = req.body.newStatus
@@ -302,14 +319,24 @@ const cancelOrder = asyncHandler(async (req, res) => {
             return res.status(404).render('./shop/pages/404');
         } else {
             if (productItem.status !== 'cancelled') {
+                console.log('inside the if', order.paymentMethod, order.paymentStatus);
+
+                if (order.paymentMethod == 'RazorPay' && order.paymentStatus == 'Paid') {
+                    console.log('inside the razorpay wallet cancel',);
+                    const description = 'Order Cancelled';
+                    const type = 'credit'
+                    await updateWalletAmount(userId, productItem.price, description, type)
+                } else {
+                    console.log("wallet not updated")
+                }
+
                 productItem.status = newStatus
                 const incQuantity = productItem.quantity
 
                 await Product.findByIdAndUpdate(productId,
                     { $inc: { quantity: incQuantity, sold: -incQuantity } });
 
-                const saved = await order.save();
-                console.log('after update', saved);
+                await order.save();
                 return res.redirect(`/orders`);
             } else {
                 res.render('./shop/pages/404')
@@ -320,11 +347,41 @@ const cancelOrder = asyncHandler(async (req, res) => {
         throw new Error(error);
     }
 });
+
+// return request from user--
+const returnProduct = asyncHandler(async (req, res) => {
+    try {
+        console.log('recived requres');
+        const orderId = req.params.id;
+        const productId = req.body.productId;
+        const findOrder = await Order.findOne({ _id: orderId })
+        console.log(findOrder)
+
+        const productIdString = String(productId); //finding matching productId from orderDb
+        const productItem = findOrder.items.find(item => String(item.product._id) === productIdString);
+
+        if (productItem) {
+            productItem.status = 'Return requested';
+            productItem.returnDate = Date.now()
+            await findOrder.save();
+            res.redirect('/orders')
+        } else {
+            res.render('./shop/pages/404')
+        }
+    } catch (error) {
+        throw new Error(error);
+    }
+});
+
+
+
+/******************* User side End *********************/
 /******************************************************/
 
 
 /*******************************************************/
-/**************** adiminSide *********************/
+/******************* Admin Section *********************/
+/*******************************************************/
 
 // ordersPage---
 const ordersPage = asyncHandler(async (req, res) => {
@@ -356,7 +413,8 @@ const editOrderPage = asyncHandler(async (req, res) => {
         throw new Error(error)
     }
 })
-// update Order status--
+
+// update Order status  , return product , refund and credit amount to wallet--
 const updateOrder = asyncHandler(async (req, res) => {
     try {
         const orderId = req.params.id;
@@ -379,23 +437,31 @@ const updateOrder = asyncHandler(async (req, res) => {
                 { _id: orderId },
                 { $set: { deliveredDate: new Date(), paymentStatus: 'Paid' } }
             );
-        }
+        } else { }
+
+
         if (update) { //if update is success            
-            if (status == 'Cancelled') { //if the admin updates the status to cancelled ,increase the quantity.
+            if (status == 'Cancelled' && update.paymentMethod == 'COD') { //if the admin updates the status to cancelled ,increase the quantity.
+                console.log('inside the cod cancelled');
+                decreaseQuantity(orderId, productId)
 
-                const order = await Order.findOne({ _id: orderId })
-                    .populate({
-                        path: 'items.product',
-                        model: 'Product'
-                    })
+            } else if (status == 'Cancelled' && update.paymentMethod == 'RazorPay') {
+                console.log('inside the RazorPay cancelled');
+                const productPrice = await decreaseQuantity(orderId, productId);
+                const userId = update.user;
+                const description = 'Order Cancelled';
+                const type = 'Order cancelled'
+                updateWalletAmount(userId, productPrice, description, type)
 
-                const productIdString = String(productId); //finding matching productId from orderDb
-                const productItem = order.items.find(item => String(item.product._id) === productIdString);
-
-                const incQuantity = productItem.quantity
-                await Product.findByIdAndUpdate(productId,
-                    { $inc: { quantity: incQuantity, sold: -incQuantity } });
-
+            } else if (status == 'Refunded') {
+                // increase the quantity and decrease sold , returns the product price
+                const productPrice = await decreaseQuantity(orderId, productId);
+                const userId = update.user;
+                const description = 'Refund';
+                const type = 'credit'
+                updateWalletAmount(userId, productPrice, description, type)
+            } else {
+                console.log('erro in updating');
             }
 
             res.redirect('/admin/orders')
@@ -420,6 +486,7 @@ module.exports = {
     orders,
     viewOrder,
     cancelOrder,
+    returnProduct,
     ordersPage,
     editOrderPage,
     updateOrder

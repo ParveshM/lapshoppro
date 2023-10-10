@@ -16,10 +16,10 @@
           </div>
         </div>
         <div class="col-md-6">
-          <div class="userWallet card add-btn text-center p-4">
+          <div class="userWallet card add-btn text-center p-4"> 
             <p class="h4 fw-bold  mb-2">My Wallet</p>
-            <i class="fas fa-wallet text-warning fa-3x mb-3"></i>
-            <h3 class="h2 fw-bold ">₹1234.00</h3>
+           <a href="/wallet-history"><i class="fas fa-wallet text-warning fa-3x mb-3"></i></a>
+            <h3 class="h2 fw-bold ">₹<%= (walletBalance).toLocaleString() %></h3>
           </div>
         </div>
       </div>
@@ -64,3 +64,5 @@
     </div>
   </div>
 </main>
+
+

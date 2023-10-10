@@ -15,7 +15,10 @@
                             <div class="card-body">
 
                                 <h5 class="card-title">
-                                    <strong>Product Name:<%= product.title %></strong>
+                                    <strong>Product Name:</strong>
+                                    <span>
+                                        <%= product.title %>
+                                    </span>
                                 </h5>
 
 
@@ -27,7 +30,7 @@
                                 <!-- Ship To Name -->
                                 <p class="card-text">
                                     <strong>Ship To :</strong>
-                                    <strong>
+                                    <span>
                                         <%= order.billingAddress.name %>,
                                             <%= order.billingAddress.addressType %>,
                                                 <%= order.billingAddress.address %>,
@@ -35,23 +38,25 @@
                                                         <%= order.billingAddress.state %>,
                                                             <%= order.billingAddress.postCode %>,
                                                                 <%= order.billingAddress.phone %>
-                                    </strong>
+                                    </span>
                                 </p>
 
                                 <p class="card-text">
                                     <strong>Order Status:</strong>
-                                    <span class="<%= status === 'Pending'
+                                    <strong class="<%= status === 'Pending'
                                     ? 'text-warning' : (status === 'Shipped' ? 'text-primary' :
                                     (status === 'Cancelled' ? 'text-danger' :
-                                    (status === 'Delivered' ? 'text-success' : '' ))) %>">
+                                    (status === 'Delivered' ? 'text-success':
+                                    (status === 'Returned' ? 'text-info' :
+                                    (status === 'Refunded' ? 'text-success': '' ))))) %>">
                                         <%= status %>
-                                    </span>
+                                    </strong>
                                 </p>
                                 <p class="card-text">
-                                    <strong>Product Price:</strong> ₹<%= price %>
+                                    <strong>Product Price:</strong> ₹<%= (price).toLocaleString() %>
                                 </p>
                                 <p class="card-text">
-                                    <strong>ProcessingFee:</strong> ₹ <%= order.processingFee %>
+                                    <strong>ProcessingFee:</strong> ₹<%= order.processingFee %>
                                 </p>
                                 <p class="card-text"><strong>Quantity: <%= quantity %></strong> </p>
                                 <p class="card-text"><strong>Order Total: </strong>₹<%= (order.total).toLocaleString()
@@ -61,36 +66,63 @@
                                     <strong>Payment Method: </strong>
                                     <%= order.paymentMethod %>
                                 </p>
-                                <p class="card-text"><strong>Payment Status:</strong>
-                                    <span class="<%= order.paymentStatus === 'Pending'? 'text-warning' :
+
+                                <% if (status !=='Refunded' ) { %>
+                                    <p class="card-text"><strong>Payment Status:</strong>
+                                        <strong class="<%= order.paymentStatus === 'Pending'? 'text-warning' :
                                     (order.paymentStatus === 'Paid' ? 'text-success' : '' ) %>">
-                                        <%= order.paymentStatus %>
-                                    </span>
-                                </p>
-                                <% if (status=='Delivered' ) { %>
-                                    <p class="card-text text-muted">
-                                        <span>Didn't like the product ? , you can return it within 7 days.</span>
+                                            <%= order.paymentStatus %>
+                                        </strong>
                                     </p>
-                                    <form action="/?_method=PUT" method="POST">
-                                        <input type="hidden" name="productId" value="<%= product._id %>">
-                                        <button type="submit" class="btn btn-success h-auto">Return
-                                            Product</button>
-                                    </form>
-                                    <% } else { %>
-                                        <% if (status !=='Cancelled' ) { %>
-                                            <!-- Cancel Button -->
-                                            <form action="/cancelOrder/<%= order._id %>?_method=PUT" method="POST">
+                                    <% } %>
+
+
+                                        <% if (status=='Delivered' ) { %>
+
+                                            <p class="card-text text-muted">
+                                                <span>Didn't like the product ? , you can return it within 7
+                                                    days.</span>
+                                            </p>
+                                            <form action="/return-product/<%= order._id %>?_method=PUT" method="POST">
                                                 <input type="hidden" name="productId" value="<%= product._id %>">
-                                                <input type="hidden" name="newStatus" value="Cancelled">
-                                                <button type="submit" class="btn btn-danger h-auto">Cancel
-                                                    Order</button>
+                                                <button type="submit" class="btn btn-success h-auto">Return
+                                                    Product</button>
                                             </form>
-                                            <% } else { %>
-                                                <p class="card-text text-danger">
-                                                    <strong>Order Cancelled</strong>
+
+                                            <% } else if (status=='Return requested' ){ %>
+                                                <p class="card-text text-muted">
+                                                    <span>Return request sent, Once the the request is confirmed the
+                                                        amount will
+                                                        be credited to wallet (excluding processingFee).</span>
                                                 </p>
-                                                <% } %>
-                                                    <% } %>
+
+                                                <% } else if (status=='Refunded' ) { %>
+
+                                                    <p class="card-text text-muted">
+                                                        <span>Your return request confirmed, The amount is credited to
+                                                            the
+                                                            wallet.</span>
+                                                    </p>
+
+                                                    <% } else { %>
+
+                                                        <% if (status !=='Cancelled' ) { %>
+                                                            <!-- Cancel Button -->
+                                                            <form action="/cancelOrder/<%= order._id %>?_method=PUT"
+                                                                method="POST">
+                                                                <input type="hidden" name="productId"
+                                                                    value="<%= product._id %>">
+                                                                <input type="hidden" name="newStatus" value="Cancelled">
+                                                                <button type="submit"
+                                                                    class="btn btn-danger h-auto">Cancel
+                                                                    Order</button>
+                                                            </form>
+                                                            <% } else { %>
+                                                                <p class="card-text text-danger">
+                                                                    <strong>Order Cancelled</strong>
+                                                                </p>
+                                                                <% } %>
+                                                                    <% } %>
                             </div>
                         </div>
                     </div>

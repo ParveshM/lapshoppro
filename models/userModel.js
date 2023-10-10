@@ -28,6 +28,7 @@ const userSchema = new Schema({
     }],
     addresses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Address' }],
     wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }],
+    wallet: { type: mongoose.Schema.Types.ObjectId, ref: 'Wallet' },
     passwordChangedAt: Date,
     passwordResetToken: String,
     passwordResetTokenExpires: Date,

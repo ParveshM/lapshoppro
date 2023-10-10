@@ -17,13 +17,13 @@ userRoute.use((req, res, next) => {
 
 
 // userRoute setting----
-userRoute.get('/', userController.loadLandingPage); /* Loading home page */
+userRoute.get('/', userController.loadLandingPage); // Loading home page
 
-userRoute.get('/register', ensureNotAuthenticated, userController.loadRegister); /* Register Page */
+userRoute.get('/register', ensureNotAuthenticated, userController.loadRegister); // Register Page 
 userRoute.post('/register', ensureNotAuthenticated, userController.insertUser);
-userRoute.get('/sendOTP', ensureNotAuthenticated, userController.sendOTPpage); /* otp sending */
+userRoute.get('/sendOTP', ensureNotAuthenticated, userController.sendOTPpage); // otp sending 
 userRoute.post('/sendOTP', ensureNotAuthenticated, userController.verifyOTP);
-userRoute.get('/reSendOTP', ensureNotAuthenticated, userController.reSendOTP); /* otp Resending */
+userRoute.get('/reSendOTP', ensureNotAuthenticated, userController.reSendOTP); // otp Resending 
 userRoute.post('/reSendOTP', ensureNotAuthenticated, userController.verifyResendOTP);
 
 // Login & Verification section---
@@ -36,17 +36,17 @@ userRoute.post('/login', ensureNotAuthenticated,
   }));
 userRoute.get('/logout', ensureAuthenticated, userController.userLogout);
 
+// forget-Password and reset password section
 userRoute.get('/forgetPassword', ensureNotAuthenticated, userController.forgotPasswordpage);
-
 userRoute.post('/forgetPassword', ensureNotAuthenticated, userController.sendResetLink);
-
 userRoute.get('/resetPassword/:token', ensureNotAuthenticated, userController.resetPassPage);
 userRoute.put('/resetPassword/:token', ensureNotAuthenticated, userController.resetPassword);
 
 userRoute.get('/contact', userController.contact);
 userRoute.get('/about', userController.aboutUs);
 userRoute.get('/profile', ensureAuthenticated, userController.userProfile);
-` `
+// wallet history
+userRoute.get('/wallet-history', ensureAuthenticated, userController.viewWalletHistory);
 
 // shopping_section--- 
 userRoute.get('/shop', userController.shopping);   /* shopping page */
@@ -81,12 +81,12 @@ userRoute.get('/orderPlaced', ensureAuthenticated, orderController.orderPlacedPa
 userRoute.post('/verifyPayment', ensureAuthenticated, orderController.verifyPayment);
 userRoute.post('/payment-failed', ensureAuthenticated, orderController.paymentFailed);
 
-
-
-
+// order section --
 userRoute.get('/orders', ensureAuthenticated, orderController.orders);
 userRoute.post('/viewOrder/:id', ensureAuthenticated, orderController.viewOrder);
 userRoute.put('/cancelOrder/:id', ensureAuthenticated, orderController.cancelOrder);
+userRoute.put('/return-product/:id', ensureAuthenticated, orderController.returnProduct);
+
 
 // 404 notfound page--
 userRoute.get('*', (req, res) => { res.render('./shop/pages/404') })
