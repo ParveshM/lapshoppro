@@ -81,6 +81,9 @@ userRoute.get('/orderPlaced', ensureAuthenticated, orderController.orderPlacedPa
 userRoute.post('/verifyPayment', ensureAuthenticated, orderController.verifyPayment);
 userRoute.post('/payment-failed', ensureAuthenticated, orderController.paymentFailed);
 
+// wallet section--
+userRoute.get('/updateWalletAmount', ensureAuthenticated, orderController.updateWalletInCheckout);
+
 // order section --
 userRoute.get('/orders', ensureAuthenticated, orderController.orders);
 userRoute.post('/viewOrder/:id', ensureAuthenticated, orderController.viewOrder);

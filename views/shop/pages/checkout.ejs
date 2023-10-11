@@ -115,16 +115,22 @@
                                             <%= (cartSubtotal).toLocaleString() %>
                                         </span></td>
                                 </tr>
-                                <tr class="tax-amount">
+                                <tr class="processingFee">
                                     <th>Processing Fee</th>
                                     <td><span class="amount">
                                             ₹<%= processingFee %>
                                         </span></td>
                                 </tr>
+                                <tr class="deductedWalletAmount">
+                                    <th>Wallet</th>
+                                    <td><span id="deductedAmount">
+                                            
+                                        </span></td>
+                                </tr>
                                 <tr class="order-total">
                                     <th>Order Total</th>
-                                    <td><strong><span class="amount">
-                                                ₹<%= (orderTotal).toLocaleString() %>
+                                    <td><strong>₹<span class="amount" id="orderTotal">
+                                                <%= orderTotal %>
                                             </span></strong>
                                     </td>
                                 </tr>
@@ -133,7 +139,10 @@
                         <div class="d-flex justify-content-between">
                             <div>
                                 <h5>Wallet</h5>
-                                <p>Available Balance: ₹<%= (walletBalance).toLocaleString() %>
+                                <p>Available Balance: ₹
+                                    <span id="walletBalanceAmount">
+                                        <%= walletBalance %>
+                                    </span>
                                 </p>
                             </div>
                         </div>
@@ -155,23 +164,40 @@
                                                     <div class="panel-body">
                                                         <div class="form-check">
                                                             <input class="form-check-input" type="radio" value="COD"
-                                                                name="paymentMethod" id="cashOnDelivery" required>
+                                                                name="paymentMethod" id="COD" required>
                                                             <label class="form-check-label" for="cashOnDelivery">Cash On
                                                                 Delivery (COD)</label>
                                                         </div>
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="radio" value="Wallet"
-                                                                name="paymentMethod" id="wallet" required>
-                                                            <label class="form-check-label" for="razorPay">Pay with
-                                                                Wallet</label>
-                                                        </div>
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="radio"
-                                                                value="RazorPay" name="paymentMethod" id="razorPay"
-                                                                required>
-                                                            <label class="form-check-label"
-                                                                for="razorPay">RazorPay</label>
-                                                        </div>
+
+                                                        <% if (amount) { %>
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="radio"
+                                                                    value="Wallet" name="paymentMethod" id="" required>
+                                                                <label class="form-check-label" for="razorPay">Pay with
+                                                                    Wallet</label>
+                                                            </div>
+
+                                                            <% } else if (minBalance) {%>
+
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input" type="radio"
+                                                                        value="WalletWithRazorpay"
+                                                                        id="walletWithRazorpay" name="paymentMethod"
+                                                                        required>
+                                                                    <label class="form-check-label" for="razorPay">
+                                                                        Pay wallet with Razorpay
+                                                                    </label>
+                                                                </div>
+
+                                                                <% } %>
+
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="radio"
+                                                                            value="RazorPay" name="paymentMethod"
+                                                                            id="razorPay" required>
+                                                                        <label class="form-check-label"
+                                                                            for="razorPay">RazorPay</label>
+                                                                    </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -184,7 +210,8 @@
                                         </form>
                                     </div>
                                     <% } else { %>
-                                        <p class="text-center text-danger">You have no address! , Please add an Address.
+                                        <p class="text-center text-danger">You have no address! , Please add an Address
+                                            to place your order.
                                         </p>
                                         <% } %>
 
@@ -198,6 +225,73 @@
 
     <script>
         $(document).ready(function () {
+
+            const walletWithRazorpay = document.getElementById("walletWithRazorpay");
+            const cod = document.getElementById('COD')
+            const razorPay = document.getElementById('razorPay')
+            const walletBalanceElement = document.getElementById("walletBalanceAmount");
+            const orderTotalElement = document.getElementById("orderTotal");
+            const deductedWalletRow = document.querySelector(".deductedWalletAmount");
+
+            deductedWalletRow.style.display = 'none';
+
+            const currentWallet = walletBalanceElement.textContent.trim().replace('₹', '');
+            const walBalance = parseFloat(currentWallet);
+
+            const orderTotalValue = orderTotalElement.textContent.trim().replace('₹', '');
+            const total = parseFloat(orderTotalValue);
+
+            walletWithRazorpay.addEventListener("change", function () {
+                if (walletWithRazorpay.checked) {
+                    $.ajax({
+                        url: '/updateWalletAmount',
+                        method: 'GET',
+                        data: {
+                            total
+                        },
+                        success: function (response) {
+                            if (response.success) {
+                                console.log(response)
+
+                                walletBalanceElement.innerText = 0;
+
+                                // Update the order total element
+                                deductedWalletRow.style.display = 'table-row';
+                                orderTotalElement.innerText = `${response.amountTopay}`;
+                                deductedAmount.innerText = `-${response.walletBalance}`;
+                                deductedAmount.style.color = 'red';
+
+
+                            } else {
+                                console.log('inside error log');
+                            }
+
+                        },
+                        error: function (err) {
+                            console.error(err);
+                        }
+                    });
+                }
+            });
+            cod.addEventListener("change", function () {
+                if (cod.checked) {
+
+                    deductedWalletRow.style.display = 'none';
+                    orderTotalElement.innerText = total;
+                    walletBalanceElement.innerText = walBalance;
+                    deductedWalletRow.style.display = 'none';
+                }
+            });
+            razorPay.addEventListener("change", function () {
+                if (razorPay.checked) {
+
+                    deductedWalletRow.style.display = 'none';
+                    orderTotalElement.innerText = total;
+                    walletBalanceElement.innerText = walBalance;
+                    deductedWalletRow.style.display = 'none';
+                }
+            });
+
             const originalCartInput = JSON.parse(document.getElementById("originalCartData").value);
 
             $('#checkout-form').submit(function (e) {

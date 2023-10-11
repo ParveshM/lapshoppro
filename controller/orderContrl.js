@@ -9,6 +9,7 @@ const { calculateSubtotal } = require('../utility/ordercalculation')
 const { generateRazorPay, verifyingPayment } = require('../config/razorpay')
 const { checkCartItemsMatch } = require('../helpers/checkCartHelper');
 const { decreaseQuantity, updateWalletAmount, decreaseWalletAmount } = require('../helpers/productReturnHelper')
+const {walletAmount } = require('../helpers/placeOrderHelper')
 
 
 /*********** User Side **************/
@@ -31,6 +32,15 @@ const checkoutPage = asyncHandler(async (req, res) => {
         const findWallet = await User.findById(user).populate('wallet')
         const walletBalance = findWallet.wallet.balance;
 
+        let amount = false;
+        if (walletBalance > orderTotal) {
+            amount = true
+        }
+
+        let minBalance = false;
+        if (walletBalance > 0 && walletBalance < orderTotal) {
+            minBalance = true;
+        }
 
         res.render('./shop/pages/checkout', {
             cartItems,
@@ -38,7 +48,10 @@ const checkoutPage = asyncHandler(async (req, res) => {
             processingFee,
             orderTotal,
             addresses,
-            walletBalance
+            walletBalance,
+            amount,
+            minBalance
+
         });
     } catch (error) {
         throw new Error(error);
@@ -75,6 +88,37 @@ const checkCart = asyncHandler(async (req, res) => {
         throw new Error(error);
     }
 });
+
+// updateWallet in checkout--
+const updateWalletInCheckout = asyncHandler(async (req, res) => {
+    try {
+        console.log('req recieved in wallet');
+        const total = req.query.total
+        const user = req.user.id;
+
+        const findWallet = await User.findById({ _id: user }).populate('wallet')
+        const walletBalance = findWallet.wallet.balance
+
+        if (walletBalance < total) {
+            const amountTopay = total - walletBalance;
+
+
+            res.json({ success: true, amountTopay, walletBalance })
+        } else {
+            console.log('eroor ');
+            res.json({ error: 404 })
+        }
+
+
+
+
+
+    } catch (error) {
+        throw new Error(error);
+    }
+});
+
+
 
 
 // orderPlacing---
@@ -125,7 +169,8 @@ const placeOrder = asyncHandler(async (req, res) => {
                     await user.clearCart()
                     if (paymentMethod == 'Wallet') {
                         await Order.findByIdAndUpdate({ _id: createOrder._id }, { paymentStatus: 'Paid' });
-                        const description = 'Product purchased';
+
+                        const description = 'Product purchase';
                         const type = 'debit'
                         await decreaseWalletAmount(user, orderTotal, description, type)
 
@@ -134,6 +179,34 @@ const placeOrder = asyncHandler(async (req, res) => {
                         res.json({ codSuccess: true, orderID: createOrder._id, payment: 'COD' });
                     }
                 }
+            } else if (paymentMethod == 'WalletWithRazorpay') {
+
+                console.log('inside the with razorpay');
+                const userData = await User.findById({ _id: user }).populate('wallet')
+
+                const totalAmountToPay = walletAmount(userData,orderTotal)
+
+                console.log('total pat',totalAmountToPay);
+
+
+                const createOrder = await Order.create(newOrder);
+                if (createOrder) { //if order is created
+
+                    for (const item of orderItems) {
+                        const orderQuantity = item.quantity;
+
+                        await Product.findByIdAndUpdate(item.product,
+                            { $inc: { quantity: -orderQuantity, sold: orderQuantity } }
+                        );
+                    }
+
+                    generateRazorPay(totalAmountToPay, createOrder._id) //genereting razorpay order--
+                        .then((response) => {
+                            return res.json({ status: 'success', response, userData });
+                        })
+                        .catch((err) => { console.log(err) })
+                }
+
 
             } else if (paymentMethod == 'RazorPay') {  // if payment is done using razorPay
 
@@ -158,10 +231,10 @@ const placeOrder = asyncHandler(async (req, res) => {
                 }
 
             } else {
-                res.render('./shop/pages/404') // in the case of cart not found
+                res.render('./shop/pages/404')
             }
         } else {
-            res.redirect('/shop')
+            res.redirect('/shop')// in the case of cart not found
         }
     } catch (error) {
         throw new Error(error);
@@ -183,7 +256,7 @@ const verifyPayment = asyncHandler(async (req, res) => {
 
                 // Clear the user's cart once the promise is resolved
                 return user.clearCart()
-                    .then(() => changePaymentStatus(orderId)); // Chain this with the next then block
+                    .then(() => changePaymentStatus(orderId));
             })
             .then((changeStatus) => { // payment success and payment status changed to paid
                 console.log('status updated', changeStatus);
@@ -479,6 +552,7 @@ const updateOrder = asyncHandler(async (req, res) => {
 module.exports = {
     checkoutPage,
     checkCart,
+    updateWalletInCheckout,
     placeOrder,
     orderPlacedPage,
     verifyPayment,
