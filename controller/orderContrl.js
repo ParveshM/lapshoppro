@@ -9,7 +9,7 @@ const { calculateSubtotal } = require('../utility/ordercalculation')
 const { generateRazorPay, verifyingPayment } = require('../config/razorpay')
 const { checkCartItemsMatch } = require('../helpers/checkCartHelper');
 const { decreaseQuantity, updateWalletAmount, decreaseWalletAmount } = require('../helpers/productReturnHelper')
-const {walletAmount } = require('../helpers/placeOrderHelper')
+const { walletAmount } = require('../helpers/placeOrderHelper')
 
 
 /*********** User Side **************/
@@ -172,7 +172,7 @@ const placeOrder = asyncHandler(async (req, res) => {
 
                         const description = 'Product purchase';
                         const type = 'debit'
-                        await decreaseWalletAmount(user, orderTotal, description, type)
+                        await decreaseWalletAmount(user._id, orderTotal, description, type)
 
                         res.json({ walletSuccess: true, orderID: createOrder._id, payment: 'Wallet' });
                     } else {
@@ -181,12 +181,11 @@ const placeOrder = asyncHandler(async (req, res) => {
                 }
             } else if (paymentMethod == 'WalletWithRazorpay') {
 
-                console.log('inside the with razorpay');
-                const userData = await User.findById({ _id: user }).populate('wallet')
+                const userData = await User.findById({ _id: user._id }).populate('wallet')
 
-                const totalAmountToPay = walletAmount(userData,orderTotal)
+                console.log('userdaa', userData);
+                const totalAmountToPay = walletAmount(userData, orderTotal)
 
-                console.log('total pat',totalAmountToPay);
 
 
                 const createOrder = await Order.create(newOrder);
@@ -241,22 +240,73 @@ const placeOrder = asyncHandler(async (req, res) => {
     }
 })
 
-const changePaymentStatus = (orderId) => {
-    return Order.findByIdAndUpdate({ _id: orderId }, { paymentStatus: 'Paid' });
+// const changePaymentStatus = (orderId) => {
+//     return Order.findByIdAndUpdate({ _id: orderId }, { paymentStatus: 'Paid' });
+// };
+
+const changePaymentStatus = async (orderId, user, amount) => {
+
+    const orderUpdated = await Order.findByIdAndUpdate({ _id: orderId }, { paymentStatus: 'Paid' });
+
+    if (orderUpdated.paymentMethod == 'WalletWithRazorpay') {
+
+        const findWallet = await User.findById({ _id: user._id }).populate('wallet')
+        const walletBalance = findWallet.wallet.balance
+
+        const description = 'Wallet with Razorpay';
+        const type = 'debit'
+        decreaseWalletAmount(user, walletBalance, description, type)
+        const updateWallet = await Order.findByIdAndUpdate({ _id: orderId }, { walletPayment: walletBalance });
+    }
+
+
+    return orderUpdated;
 };
 
+
 // verifyPayment
+// const verifyPayment = asyncHandler(async (req, res) => {
+//     try {
+//         const user = req.user;
+//         verifyingPayment(req.body) // Verifying the payment--
+//             .then(() => {
+//                 const details = req.body;
+//                 const orderId = details.order.response.receipt;
+
+//                 // Clear the user's cart once the promise is resolved
+//                 return user.clearCart()
+//                     .then(() => changePaymentStatus(orderId));
+//             })
+//             .then((changeStatus) => { // payment success and payment status changed to paid
+//                 console.log('status updated', changeStatus);
+//                 console.log('Payment success');
+//                 return res.json({ status: true, orderID: `${changeStatus._id}` });
+//             })
+//             .catch((err) => { // payment verification failed 
+//                 console.log('Error in payment verification', err);
+//                 res.json({ status: false, errMsg: 'Payment verification failed' });
+//             });
+//     } catch (error) {
+//         throw new Error(error);
+//     }
+// });
 const verifyPayment = asyncHandler(async (req, res) => {
     try {
         const user = req.user;
+
         verifyingPayment(req.body) // Verifying the payment--
             .then(() => {
                 const details = req.body;
                 const orderId = details.order.response.receipt;
+                let amount = details.order.response.amount;
+                amount = amount / 100;
+                // const walletAmount = amount - walletAmount
+                console.log('amout', amount);
+                console.log('inside verify paymnet details', details);
 
                 // Clear the user's cart once the promise is resolved
                 return user.clearCart()
-                    .then(() => changePaymentStatus(orderId));
+                    .then(() => changePaymentStatus(orderId, user, amount));
             })
             .then((changeStatus) => { // payment success and payment status changed to paid
                 console.log('status updated', changeStatus);
@@ -271,6 +321,7 @@ const verifyPayment = asyncHandler(async (req, res) => {
         throw new Error(error);
     }
 });
+
 
 // payment failed---
 const paymentFailed = asyncHandler(async (req, res) => {
@@ -394,7 +445,9 @@ const cancelOrder = asyncHandler(async (req, res) => {
             if (productItem.status !== 'cancelled') {
                 console.log('inside the if', order.paymentMethod, order.paymentStatus);
 
-                if (order.paymentMethod == 'RazorPay' && order.paymentStatus == 'Paid') {
+                if (order.paymentMethod == 'RazorPay' && order.paymentStatus == 'Paid'
+                    || (order.paymentMethod == 'WalletWithRazorpay' && order.paymentStatus == 'Paid'
+                    )) {
                     console.log('inside the razorpay wallet cancel',);
                     const description = 'Order Cancelled';
                     const type = 'credit'
