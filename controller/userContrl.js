@@ -1,6 +1,7 @@
 const User = require('../models/userModel')
 const Product = require('../models/productModel')
 const Category = require('../models/categoryModel')
+const Wallet = require('../models/walletModel')
 const asyncHandler = require('express-async-handler')
 const { sendOtp, generateOTP } = require('../utility/nodeMailer')
 const { forgetPassMail } = require('../utility/forgetPassMail')
@@ -172,12 +173,44 @@ const userLogout = async (req, res) => {
 // userProfile---
 const userProfile = asyncHandler(async (req, res) => {
     try {
-        const user = req.user;
-        res.render('./shop/pages/profile', { user })
+        const user = req.user.id
+
+        const findWallet = await User.findById(user).populate('wallet')
+        console.log('din wlalet',findWallet);
+        const walletId = findWallet.wallet._id
+        const wal = await Wallet.find(walletId).populate('transactions').exec()
+
+
+        const walletBalance = findWallet.wallet.balance;
+
+        res.render('./shop/pages/profile', { user, walletBalance })
     } catch (error) {
         throw new Error(error);
     }
 });
+
+// view wallet history ---
+const viewWalletHistory = asyncHandler(async (req, res) => {
+    try {
+        const user = req.user;
+        const findWallet = await User.findById(user).populate('wallet')
+        const walletId = findWallet.wallet._id
+
+        const walletTransaction = await Wallet.findById({ _id: walletId })
+            .populate({
+                path: 'transactions',
+                options: {
+                    sort: { timestamp: -1 } // Sort in descending order (latest first)
+                }
+            });
+        const walletHistory = walletTransaction.transactions
+
+        res.render('./shop/pages/walletHistory', { walletHistory })
+    } catch (error) {
+        throw new Error(error);
+    }
+});
+
 
 // Shopping Page--
 const shopping = asyncHandler(async (req, res) => {
@@ -211,7 +244,7 @@ const shopping = asyncHandler(async (req, res) => {
         const count = await Product.find(
             { categoryName: { $in: listedCategoryIds }, isListed: true })
             .countDocuments();
-           
+
 
         res.render('./shop/pages/shopping', {
             products: findProducts,
@@ -386,6 +419,7 @@ module.exports = {
     loadLogin,
     userLogout,
     userProfile,
+    viewWalletHistory,
     shopping,
     viewProduct,
     wishlist,

@@ -31,84 +31,118 @@
                                                             <%= viewOrder.billingAddress.phone %>
 
                                     </p>
-                                    <h5 class="mb-3">Order Status:</h5>
-                                    <select name="status" class="form-control mb-3">
-                                        <option value="<%= item.status %>">
+
+                                    <h5 class="mb-1">Order Status:</h5>
+                                    <% if (item.status=='Return requested' || item.status=='Refunded' ) { %>
+                                        <p class="font-weight-bold my-0">
                                             <%= item.status %>
-                                        </option>
-                                        <% if (item.status!=='Cancelled' && item.status!=='Delivered' ) { %>
-                                            <option value="Pending">Pending</option>
-                                            <option value="Shipped">Shipped</option>
-                                            <option value="Delivered">Delivered</option>
-                                            <option value="Cancelled">Cancelled</option>
+                                        </p>
+                                        <% } else { %>
+                                            <select name="status" class="form-control mb-3">
+                                                <% if (item.status !=='Refunded' ) { %>
+                                                    <option value="<%= item.status %>">
+                                                        <%= item.status %>
+                                                    </option>
+
+                                                    <% } %>
+                                                        <% if (item.status!=='Cancelled' && item.status!=='Delivered' )
+                                                            { %>
+
+                                                            <option value="Pending">Pending</option>
+                                                            <option value="Shipped">Shipped</option>
+                                                            <option value="Delivered">Delivered</option>
+                                                            <option value="Cancelled">Cancelled</option>
+                                                            <% } %>
+                                            </select>
                                             <% } %>
-                                    </select>
-                                    <h5 class="mb-2 ">Product Details:</h5>
-                                    <p>
-                                        <%= item.product.title %>
-                                    </p>
-                                    <div class="row d-flex justify-content-between">
-                                        <div class="col-md-6 ">
-                                            <div class="mb-2 d-flex flex-column justify-content-between align-middle">
-                                                <h6>Quantity:</h6>
-                                                <p>
-                                                    <%= item.quantity %>
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6 ">
-                                            <div class="mb-2 d-flex flex-column justify-content-between align-middle">
-                                                <h6>Price:</h6>
-                                                <p>
-                                                    ₹<%= (item.price).toLocaleString()%>
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6 ">
-                                            <div class="mb-2 d-flex flex-column justify-content-between align-middle">
-                                                <h6>Processing Fee:</h6>
-                                                <p>
-                                                    ₹<%= viewOrder.processingFee%>
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6 mb-2">
-                                            <div class="d-flex flex-column justify-content-between align-middle mb-2">
-                                                <h6>Total Amount:</h6>
-                                                <p class="font-weight-bold">₹<%= (viewOrder.total).toLocaleString() %>
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row d-flex justify-content-between">
-                                        <div class="col-md-6">
-                                            <div class="d-flex flex-column justify-content-around mb-3">
-                                                <h6>Payment Method:</h6>
-                                                <p>
-                                                    <%= viewOrder.paymentMethod %>
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="d-flex flex-column justify-content-between mb-3">
-                                                <h6>Ordered Date:</h6>
-                                                <p>
-                                                    <%= viewOrder.orderDate.toLocaleDateString('en-IN', {
-                                                        year: 'numeric' , month: 'numeric' , day: 'numeric' }) %>
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
+
+                                                <% if(item.status=='Return requested' ){ %>
+                                                    <input type="hidden" name="productId"
+                                                        value="<%= item.product._id  %>">
+                                                    <input type="hidden" name="status" value="Refunded">
+                                                    <button type="submit" class="btn btn-danger h-auto my-3">
+                                                        Confirm Return
+                                                    </button>
+                                                    <% }%>
+
+                                                        <h5 class="my-2">Product Details:</h5>
+                                                        <p>
+                                                            <%= item.product.title %>
+                                                        </p>
+                                                        <div class="row d-flex justify-content-between">
+                                                            <div class="col-md-6 ">
+                                                                <div
+                                                                    class="mb-2 d-flex flex-column justify-content-between align-middle">
+                                                                    <h6>Quantity:</h6>
+                                                                    <p>
+                                                                        <%= item.quantity %>
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6 ">
+                                                                <div
+                                                                    class="mb-2 d-flex flex-column justify-content-between align-middle">
+                                                                    <h6>Price:</h6>
+                                                                    <p>
+                                                                        ₹<%= (item.price).toLocaleString()%>
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6 ">
+                                                                <div
+                                                                    class="mb-2 d-flex flex-column justify-content-between align-middle">
+                                                                    <h6>Processing Fee:</h6>
+                                                                    <p>
+                                                                        ₹<%= viewOrder.processingFee%>
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6 mb-2">
+                                                                <div
+                                                                    class="d-flex flex-column justify-content-between align-middle mb-2">
+                                                                    <h6>Total Amount:</h6>
+                                                                    <p class="font-weight-bold">₹<%=
+                                                                            (viewOrder.total).toLocaleString() %>
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row d-flex justify-content-between">
+                                                            <div class="col-md-6">
+                                                                <div
+                                                                    class="d-flex flex-column justify-content-around mb-3">
+                                                                    <h6>Payment Method:</h6>
+                                                                    <p>
+                                                                        <%= viewOrder.paymentMethod %>
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <div
+                                                                    class="d-flex flex-column justify-content-between mb-3">
+                                                                    <h6>Ordered Date:</h6>
+                                                                    <p>
+                                                                        <%= viewOrder.orderDate.toLocaleDateString('en-IN',
+                                                                            { year: 'numeric' , month: 'numeric' ,
+                                                                            day: 'numeric' }) %>
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                 </div>
                                 <div class="col-md-4">
                                     <img src="/admin/uploads/<%= item.product.primaryImage[0].name %>"
                                         alt="Product Image" class="img-fluid rounded" />
                                 </div>
                             </div>
-                            <div class="col">
-                                <input type="hidden" name="productId" value="<%= item.product._id %>">
-                                <button type="submit" class="btn btn-primary">Update Status</button>
-                            </div>
+                            <% if(item.status=='Return requested' || item.status=='Refunded' ) { %>
+                                <% } else { %>
+                                    <div class="col">
+                                        <input type="hidden" name="productId" value="<%= item.product._id %>">
+                                        <button type="submit" class="btn btn-primary">Update Status</button>
+                                    </div>
+                                    <% } %>
+
                         </div>
                     </div>
                 </form>
@@ -116,5 +150,5 @@
         </div>
         <% }) %>
             <% } else { %>
-                noooooo
+                <h2 class="col-md-6">No Orders</h2>
                 <% } %>

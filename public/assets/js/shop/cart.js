@@ -29,6 +29,7 @@ if (window.location.pathname.includes('/cart') || $('#checkout-link').length > 0
                         $(`#subtotal-${productId}`).text(`₹${subtotal.toLocaleString()}`);
                     }
                     if (allProductsAvailable) {
+                        $(`#outOfStock-${productId}`).text("");
                         checkoutButton.prop("disabled", false);
                         href.attr('href', '/checkout');
                     } else {

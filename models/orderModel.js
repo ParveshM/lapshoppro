@@ -10,9 +10,10 @@ const orderSchema = new mongoose.Schema({
             },
             status: {
                 type: String,
-                enum: ['Pending', 'Shipped', 'Delivered', 'Cancelled'],
+                enum: ['Pending', 'Shipped', 'Delivered', 'Cancelled', 'Return requested', 'Refunded'],
                 default: 'Pending',
             },
+            returnDate: Date
         }
     ],
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
@@ -36,14 +37,8 @@ const orderSchema = new mongoose.Schema({
             return deliveryDate;
         },
     },
-    shippedDate: {
-        type: Date,
-        default: Date,
-    },
-    deliveredDate: {
-        type: Date,
-        default: Date,
-    },
+    shippedDate: Date,
+    deliveredDate: Date,
     billingAddress: { type: mongoose.Schema.Types.ObjectId, ref: 'Address' },
     paymentMethod: {
         type: String,
@@ -51,10 +46,18 @@ const orderSchema = new mongoose.Schema({
     },
     paymentStatus: {
         type: String,
-       default:'Pending'
+        default: 'Pending'
     },
     discount: Number,
     processingFee: Number,
+    walletPayment: {
+        type: Number,
+        default: 0
+    },
+    amountPaid: {
+        type: Number,
+        default: 0
+    },
     subtotal: Number,
     total: Number,
 });

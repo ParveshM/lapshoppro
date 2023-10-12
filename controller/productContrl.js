@@ -34,7 +34,7 @@ const insertProduct = expressHandler(async (req, res) => {
         for (const e of req.files.primaryImage) {
             const croppedImage = path.join(__dirname, '../public/admin/uploads', `cropped_${e.filename}`);
             await sharp(e.path)
-                .resize(1000, 1000, {
+                .resize(800, 1000, {
                     kernel: sharp.kernel.nearest,
                     fit: 'fill',
                     position: 'right top',

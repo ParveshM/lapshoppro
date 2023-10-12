@@ -4,7 +4,7 @@
         <a class="btn-hover list-btn-style" href="/addAddress">Add Address</a>
     </div>
     <div class="row">
-        <% if (address.length>= 0) { %>
+        <% if (address.length > 0) { %>
             <% address.forEach((element, index)=> { %>
                 <div class="col-md-4 mb-4">
                     <div class="card">
@@ -53,7 +53,11 @@
                     </div>
                 </div>
                 <% }) %>
-                    <% }%>
+               
+          <% } else { %>
+            <h3 class="text-center text-warning">You have no saved address! , Please add an Address.
+            </h3>        
+     <% }%>
 
     </div>
     </div>
