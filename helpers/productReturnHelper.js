@@ -2,6 +2,7 @@ const Order = require('../models/orderModel')
 const Product = require('../models/productModel')
 const Wallet = require('../models/walletModel')
 const Transaction = require('../models/transactionModel')
+const User = require('../models/userModel')
 
 // function for decreasing the quantity when admin change status to cancelled or refunded----
 async function decreaseQuantity(orderId, productId) {
@@ -23,14 +24,16 @@ async function decreaseQuantity(orderId, productId) {
 
 
 // increasing the wallet amount when user cancels the product that is paid by online payment--
-async function updateWalletAmount(userId,productPrice,description,type) {
-console.log('price in function',productPrice);
+async function updateWalletAmount(userId, productPrice, description, type) {
+    console.log('price in update wallet function', productPrice);
     //if user has wallet add amount to it else create a wallet and credit the amount.
     let userWallet = await Wallet.findOne({ user: userId });
+
     if (!userWallet) {
         userWallet = await Wallet.create({ user: userId });
         // insert the wallet reference to user model
-        await User.findByIdAndUpdate(userId, { wallet: userWallet._id })
+        const updatedUser = await User.findByIdAndUpdate(userId, { wallet: userWallet._id }, { new: true });
+
     }
     const walletId = userWallet._id;
 
@@ -55,11 +58,11 @@ console.log('price in function',productPrice);
 }
 
 // Decrease the users wallet amount
-async function decreaseWalletAmount(userId,orderTotal,description,type) {
-console.log('price in function',orderTotal);
+async function decreaseWalletAmount(userId, orderTotal, description, type) {
+    console.log('price in  decrease function', orderTotal);
     //if user has wallet reduce amount 
     const userWallet = await Wallet.findOne({ user: userId });
- 
+
     const walletId = userWallet._id;
 
     const updateWallet = await Wallet.findByIdAndUpdate(walletId,
@@ -83,4 +86,4 @@ console.log('price in function',orderTotal);
 }
 
 
-module.exports = { decreaseQuantity, updateWalletAmount , decreaseWalletAmount}
+module.exports = { decreaseQuantity, updateWalletAmount, decreaseWalletAmount }

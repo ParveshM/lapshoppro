@@ -124,7 +124,7 @@
                                 <tr class="deductedWalletAmount">
                                     <th>Wallet</th>
                                     <td><span id="deductedAmount">
-                                            
+
                                         </span></td>
                                 </tr>
                                 <tr class="order-total">
@@ -227,20 +227,20 @@
         $(document).ready(function () {
 
             const walletWithRazorpay = document.getElementById("walletWithRazorpay");
-            if(walletWithRazorpay){
-            const cod = document.getElementById('COD')
-            const razorPay = document.getElementById('razorPay')
-            const walletBalanceElement = document.getElementById("walletBalanceAmount");
-            const orderTotalElement = document.getElementById("orderTotal");
-            const deductedWalletRow = document.querySelector(".deductedWalletAmount");
+            if (walletWithRazorpay) {
+                const cod = document.getElementById('COD')
+                const razorPay = document.getElementById('razorPay')
+                const walletBalanceElement = document.getElementById("walletBalanceAmount");
+                const orderTotalElement = document.getElementById("orderTotal");
+                const deductedWalletRow = document.querySelector(".deductedWalletAmount");
+                
+                deductedWalletRow.style.display = 'none';
 
-            deductedWalletRow.style.display = 'none';
+                const currentWallet = walletBalanceElement.textContent.trim().replace('₹', '');
+                const walBalance = parseFloat(currentWallet);
 
-            const currentWallet = walletBalanceElement.textContent.trim().replace('₹', '');
-            const walBalance = parseFloat(currentWallet);
-
-            const orderTotalValue = orderTotalElement.textContent.trim().replace('₹', '');
-            const total = parseFloat(orderTotalValue);
+                const orderTotalValue = orderTotalElement.textContent.trim().replace('₹', '');
+                const total = parseFloat(orderTotalValue);
 
                 walletWithRazorpay.addEventListener("change", function () {
                     if (walletWithRazorpay.checked) {
@@ -253,20 +253,20 @@
                             success: function (response) {
                                 if (response.success) {
                                     console.log(response)
-    
+
                                     walletBalanceElement.innerText = 0;
-    
+
                                     // Update the order total element
                                     deductedWalletRow.style.display = 'table-row';
                                     orderTotalElement.innerText = `${response.amountTopay}`;
                                     deductedAmount.innerText = `-${response.walletBalance}`;
                                     deductedAmount.style.color = 'red';
-    
-    
+
+
                                 } else {
                                     console.log('inside error log');
                                 }
-    
+
                             },
                             error: function (err) {
                                 console.error(err);
@@ -276,7 +276,7 @@
                 });
                 cod.addEventListener("change", function () {
                     if (cod.checked) {
-    
+
                         deductedWalletRow.style.display = 'none';
                         orderTotalElement.innerText = total;
                         walletBalanceElement.innerText = walBalance;
@@ -285,7 +285,7 @@
                 });
                 razorPay.addEventListener("change", function () {
                     if (razorPay.checked) {
-    
+
                         deductedWalletRow.style.display = 'none';
                         orderTotalElement.innerText = total;
                         walletBalanceElement.innerText = walBalance;

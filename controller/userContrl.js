@@ -173,10 +173,12 @@ const userLogout = async (req, res) => {
 // userProfile---
 const userProfile = asyncHandler(async (req, res) => {
     try {
-        const user = req.user;
-        const findWallet = await User.findById(user).populate('wallet')
+        const user = req.user.id
 
-        const wal = await Wallet.find(findWallet.wallet._id).populate('transactions').exec()
+        const findWallet = await User.findById(user).populate('wallet')
+        console.log('din wlalet',findWallet);
+        const walletId = findWallet.wallet._id
+        const wal = await Wallet.find(walletId).populate('transactions').exec()
 
 
         const walletBalance = findWallet.wallet.balance;

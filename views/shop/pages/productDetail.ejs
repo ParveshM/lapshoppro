@@ -232,24 +232,24 @@
         </div>
         <div class="row">
             <% if (products.length> 0) { %>
-                <% for (let i = 0; i < 3; i++) {   %>
+                <% products.forEach(element => { %>
                     
                     
               
                     <div class="col-md-4">
                         <div class="card">
-                            <a href="/viewProduct/<%= products[i]._id%>">
+                            <a href="/viewProduct/<%= element._id%>">
                                 <img class="card-img-top img-size"
-                                    src="/admin/uploads/<%= products[i].primaryImage[0].name %>"
-                                    alt="<%= products[i]?.title %>">
+                                    src="/admin/uploads/<%= element.primaryImage[0].name %>"
+                                    alt="<%= element?.title %>">
                             </a>
                             <div class="card-body">
                                 <h5 class="card-title">
-                                    <a href="/viewProduct/<%= products[i]._id%>" class="truncate-text">
-                                        <%= products[i]?.title %>
+                                    <a href="/viewProduct/<%= element._id%>" class="truncate-text">
+                                        <%= element?.title %>
                                     </a>
                                 </h5>
-                                <p class="card-text">₹<%= products[i]?.salePrice %>
+                                <p class="card-text">₹<%= element?.salePrice %>
                                 </p>
                                 <div class="product-action">
                                     <a class="animate-left" title="Wishlist" href="#">
@@ -262,7 +262,7 @@
                             </div>
                         </div>
                     </div>
-                    <% } %>
+                    <% }) %>
                         <% } %>
         </div>
     </div>

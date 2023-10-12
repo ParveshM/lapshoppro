@@ -54,6 +54,10 @@ const orderSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    amountPaid: {
+        type: Number,
+        default: 0
+    },
     subtotal: Number,
     total: Number,
 });

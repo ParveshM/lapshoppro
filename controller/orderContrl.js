@@ -29,17 +29,21 @@ const checkoutPage = asyncHandler(async (req, res) => {
         const totalArray = calculateSubtotal(userWithCart);
         const [cartItems, cartSubtotal, processingFee, orderTotal] = [...totalArray];
 
-        const findWallet = await User.findById(user).populate('wallet')
-        const walletBalance = findWallet.wallet.balance;
 
         let amount = false;
-        if (walletBalance > orderTotal) {
-            amount = true
-        }
-
         let minBalance = false;
-        if (walletBalance > 0 && walletBalance < orderTotal) {
-            minBalance = true;
+        let walletBalance = 0;
+        const findWallet = await User.findById(user).populate('wallet')
+        if (findWallet.wallet) {
+            walletBalance = findWallet.wallet.balance;
+
+            if (walletBalance > orderTotal) {
+                amount = true
+            }
+
+            if (walletBalance > 0 && walletBalance < orderTotal) {
+                minBalance = true;
+            }
         }
 
         res.render('./shop/pages/checkout', {
@@ -168,7 +172,7 @@ const placeOrder = asyncHandler(async (req, res) => {
                     }
                     await user.clearCart()
                     if (paymentMethod == 'Wallet') {
-                        await Order.findByIdAndUpdate({ _id: createOrder._id }, { paymentStatus: 'Paid' });
+                        await Order.findByIdAndUpdate({ _id: createOrder._id }, { paymentStatus: 'Paid', AmountPaid: orderTotal });
 
                         const description = 'Product purchase';
                         const type = 'debit'
@@ -240,56 +244,30 @@ const placeOrder = asyncHandler(async (req, res) => {
     }
 })
 
-// const changePaymentStatus = (orderId) => {
-//     return Order.findByIdAndUpdate({ _id: orderId }, { paymentStatus: 'Paid' });
-// };
 
+// changing the payment status and updating walletBalance--
 const changePaymentStatus = async (orderId, user, amount) => {
 
     const orderUpdated = await Order.findByIdAndUpdate({ _id: orderId }, { paymentStatus: 'Paid' });
 
     if (orderUpdated.paymentMethod == 'WalletWithRazorpay') {
-
+        console.log('amount insiie wllpay',amount);
         const findWallet = await User.findById({ _id: user._id }).populate('wallet')
         const walletBalance = findWallet.wallet.balance
 
         const description = 'Wallet with Razorpay';
         const type = 'debit'
         decreaseWalletAmount(user, walletBalance, description, type)
-        const updateWallet = await Order.findByIdAndUpdate({ _id: orderId }, { walletPayment: walletBalance });
+        const updateWallet = await Order.findByIdAndUpdate(
+            { _id: orderId },
+            { walletPayment: walletBalance, amountPaid: amount }
+        );
     }
-
-
     return orderUpdated;
 };
 
 
 // verifyPayment
-// const verifyPayment = asyncHandler(async (req, res) => {
-//     try {
-//         const user = req.user;
-//         verifyingPayment(req.body) // Verifying the payment--
-//             .then(() => {
-//                 const details = req.body;
-//                 const orderId = details.order.response.receipt;
-
-//                 // Clear the user's cart once the promise is resolved
-//                 return user.clearCart()
-//                     .then(() => changePaymentStatus(orderId));
-//             })
-//             .then((changeStatus) => { // payment success and payment status changed to paid
-//                 console.log('status updated', changeStatus);
-//                 console.log('Payment success');
-//                 return res.json({ status: true, orderID: `${changeStatus._id}` });
-//             })
-//             .catch((err) => { // payment verification failed 
-//                 console.log('Error in payment verification', err);
-//                 res.json({ status: false, errMsg: 'Payment verification failed' });
-//             });
-//     } catch (error) {
-//         throw new Error(error);
-//     }
-// });
 const verifyPayment = asyncHandler(async (req, res) => {
     try {
         const user = req.user;
@@ -446,12 +424,14 @@ const cancelOrder = asyncHandler(async (req, res) => {
                 console.log('inside the if', order.paymentMethod, order.paymentStatus);
 
                 if (order.paymentMethod == 'RazorPay' && order.paymentStatus == 'Paid'
-                    || (order.paymentMethod == 'WalletWithRazorpay' && order.paymentStatus == 'Paid'
+                    || (order.paymentMethod == 'WalletWithRazorpay' && order.paymentStatus == 'Paid' ||
+                        order.paymentMethod == 'Wallet'
                     )) {
                     console.log('inside the razorpay wallet cancel',);
+                    const user = req.user.id
                     const description = 'Order Cancelled';
                     const type = 'credit'
-                    await updateWalletAmount(userId, productItem.price, description, type)
+                    await updateWalletAmount(user, productItem.price, description, type)
                 } else {
                     console.log("wallet not updated")
                 }
