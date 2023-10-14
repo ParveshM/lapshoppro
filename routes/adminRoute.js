@@ -4,8 +4,10 @@ const adminController = require("../controller/adminContrl")
 const categoryController = require('../controller/categoryContrl')
 const productController = require('../controller/productContrl')
 const orderController = require('../controller/orderContrl')
+const couponController = require('../controller/couponController')
 const { upload } = require('../config/upload')
 const { isAdminLoggedIn, isAdminLoggedOut } = require('../middlewares/adminAuth')
+const { adminValidateID } = require('../middlewares/idValidation')
 const nocache = require('nocache')
 require('dotenv').config()
 
@@ -24,32 +26,32 @@ adminRoute.get('/logout', isAdminLoggedIn, adminController.logout)
 adminRoute.get('/dashboard', isAdminLoggedIn, adminController.loadDashboard)
 adminRoute.get('/user', isAdminLoggedIn, adminController.userManagement)
 adminRoute.post('/user/search', isAdminLoggedIn, adminController.searchUser)
-adminRoute.post('/user/blockUser/:id', isAdminLoggedIn, adminController.blockUser)
-adminRoute.post('/user/unBlockUser/:id', isAdminLoggedIn, adminController.unBlockUser)
+adminRoute.post('/user/blockUser/:id', adminValidateID, isAdminLoggedIn, adminController.blockUser)
+adminRoute.post('/user/unBlockUser/:id', adminValidateID, isAdminLoggedIn, adminController.unBlockUser)
 
 // categoryManagement--- 
 adminRoute.get('/category', isAdminLoggedIn, categoryController.categoryManagement)
 adminRoute.get('/addCategory', isAdminLoggedIn, categoryController.addCategory)
 adminRoute.post('/addCategory', isAdminLoggedIn, categoryController.insertCategory)
-adminRoute.get('/category/list/:id', isAdminLoggedIn, categoryController.list)
-adminRoute.get('/category/unList/:id', isAdminLoggedIn, categoryController.unList)
-adminRoute.get('/editCategory/:id', isAdminLoggedIn, categoryController.editCategory)
-adminRoute.post('/editCategory/:id', isAdminLoggedIn, categoryController.updateCategory)
+adminRoute.get('/category/list/:id', adminValidateID, isAdminLoggedIn, categoryController.list)
+adminRoute.get('/category/unList/:id', adminValidateID, isAdminLoggedIn, categoryController.unList)
+adminRoute.get('/editCategory/:id', adminValidateID, isAdminLoggedIn, categoryController.editCategory)
+adminRoute.post('/editCategory/:id', adminValidateID, isAdminLoggedIn, categoryController.updateCategory)
 adminRoute.post('/category/search', isAdminLoggedIn, categoryController.searchCategory)
 
 // Product Management---
 adminRoute.get('/product/addProduct', isAdminLoggedIn, productController.addProduct)
- 
+
 adminRoute.post('/product/addProduct',
     upload.fields([
         { name: "secondaryImage" }
         , { name: "primaryImage" }]),
     productController.insertProduct)  /** Product adding and multer using  **/
 adminRoute.get('/products', isAdminLoggedIn, productController.productManagement)
-adminRoute.post('/product/list/:id', isAdminLoggedIn, productController.listProduct)
-adminRoute.post('/product/unList/:id', isAdminLoggedIn, productController.unListProduct)
-adminRoute.get('/product/editproduct/:id', isAdminLoggedIn, productController.editProductPage)
-adminRoute.post('/product/editproduct/:id',
+adminRoute.post('/product/list/:id', adminValidateID, isAdminLoggedIn, productController.listProduct)
+adminRoute.post('/product/unList/:id', adminValidateID, isAdminLoggedIn, productController.unListProduct)
+adminRoute.get('/product/editproduct/:id', adminValidateID, isAdminLoggedIn, productController.editProductPage)
+adminRoute.post('/product/editproduct/:id', adminValidateID,
     upload.fields([
         { name: "secondaryImage" }
         , { name: "primaryImage" }]),
@@ -58,8 +60,15 @@ adminRoute.post('/product/editproduct/:id',
 
 // OrderManagement--
 adminRoute.get('/orders', isAdminLoggedIn, orderController.ordersPage)
-adminRoute.get('/orders/editOrder/:id', isAdminLoggedIn, orderController.editOrderPage)
-adminRoute.post('/orders/editOrder/:id', isAdminLoggedIn, orderController.updateOrder)
+adminRoute.get('/orders/editOrder/:id', adminValidateID, isAdminLoggedIn, orderController.editOrderPage)
+adminRoute.post('/orders/editOrder/:id', adminValidateID, isAdminLoggedIn, orderController.updateOrder)
+
+// Coupon Management---
+adminRoute.get('/coupons', isAdminLoggedIn, couponController.listCoupons)
+adminRoute.get('/coupon/add-coupon', isAdminLoggedIn, couponController.addCouponPage)
+adminRoute.post('/coupon/add-coupon', isAdminLoggedIn, couponController.createCoupon)
+adminRoute.get('/coupons/edit-coupon/:id', adminValidateID, isAdminLoggedIn, couponController.editCouponPage)
+adminRoute.post('/coupons/edit-coupon/:id', adminValidateID, isAdminLoggedIn, couponController.editCoupon)
 
 
 

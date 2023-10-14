@@ -1,0 +1,63 @@
+<div class="container">
+    <div class="d-flex justify-content-between ">
+        <h1 class="mt-4">Coupons</h1>
+        <div>
+           <a href="/admin/coupon/add-coupon"> <button class="btn btn-primary mt-4">Add Coupon</button></a>
+        </div>
+    </div>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Coupon Code</th>
+                <th>Discount Type</th>
+                <th>Percentage</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% if (coupons.length>0) { %>
+                <% coupons.forEach(element=> { %>
+
+                    <tr>
+                        <td>
+                            <%= element.code %>
+                        </td>
+                        <td>
+                            <%= element.discountType %>
+                        </td>
+                        <td>
+                            <%= element.discountAmount %>
+                        </td>
+
+                        <td>
+                            <%= (element.timestamp).toLocaleDateString('en-IN', { year: 'numeric' , month: 'long' ,
+                                day: 'numeric' }) %>
+                        </td>
+                        <td>
+                            <%= (element.expirationDate).toLocaleDateString('en-IN', { year: 'numeric' , month: 'long' ,
+                                day: 'numeric' }) %>
+                        </td>
+
+
+                        <td>
+
+                            <a href="/admin/coupons/edit-coupon/<%= element._id %>">
+                                <button class="btn btn-info btn-sm ml-2 "><i
+                                        class="material-icons md-edit pb-1"></i></button>
+                            </a>
+                            <a href="/admin/coupons/edit-coupon/<%= element._id %>?coupon=delete">
+                                <button class="btn btn-danger btn-sm ml-2 "><i class="fas fa-trash pb-1"></i></button>
+                            </a>
+                        </td>
+                    </tr>
+                    <% }) %>
+                    <% } else { %>
+                     <h2>No Coupons !</h2>
+                        <% } %>
+
+        </tbody>
+    </table>
+</div>
+

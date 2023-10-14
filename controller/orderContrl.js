@@ -3,13 +3,13 @@ const Product = require('../models/productModel')
 const Order = require('../models/orderModel')
 const Address = require('../models/addressModel')
 const Wallet = require('../models/walletModel')
-const Transaction = require('../models/transactionModel')
+const Coupon = require('../models/couponModel')
 const asyncHandler = require('express-async-handler');
 const { calculateSubtotal } = require('../utility/ordercalculation')
 const { generateRazorPay, verifyingPayment } = require('../config/razorpay')
 const { checkCartItemsMatch } = require('../helpers/checkCartHelper');
 const { decreaseQuantity, updateWalletAmount, decreaseWalletAmount } = require('../helpers/productReturnHelper')
-const { walletAmount } = require('../helpers/placeOrderHelper')
+const { walletAmount, calculateCouponDiscount, isValidCoupon, changePaymentStatus } = require('../helpers/placeOrderHelper')
 
 
 /*********** User Side **************/
@@ -96,20 +96,29 @@ const checkCart = asyncHandler(async (req, res) => {
 // updateWallet in checkout--
 const updateWalletInCheckout = asyncHandler(async (req, res) => {
     try {
-        console.log('req recieved in wallet');
-        const total = req.query.total
+        console.log('req recieved in update checkout', req.query);
+        const { total, couponCode } = req.query
         const user = req.user.id;
 
         const findWallet = await User.findById({ _id: user }).populate('wallet')
         const walletBalance = findWallet.wallet.balance
 
         if (walletBalance < total) {
-            const amountTopay = total - walletBalance;
+            let amountTopay = total - walletBalance;
+
+            if (couponCode) {
+                const findCoupon = await isValidCoupon(couponCode)
+                if (findCoupon.coupon) {
+                    const orderTotal = calculateCouponDiscount(findCoupon.coupon, total)
+                    const [discountTotal, discountAmount] = [...orderTotal]
+                    amountTopay = discountTotal - walletBalance;
+                }
+            }
 
 
             res.json({ success: true, amountTopay, walletBalance })
         } else {
-            console.log('eroor ');
+            console.log('error: wallet Amount is greater than Total  ');
             res.json({ error: 404 })
         }
 
@@ -122,6 +131,42 @@ const updateWalletInCheckout = asyncHandler(async (req, res) => {
     }
 });
 
+// apply coupon--
+const applyCoupon = asyncHandler(async (req, res) => {
+    try {
+        const user = req.user;
+        const { couponCode, total, walAmount } = req.body;
+
+        const findCoupon = await isValidCoupon(couponCode, user);
+
+        if (findCoupon.coupon) {
+            const orderTotal = calculateCouponDiscount(findCoupon.coupon, total);
+            const [totalAfterDiscount, discountAmount] = [...orderTotal];
+            let amountToPay = totalAfterDiscount;
+
+            if (walAmount !== '') {
+                amountToPay = totalAfterDiscount - Number(walAmount);
+            }
+            //if order total is greater than coupon min and max , apply coupon
+            if (total > findCoupon.coupon.minimumPurchase && total < findCoupon.coupon.maximumPurchase) {
+
+                res.json({ success: true, amountToPay, discountAmount, message: findCoupon.message });
+            } else {
+
+                const minimumPurchase = findCoupon.coupon.minimumPurchase;
+                const maximumPurchase = findCoupon.coupon.maximumPurchase;
+                const message = `Order total must be greater than ${minimumPurchase} , less than ${maximumPurchase} to get this coupon `;
+                res.json({ success: false, message: message });
+            }
+        } else {
+            res.json({ success: false, message: findCoupon.message });
+        }
+    } catch (error) {
+        throw new Error(error);
+    }
+});
+
+
 
 
 
@@ -129,9 +174,10 @@ const updateWalletInCheckout = asyncHandler(async (req, res) => {
 const placeOrder = asyncHandler(async (req, res) => {
     try {
         const user = req.user;
-        const { coupon, address, paymentMethod } = req.body
+        const { couponCode, address, paymentMethod } = req.body
+        console.log('bosiuhf', req.body);
 
-        console.log('body of user', req.body);
+        console.log('body of user', req.body, couponCode);
 
         const userWithCart = await User.findById(user).populate('cart.product'); //finding products in the cart
 
@@ -158,9 +204,20 @@ const placeOrder = asyncHandler(async (req, res) => {
             }
 
             if (paymentMethod === 'COD' || paymentMethod === 'Wallet') {
-
                 const createOrder = await Order.create(newOrder);
 
+                if (couponCode) {
+                    const findCoupon = await isValidCoupon(couponCode, user)
+                    if (findCoupon.coupon) {
+                        console.log('orderto', createOrder.total, findCoupon.coupon);
+                        const orderTotal = calculateCouponDiscount(findCoupon.coupon, createOrder.total)
+                        var [amountToPay, discountAmount] = [...orderTotal]
+                        createOrder.discount = discountAmount;
+                        createOrder.save()
+                        await User.findByIdAndUpdate(user._id, { coupons: findCoupon.coupon._id });
+
+                    }
+                }
                 if (createOrder) { //if order is created
 
                     for (const item of orderItems) {
@@ -172,11 +229,23 @@ const placeOrder = asyncHandler(async (req, res) => {
                     }
                     await user.clearCart()
                     if (paymentMethod == 'Wallet') {
-                        await Order.findByIdAndUpdate({ _id: createOrder._id }, { paymentStatus: 'Paid', AmountPaid: orderTotal });
+                        if (couponCode !== '') {
+                            await Order.findByIdAndUpdate(
+                                { _id: createOrder._id },
+                                { paymentStatus: 'Paid', amountPaid: amountToPay, walletPayment: amountToPay });
 
-                        const description = 'Product purchase';
-                        const type = 'debit'
-                        await decreaseWalletAmount(user._id, orderTotal, description, type)
+                            const description = 'Product purchase';
+                            const type = 'debit'
+                            await decreaseWalletAmount(user._id, amountToPay, description, type)
+                        } else {
+                            await Order.findByIdAndUpdate(
+                                { _id: createOrder._id },
+                                { paymentStatus: 'Paid', amountPaid: orderTotal, walletPayment: orderTotal });
+
+                            const description = 'Product purchase';
+                            const type = 'debit'
+                            await decreaseWalletAmount(user._id, orderTotal, description, type)
+                        }
 
                         res.json({ walletSuccess: true, orderID: createOrder._id, payment: 'Wallet' });
                     } else {
@@ -185,14 +254,28 @@ const placeOrder = asyncHandler(async (req, res) => {
                 }
             } else if (paymentMethod == 'WalletWithRazorpay') {
 
+                const createOrder = await Order.create(newOrder);
+
+                if (couponCode) {
+                    const findCoupon = await isValidCoupon(couponCode, user)
+                    if (findCoupon.coupon) {
+                        const orderTotal = calculateCouponDiscount(findCoupon.coupon, createOrder.total)
+                        var [amountToPay, discountAmount] = [...orderTotal]
+                        createOrder.discount = discountAmount;
+                        createOrder.save()
+                        await User.findByIdAndUpdate(user._id, { coupons: findCoupon.coupon._id });
+
+                    }
+
+                }
+
                 const userData = await User.findById({ _id: user._id }).populate('wallet')
 
-                console.log('userdaa', userData);
-                const totalAmountToPay = walletAmount(userData, orderTotal)
+                let totalAmountToPay = walletAmount(userData, orderTotal)
+                if (couponCode) {
+                    totalAmountToPay = amountToPay;
+                }
 
-
-
-                const createOrder = await Order.create(newOrder);
                 if (createOrder) { //if order is created
 
                     for (const item of orderItems) {
@@ -214,6 +297,21 @@ const placeOrder = asyncHandler(async (req, res) => {
             } else if (paymentMethod == 'RazorPay') {  // if payment is done using razorPay
 
                 const createOrder = await Order.create(newOrder);
+
+                let totalAmountToPay = orderTotal
+                if (couponCode) {
+                    const findCoupon = await isValidCoupon(couponCode, user)
+                    if (findCoupon.coupon) {
+                        const orderTotal = calculateCouponDiscount(findCoupon.coupon, createOrder.total)
+                        var [amountToPay, discountAmount] = [...orderTotal]
+                        createOrder.discount = discountAmount;
+                        createOrder.save()
+                        totalAmountToPay = amountToPay;
+                        await User.findByIdAndUpdate(user._id, { coupons: findCoupon.coupon._id });
+
+                    }
+                }
+
                 if (createOrder) { //if order is created
 
                     for (const item of orderItems) {
@@ -226,7 +324,7 @@ const placeOrder = asyncHandler(async (req, res) => {
 
                     const userData = await User.findOne({ _id: user });
 
-                    generateRazorPay(orderTotal, createOrder._id) //genereting razorpay order--
+                    generateRazorPay(totalAmountToPay, createOrder._id) //genereting razorpay order--
                         .then((response) => {
                             return res.json({ status: 'success', response, userData });
                         })
@@ -245,27 +343,6 @@ const placeOrder = asyncHandler(async (req, res) => {
 })
 
 
-// changing the payment status and updating walletBalance--
-const changePaymentStatus = async (orderId, user, amount) => {
-
-    const orderUpdated = await Order.findByIdAndUpdate({ _id: orderId }, { paymentStatus: 'Paid' });
-
-    if (orderUpdated.paymentMethod == 'WalletWithRazorpay') {
-        console.log('amount insiie wllpay',amount);
-        const findWallet = await User.findById({ _id: user._id }).populate('wallet')
-        const walletBalance = findWallet.wallet.balance
-
-        const description = 'Wallet with Razorpay';
-        const type = 'debit'
-        decreaseWalletAmount(user, walletBalance, description, type)
-        const updateWallet = await Order.findByIdAndUpdate(
-            { _id: orderId },
-            { walletPayment: walletBalance, amountPaid: amount }
-        );
-    }
-    return orderUpdated;
-};
-
 
 // verifyPayment
 const verifyPayment = asyncHandler(async (req, res) => {
@@ -278,10 +355,6 @@ const verifyPayment = asyncHandler(async (req, res) => {
                 const orderId = details.order.response.receipt;
                 let amount = details.order.response.amount;
                 amount = amount / 100;
-                // const walletAmount = amount - walletAmount
-                console.log('amout', amount);
-                console.log('inside verify paymnet details', details);
-
                 // Clear the user's cart once the promise is resolved
                 return user.clearCart()
                     .then(() => changePaymentStatus(orderId, user, amount));
@@ -421,17 +494,25 @@ const cancelOrder = asyncHandler(async (req, res) => {
             return res.status(404).render('./shop/pages/404');
         } else {
             if (productItem.status !== 'cancelled') {
-                console.log('inside the if', order.paymentMethod, order.paymentStatus);
-
                 if (order.paymentMethod == 'RazorPay' && order.paymentStatus == 'Paid'
                     || (order.paymentMethod == 'WalletWithRazorpay' && order.paymentStatus == 'Paid' ||
                         order.paymentMethod == 'Wallet'
                     )) {
-                    console.log('inside the razorpay wallet cancel',);
+
+                    let price = productItem.price
+                    console.log('outside  discount price', price);
+                    if (order.discount > 0) {
+                        if (order.items.length > 1) {
+                            price = productItem.price - (order.discount / order.items.length)
+                            console.log('inside  discount price', price);
+                        } else {
+                            price = productItem.price - order.discount;
+                        }
+                    }
                     const user = req.user.id
                     const description = 'Order Cancelled';
                     const type = 'credit'
-                    await updateWalletAmount(user, productItem.price, description, type)
+                    await updateWalletAmount(user, price, description, type)
                 } else {
                     console.log("wallet not updated")
                 }
@@ -457,7 +538,7 @@ const cancelOrder = asyncHandler(async (req, res) => {
 // return request from user--
 const returnProduct = asyncHandler(async (req, res) => {
     try {
-        console.log('recived requres');
+        console.log('recived requrest');
         const orderId = req.params.id;
         const productId = req.body.productId;
         const findOrder = await Order.findOne({ _id: orderId })
@@ -526,6 +607,7 @@ const updateOrder = asyncHandler(async (req, res) => {
         const orderId = req.params.id;
         const status = req.body.status;
         const productId = req.body.productId;
+        console.log('status when admin update order', status);
 
         const update = await Order.findOneAndUpdate(
             { _id: orderId, 'items.product': productId }, // Match the order and the product
@@ -545,26 +627,43 @@ const updateOrder = asyncHandler(async (req, res) => {
             );
         } else { }
 
-
         if (update) { //if update is success            
+            console.log('inside if updated ');
             if (status == 'Cancelled' && update.paymentMethod == 'COD') { //if the admin updates the status to cancelled ,increase the quantity.
-                console.log('inside the cod cancelled');
                 decreaseQuantity(orderId, productId)
 
-            } else if (status == 'Cancelled' && update.paymentMethod == 'RazorPay') {
-                console.log('inside the RazorPay cancelled');
-                const productPrice = await decreaseQuantity(orderId, productId);
+            } else if (status == 'Cancelled' && (update.paymentMethod == 'RazorPay'
+                || update.paymentMethod == 'Wallet' || update.paymentMethod == 'WalletWithRazorpay')) {
+
+                let productPrice = await decreaseQuantity(orderId, productId);
                 const userId = update.user;
                 const description = 'Order Cancelled';
-                const type = 'Order cancelled'
+                const type = 'credit'
+
+                if (update.discount > 0) {
+                    if (update.items.length > 1) {
+                        productPrice -= (update.discount / update.items.length)
+                    } else {
+                        productPrice -= update.discount;
+                    }
+                }
                 updateWalletAmount(userId, productPrice, description, type)
 
             } else if (status == 'Refunded') {
                 // increase the quantity and decrease sold , returns the product price
-                const productPrice = await decreaseQuantity(orderId, productId);
+                let productPrice = await decreaseQuantity(orderId, productId);
                 const userId = update.user;
                 const description = 'Refund';
                 const type = 'credit'
+
+                if (update.discount > 0) {
+                    if (update.items.length > 1) {
+                        productPrice -= (update.discount / update.items.length)
+                    } else {
+                        productPrice -= update.discount;
+                    }
+                }
+
                 updateWalletAmount(userId, productPrice, description, type)
             } else {
                 console.log('erro in updating');
@@ -586,6 +685,7 @@ module.exports = {
     checkoutPage,
     checkCart,
     updateWalletInCheckout,
+    applyCoupon,
     placeOrder,
     orderPlacedPage,
     verifyPayment,

@@ -1,7 +1,7 @@
   const message = document.getElementById('message');
   const errorMessage = document.getElementById('error-message');
 
-  const hide = (element) => {
+  const hide = (element) => { 
     element.style.display = 'none';
   }
 
