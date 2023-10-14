@@ -48,8 +48,6 @@ const orderSchema = new mongoose.Schema({
         type: String,
         default: 'Pending'
     },
-    discount: Number,
-    processingFee: Number,
     walletPayment: {
         type: Number,
         default: 0
@@ -58,6 +56,8 @@ const orderSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    processingFee: Number,
+    discount: Number,
     subtotal: Number,
     total: Number,
 });

@@ -84,7 +84,7 @@ const verifyOTP = asyncHandler(async (req, res) => {
             delete req.session.otpUser.otp;
             res.redirect('/login');
         } else {
-            messages = 'Verification failed, please check the OTP or resend it.';
+        var messages = 'Verification failed, please check the OTP or resend it.';
             console.log('verification failed');
 
         }

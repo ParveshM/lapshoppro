@@ -8,7 +8,7 @@ const orderController = require('../controller/orderContrl')
 const addressController = require('../controller/addressContrl')
 
 const { ensureNotAuthenticated, ensureAuthenticated } = require('../middlewares/userAuth')
-const validateID = require('../middlewares/idValidation')
+const {validateID} = require('../middlewares/idValidation')
 
 userRoute.use((req, res, next) => {
   req.app.set('layout', 'shop/layouts/user');
@@ -76,6 +76,8 @@ userRoute.get('/checkout', ensureAuthenticated, orderController.checkoutPage); /
 userRoute.get('/checkCart', ensureAuthenticated, orderController.checkCart); 
 userRoute.post('/placeOrder', ensureAuthenticated, orderController.placeOrder);
 userRoute.get('/orderPlaced', ensureAuthenticated, orderController.orderPlacedPage);
+
+userRoute.post('/applyCoupon', ensureAuthenticated, orderController.applyCoupon);
 
 // PaymentSection--
 userRoute.post('/verifyPayment', ensureAuthenticated, orderController.verifyPayment);

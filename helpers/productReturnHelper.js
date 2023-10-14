@@ -32,7 +32,7 @@ async function updateWalletAmount(userId, productPrice, description, type) {
     if (!userWallet) {
         userWallet = await Wallet.create({ user: userId });
         // insert the wallet reference to user model
-        const updatedUser = await User.findByIdAndUpdate(userId, { wallet: userWallet._id }, { new: true });
+         await User.findByIdAndUpdate(userId, { wallet: userWallet._id });
 
     }
     const walletId = userWallet._id;
@@ -82,7 +82,7 @@ async function decreaseWalletAmount(userId, orderTotal, description, type) {
     await Wallet.findByIdAndUpdate(walletId, {
         $push: { transactions: transactionId },
     });
-    console.log('Refund completed successfully.');
+    console.log('Refund/payment  completed successfully.');
 }
 
 
