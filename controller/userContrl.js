@@ -2,6 +2,7 @@ const User = require('../models/userModel')
 const Product = require('../models/productModel')
 const Category = require('../models/categoryModel')
 const Wallet = require('../models/walletModel')
+const Banner = require('../models/bannerModel')
 const asyncHandler = require('express-async-handler')
 const { sendOtp, generateOTP } = require('../utility/nodeMailer')
 const { forgetPassMail } = require('../utility/forgetPassMail')
@@ -12,7 +13,8 @@ const bcrypt = require('bcrypt')
 const loadLandingPage = asyncHandler(async (req, res) => {
     try {
         const products = await Product.find({ isListed: true })
-        res.render('./shop/pages/index', { products: products })
+        const banner = await Banner.find({ isActive: true })
+        res.render('./shop/pages/index', { products: products, banner })
     } catch (error) {
         throw new Error(error)
     }
@@ -84,7 +86,7 @@ const verifyOTP = asyncHandler(async (req, res) => {
             delete req.session.otpUser.otp;
             res.redirect('/login');
         } else {
-        var messages = 'Verification failed, please check the OTP or resend it.';
+            var messages = 'Verification failed, please check the OTP or resend it.';
             console.log('verification failed');
 
         }
@@ -176,7 +178,7 @@ const userProfile = asyncHandler(async (req, res) => {
         const user = req.user.id
 
         const findWallet = await User.findById(user).populate('wallet')
-        console.log('din wlalet',findWallet);
+        console.log('din wlalet', findWallet);
         const walletId = findWallet.wallet._id
         const wal = await Wallet.find(walletId).populate('transactions').exec()
 

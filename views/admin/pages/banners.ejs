@@ -1,0 +1,114 @@
+<!-- <div class="container">
+    <h2 class="my-4">Banner List</h2>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-responsive">
+            <thead>
+                <tr>
+                    <th>Banner Image</th>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><img src="banner1.jpg" alt="Banner 1" class="img-thumbnail" style="max-width: 100px;"></td>
+                    <td>Banner 1 Title</td>
+                    <td>Description of Banner 1 goes here.</td>
+                    <td>
+                        <div class="custom-control custom-switch">
+                            <input type="checkbox" class="custom-control-input" id="status1" checked>
+                            <label class="custom-control-label" for="status1"></label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><img src="banner2.jpg" alt="Banner 2" class="img-thumbnail" style="max-width: 100px;"></td>
+                    <td>Banner 2 Title</td>
+                    <td>Description of Banner 2 goes here.</td>
+                    <td>
+                        <div class="custom-control custom-switch">
+                            <input type="checkbox" class="custom-control-input" id="status2">
+                            <label class="custom-control-label" for="status2"></label>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<style>
+    /* Custom CSS to make table more responsive */
+    .table-responsive {
+        overflow-x: auto;
+    }
+</style> -->
+
+<a href="/admin/banner/add-banner"><button class="btn btn-primary float-right">Add Banner</button></a>
+<div class="container mt-4">
+    <h1>Banner Management</h1>
+    <% if (banners.length> 0 ) { %>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Banner Image</th>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+            <tbody>
+                <% banners.forEach(banner=> { %>
+                    <% banner.bannerImage.forEach(image=> { %>
+                        <tr>
+                            <td><img src="/admin/uploads/<%= image.name %>" alt="<%= banner.title %>"
+                                    class="img-thumbnail" style="max-width: 100px;"></td>
+                            <td>
+                                <%= banner.title %>
+                            </td>
+                            <td>
+                                <%= banner.description %>
+                            </td>
+                            <td>
+                                <div class="custom-control custom-switch">
+                                    <input type="checkbox" class="custom-control-input banner-toggle"
+                                        id="status<%= banner._id %>" <% if (banner.isActive) { %>checked<% } %>
+                                        data-banner-id="<%= banner._id %>">
+                                            <label class="custom-control-label" for="status<%= banner._id %>"></label>
+                                </div>
+                            </td>
+
+                        </tr>
+                        <% }); %>
+                            <% }); %>
+
+            </tbody>
+        </table>
+        <% } else { %>
+            noooooooooo
+            <% } %>
+</div>
+<script>
+    $(document).ready(function () {
+        $('.banner-toggle').change(function () {
+            const bannerId = $(this).data('banner-id'); 
+            const isActive = this.checked;
+
+            // Send a request to the server to update the banner status
+            $.ajax({
+                url: `/admin/banner/updateBannerStatus/${bannerId}`,
+                method: 'POST', // Change to your preferred HTTP method
+                data: { isActive: isActive },
+                success: function (response) {
+                    if (response) {
+                       console.log('Status updated');
+                    }
+                },
+                error: function (error) {
+                    // Handle errors here
+                }
+            });
+        });
+    });
+</script>
