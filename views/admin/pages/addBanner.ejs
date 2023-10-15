@@ -1,0 +1,247 @@
+<!-- 
+--------------------------------------------
+dont remove this
+
+
+
+<form method="POST" action="/admin/banners" enctype="multipart/form-data">
+    <input type="file" name="image" id="image-input" accept="image/*">
+    <div id="image-preview"></div>
+    <input type="hidden" name="base64_image" id="base64-image">
+    <input type="text" value="Typw sjdfj">
+    <button type="button" id="crop-button">Crop Image</button>
+    <button type="submit" id="submit-button">Submit</button>
+</form>
+
+<div class="cropped-image-container" style="display: none;">
+    <h3>Cropped Image Preview</h3>
+    <img id="cropped-image" src="#" alt="Cropped Image">
+</div>
+
+<script>
+    var preview = new Croppie($('#image-preview')[0], {
+        viewport: {
+            width: 800,
+            height: 450,
+            type: 'square'
+        },
+        boundary: {
+            width: 810,
+            height: 460
+        },
+        enableResize: false,
+        enableOrientation: true,
+        enableExif: true,
+    });
+
+    $('#image-input').on('change', function (e) {
+        var file = e.target.files[0];
+        var reader = new FileReader();
+
+        reader.onload = function () {
+            var base64data = reader.result;
+            $('#base64-image').val(base64data);
+
+            preview.bind({
+                url: base64data
+            }).then(function () {
+                console.log('Croppie bind complete');
+            });
+        }
+
+        reader.readAsDataURL(file);
+    });
+
+    // Add a click event handler for the "Crop Image" button
+    $('#crop-button').on('click', function () {
+        // Crop the image and display the result in the container
+        preview.result('base64').then(function (result) {
+            // Show the cropped image in the container
+            $('#cropped-image').attr('src', result);
+            $('.cropped-image-container').show();
+            
+            // Store the cropped image data in the hidden input field
+            $('#base64-image').val(result);
+        });
+    });
+
+    // Change the ID of the submit button to prevent conflicts with the form
+    $('#submit-button').on('click', function () {
+        // Manually trigger the form submission
+        $('form').submit();
+    });
+</script>
+_______________________________________________
+-----------------------------------------------
+_______________________________________________
+ -->
+
+
+
+
+
+
+
+
+
+<!-- <div class="container">
+    <div class="row">
+        <div class="col-lg-12 d-flex align-items-stretch">
+            <div class="card w-100">
+                <div class="card-body p-4">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h2 class="text-center mb-4">Add New Banner</h2>
+                            <form id="form" action="/admin/banners" method="POST" enctype="multipart/form-data">
+                                <div class="form-group">
+                                    <label for="title">Title:</label>
+                                    <input type="text" class="form-control" id="title" name="title" required />
+                                </div>
+                                <div class="form-group">
+                                    <label for="description">Description:</label>
+                                    <textarea class="form-control" id="description" name="description" rows="4"
+                                        required></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="link">Link:</label>
+                                    <input type="url" class="form-control" id="link" name="link" required />
+                                    <div class="form-group">
+                                        <label for="image">Banner Image:</label>
+                                        <div class="custom-file">
+                                            <label class="custom-file-label" for="bannerImage">Choose file</label>
+                                            <input type="file" name="bannerImage" id="image-input" accept="image/*">
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary" id="submitBtn">Submit</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> -->
+<link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.bootstrap3.min.css"
+    integrity="sha256-ze/OEYGcFbPRmvCnrSeKbRTtjG4vGLHXgOqsyLFTRjg=" crossorigin="anonymous" />
+
+<div class="container">
+    <h2 class="text-center my-4">Add New Banner</h2>
+    <form id="banner-form" action="/admin/banner/add-banner" method="POST" enctype="multipart/form-data">
+        <div class="form-group col-md-6">
+            <label for="title">Title:</label>
+            <input type="text" class="form-control" id="title" name="title" required>
+        </div>
+        <div class="form-group col-md-6">
+            <label for="description">Description:</label>
+            <input class="form-control" id="description" name="description" rows="4" required>
+        </div>
+        <div class="form-group col-md-6">
+            <label for="link">Product Url:</label>
+            <select id="select-state" placeholder="Pick a Product*" class="mb-3" name="productUrl" required>
+                <option value="">Select a Product...</option>
+                <% Products.forEach(element=> { %>
+                    <option value="viewProduct/<%= element._id %>">
+                        <%= element.title %>
+                    </option>
+                    <% }) %>
+            </select>
+        </div>
+        <div class="form-group col-md-6">
+            <label for="image">Banner Image:</label>
+            <div class="custom-file">
+                <input type="file" class="custom-file-input" id="image" name="bannerImage" accept="image/*" required>
+                <label class="custom-file-label" for="image">Choose file</label>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('select').selectize({
+            sortField: 'text'
+        });
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/js/standalone/selectize.min.js"
+    integrity="sha256-+C0A5Ilqmu4QcSPxrlGpaZxJ04VjsRjKu+G82kl5UJk=" crossorigin="anonymous"></script>
+
+
+
+<!-- 
+<div
+    class="modal fade"
+    id="imageCroppingModal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="imageCroppingModalLabel"
+    aria-hidden="true"
+>
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageCroppingModalLabel">Crop Image</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="croppie-container"></div>                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="crop-button-modal">Crop and Save</button>
+            </div>
+        </div>
+    </div>
+</div> -->
+
+<!-- <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const image = document.getElementById("image-preview");
+        const cropButton = document.getElementById("crop-button");
+        const cropButtonModal = document.getElementById("crop-button-modal");
+        const croppedImageInput = document.getElementById("cropped-image");
+        const imageCroppingModal = new bootstrap.Modal(document.getElementById("imageCroppingModal"));
+
+        const croppieContainer = document.getElementById("croppie-container");
+        const croppie = new Croppie(croppieContainer, {
+            // Initialize Croppie inside the container
+            enableZoom: true,
+            viewport: { width: 480, height: 270 },
+            boundary: { width: 600, height: 337.5 },
+        });
+
+        // Handle the file input change event
+        document.getElementById("image").addEventListener("change", function (e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    croppie.bind({
+                        url: e.target.result,
+                    });
+                };
+                reader.readAsDataURL(file);
+                imageCroppingModal.show(); // Show the modal when an image is selected
+            }
+        });
+
+        // Handle the crop button click event
+        cropButton.addEventListener("click", function () {
+            imageCroppingModal.show(); // Show the modal when the "Crop Image" button is clicked
+        });
+
+        // Handle the crop button in the modal
+        cropButtonModal.addEventListener("click", function () {
+            croppie.result("base64").then(function (base64) {
+                image.src = base64; // Update the image preview
+                croppedImageInput.value = base64; // Set the base64 data in the hidden input
+                imageCroppingModal.hide(); // Hide the modal after cropping
+            });
+        });
+    });
+</script> -->

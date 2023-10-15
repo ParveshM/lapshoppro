@@ -5,6 +5,7 @@ const categoryController = require('../controller/categoryContrl')
 const productController = require('../controller/productContrl')
 const orderController = require('../controller/orderContrl')
 const couponController = require('../controller/couponController')
+const bannerController = require('../controller/bannerContrl')
 const { upload } = require('../config/upload')
 const { isAdminLoggedIn, isAdminLoggedOut } = require('../middlewares/adminAuth')
 const { adminValidateID } = require('../middlewares/idValidation')
@@ -69,6 +70,13 @@ adminRoute.get('/coupon/add-coupon', isAdminLoggedIn, couponController.addCoupon
 adminRoute.post('/coupon/add-coupon', isAdminLoggedIn, couponController.createCoupon)
 adminRoute.get('/coupons/edit-coupon/:id', adminValidateID, isAdminLoggedIn, couponController.editCouponPage)
 adminRoute.post('/coupons/edit-coupon/:id', adminValidateID, isAdminLoggedIn, couponController.editCoupon)
+
+// Banner management --
+adminRoute.get('/banners', isAdminLoggedIn, bannerController.listBanners)
+adminRoute.get('/banner/add-banner', isAdminLoggedIn, bannerController.addBannerPage)
+adminRoute.post('/banner/add-banner', upload.single("bannerImage"), isAdminLoggedIn, bannerController.createBanner)
+// adminRoute.get('/banner/edit-banner/:id', isAdminLoggedIn, bannerController.editBannerPage)
+adminRoute.post('/banner/updateBannerStatus/:id',adminValidateID, isAdminLoggedIn, bannerController.updateBannerStatus)
 
 
 

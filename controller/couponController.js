@@ -45,20 +45,14 @@ const createCoupon = asyncHandler(async (req, res) => {
 const editCouponPage = asyncHandler(async (req, res) => {
     try {
         const couponId = req.params.id
-        const query = req.query.coupon;
-        // if the query is delete , delete the coupon
-        if (query) {
-            const findCouponandDelete = await Coupon.findByIdAndRemove({ _id: couponId })
-            return res.redirect('/admin/coupons')
-        } else {
+      
             const findCoupon = await Coupon.findById({ _id: couponId })
             if (findCoupon) {
                 res.render('./admin/pages/editCoupon', { title: 'editCoupon', coupon: findCoupon });
             } else {
                 return res.status(404).render('./admin/page404', { title: '404' })
             }
-        }
-
+        
     } catch (error) {
         throw new Error(error);
     }
