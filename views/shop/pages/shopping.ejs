@@ -131,10 +131,10 @@
                                                 <div
                                                     class="product-wrapper mb-30 single-product-list product-list-right-pr mb-60">
                                                     <div class="product-img list-img-width">
-                                                        <% if (Array.isArray(element.primaryImage) &&
-                                                            element.primaryImage.length> 0) { %>
+                                                        <% if (Array.isArray(element.images) &&
+                                                            element.images.length> 0) { %>
                                                             <a href="/viewProduct/<%= element?._id %>">
-                                                                <img src="/admin/uploads/<%= element.primaryImage[0].name %>"
+                                                                <img src="<%= element.images[0].imageUrl %>"
                                                                     alt="ProductImage">
                                                             </a>
                                                             <% } else { %>

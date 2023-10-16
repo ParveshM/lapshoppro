@@ -25,60 +25,32 @@
                     <div class="product-details-tab mr-35 product-details-tab2">
                         <div class="product-details-small nav mr-10 product-details-2" role="tablist">
 
-                            <!-- Primary Images -->
-                            <% if (Array.isArray(product.primaryImage) && product.primaryImage.length> 0) { %>
-                                <% product.primaryImage.forEach((image, index)=> { %>
+                            <!-- side images -->
+                            <% if (Array.isArray(product.images) && product.images.length> 0) { %>
+                                <% product.images.forEach((image, index)=> { %>
                                     <a class="<%= index === 0 ? 'active' : '' %> mb-10"
                                         href="#pro-details<%= index + 1 %>" data-bs-toggle="tab" role="tab"
                                         aria-selected="<%= index === 0 %>">
-                                        <img src="/admin/uploads/<%= image.name %>" alt="">
+                                        <img src="<%= image.thumbnailUrl %>" alt="">
                                     </a>
                                     <% }); %>
                                         <% } %>
-
-                                            <!-- Secondary Images -->
-                                            <% if (Array.isArray(product.secondaryImages) &&
-                                                product.secondaryImages.length> 0) { %>
-                                                <% product.secondaryImages.forEach((image, index)=> { %>
-                                                    <a class="mb-10"
-                                                        href="#pro-details<%= product.primaryImage.length + index + 1 %>"
-                                                        data-bs-toggle="tab" role="tab" aria-selected="false">
-                                                        <img src="/admin/uploads/<%= image.name %>" alt="">
-                                                    </a>
-                                                    <% }); %>
-                                                        <% } %>
                         </div>
 
+                        <!-- Large image Tab content-->
                         <div class="product-details-large tab-content">
-                            <!-- Primary Images -->
-                            <% if (Array.isArray(product.primaryImage) && product.primaryImage.length> 0) { %>
-                                <% product.primaryImage.forEach((image, index)=> { %>
+                            <% if (Array.isArray(product.images) && product.images.length> 0) { %>
+                                <% product.images.forEach((image, index)=> { %>
                                     <div class="tab-pane <%= index === 0 ? 'active show' : '' %> fade"
                                         id="pro-details<%= index + 1 %>" role="tabpanel">
                                         <div class="easyzoom easyzoom--overlay is-ready">
-                                            <a href="/admin/uploads/<%= image.name %>">
-                                                <img src="/admin/uploads/<%= image.name %>" alt="">
+                                            <a href="<%= image.imageUrl %>">
+                                                <img src="<%= image.imageUrl %>" alt="">
                                             </a>
                                         </div>
                                     </div>
                                     <% }); %>
                                         <% } %>
-
-                                            <!-- Secondary Images -->
-                                            <% if (Array.isArray(product.secondaryImages) &&
-                                                product.secondaryImages.length> 0) { %>
-                                                <% product.secondaryImages.forEach((image, index)=> { %>
-                                                    <div class="tab-pane fade"
-                                                        id="pro-details<%= product.primaryImage.length + index + 1 %>"
-                                                        role="tabpanel">
-                                                        <div class="easyzoom easyzoom--overlay is-ready">
-                                                            <a href="/admin/uploads/<%= image.name %>">
-                                                                <img src="/admin/uploads/<%= image.name %>" alt="">
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                    <% }); %>
-                                                        <% } %>
                         </div>
                     </div>
                 </div>
@@ -186,80 +158,80 @@
         </div>
     </div>
 </div>
-<div class="product-description-review-area pb-90">
-    <div class="container">
-        <div class="product-description-review text-center">
-            <div class="description-review-title nav" role="tablist">
-                <a class="active" data-bs-toggle="collapse" href="#pro-dec" role="tab" aria-selected="true">
+
+<div class="accordion" id="accordionPanelsStayOpenExample pb-50">
+    <div class="accordion-item">
+        <h2 class="accordion-header" id="panelsStayOpen-headingOne">
+            <strong><button class="accordion-button" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true"
+                    aria-controls="panelsStayOpen-collapseOne">
                     Description
-                </a>
-                
-            </div>
-            <div class="description-review-text">
-                <!-- Add "show" to initially show the Description -->
-                <div class="collapse show" id="pro-dec" role="tabpanel"> 
-                    <% const sections = product.description.split('\n\n'); sections.forEach(section => {
+                </button></strong>
+        </h2>
+        <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse "
+            aria-labelledby="panelsStayOpen-headingOne">
+            <div class="accordion-body">
+                <div class="description-review-text">
+                    <% const sections=product.description.split('\n\n'); sections.forEach(section=> {
                         const lines = section.split('\n');
                         const title = lines[0];
                         const details = lines.slice(1);
-                    %>
-                    <div class="structured-section">
-                        <h4>
-                            <%= title %>
-                        </h4>
-                        <ul>
-                            <% details.forEach(detail => { %>
-                            <li>
-                                <%= detail %>
-                            </li>
-                            <% }); %>
-                        </ul>
-                    </div>
-                    <% }); %>
+                        %>
+                        <div class="structured-section">
+                            <h4>
+                                <%= title %>
+                            </h4>
+                            <ul>
+                                <% details.forEach(detail=> { %>
+                                    <li>
+                                        <%= detail %>
+                                    </li>
+                                    <% }); %>
+                            </ul>
+                        </div>
+                        <% }); %>
+
+
                 </div>
-             
             </div>
         </div>
     </div>
 </div>
 
 
-
-<div class="product-area pb-95">
+<div class="product-area mt-20 pb-95">
     <div class="container">
         <div class="section-title-3 text-center mb-50">
             <h2>Related products</h2>
         </div>
         <div class="row">
             <% if (products.length> 0) { %>
-                <% products.forEach(element => { %>
-                    
-                    
-              
+                <% products.forEach(element=> { %>
                     <div class="col-md-4">
                         <div class="card">
-                            <a href="/viewProduct/<%= element._id%>">
-                                <img class="card-img-top img-size"
-                                    src="/admin/uploads/<%= element.primaryImage[0].name %>"
-                                    alt="<%= element?.title %>">
-                            </a>
-                            <div class="card-body">
-                                <h5 class="card-title">
-                                    <a href="/viewProduct/<%= element._id%>" class="truncate-text">
-                                        <%= element?.title %>
-                                    </a>
-                                </h5>
-                                <p class="card-text">₹<%= element?.salePrice %>
-                                </p>
-                                <div class="product-action">
-                                    <a class="animate-left" title="Wishlist" href="#">
-                                        <i class="pe-7s-like"></i>
-                                    </a>
-                                    <a class="animate-top" title="Add To Cart" href="#">
-                                        <i class="pe-7s-cart"></i>
-                                    </a>
-                                </div>
-                            </div>
+                            <% if (Array.isArray(element.images) && element.images.length> 0) { %>
+                                <a href="/viewProduct/<%= element._id%>">
+                                    <img class="card-img-top img-size mt-2 mx-4" src="<%= element.images[0].imageUrl %>"
+                                        alt="<%= element?.title %>">
+                                </a>
+                                <% }%>
+                                    <div class="card-body">
+                                        <h5 class="card-title">
+                                            <a href="/viewProduct/<%= element._id%>" class="truncate-text">
+                                                <%= element?.title %>
+                                            </a>
+                                        </h5>
+                                        <p class="card-text">₹<%= element?.salePrice %>
+                                        </p>
+                                        <div class="product-action">
+                                            <a class="animate-left" title="Wishlist" href="/wishlist">
+                                                <i class="pe-7s-like"></i>
+                                            </a>
+                                            <a class="animate-top" title="Add To Cart" href="#">
+                                                <i class="pe-7s-cart"></i>
+                                            </a>
+                                        </div>
+                                    </div>
                         </div>
                     </div>
                     <% }) %>
@@ -269,6 +241,32 @@
 </div>
 
 <style>
+    .accordion-button {
+        max-width: 500px;
+        /* Adjust the maximum width as needed */
+    }
+
+    .accordion-body {
+        max-width: 200px;
+        width: 100%;
+        padding: 0;
+        border: none;
+       
+    }
+
+    .accordion {
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
+    .accordion-button {
+        width: 100%;
+        text-align: center;
+        border: none;
+    }
+
+    
+
     .truncate-text {
         white-space: nowrap;
         overflow: hidden;

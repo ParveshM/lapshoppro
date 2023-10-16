@@ -44,19 +44,16 @@ adminRoute.post('/category/search', isAdminLoggedIn, categoryController.searchCa
 adminRoute.get('/product/addProduct', isAdminLoggedIn, productController.addProduct)
 
 adminRoute.post('/product/addProduct',
-    upload.fields([
-        { name: "secondaryImage" }
-        , { name: "primaryImage" }]),
+    upload.fields([{ name: "images" }]),
     productController.insertProduct)  /** Product adding and multer using  **/
 adminRoute.get('/products', isAdminLoggedIn, productController.productManagement)
 adminRoute.post('/product/list/:id', adminValidateID, isAdminLoggedIn, productController.listProduct)
 adminRoute.post('/product/unList/:id', adminValidateID, isAdminLoggedIn, productController.unListProduct)
 adminRoute.get('/product/editproduct/:id', adminValidateID, isAdminLoggedIn, productController.editProductPage)
-adminRoute.post('/product/editproduct/:id', adminValidateID,
-    upload.fields([
-        { name: "secondaryImage" }
-        , { name: "primaryImage" }]),
-    productController.updateProduct)
+adminRoute.post('/product/editproduct/:id', adminValidateID, productController.updateProduct)
+adminRoute.put('/product/edit-image/:id', upload.single("image"),
+    adminValidateID, productController.editImage)
+adminRoute.delete('/product/delete-image/:id', adminValidateID, productController.deleteImage)
 
 
 // OrderManagement--
@@ -76,7 +73,7 @@ adminRoute.get('/banners', isAdminLoggedIn, bannerController.listBanners)
 adminRoute.get('/banner/add-banner', isAdminLoggedIn, bannerController.addBannerPage)
 adminRoute.post('/banner/add-banner', upload.single("bannerImage"), isAdminLoggedIn, bannerController.createBanner)
 // adminRoute.get('/banner/edit-banner/:id', isAdminLoggedIn, bannerController.editBannerPage)
-adminRoute.post('/banner/updateBannerStatus/:id',adminValidateID, isAdminLoggedIn, bannerController.updateBannerStatus)
+adminRoute.post('/banner/updateBannerStatus/:id', adminValidateID, isAdminLoggedIn, bannerController.updateBannerStatus)
 
 
 
