@@ -31,7 +31,7 @@
 
                 <% productList.forEach(element=> { %>
                     <tr>
-                        <td><img src=" /admin/uploads/<%= element?.primaryImage?.[0]?.name; %>"
+                        <td><img src="<%= element?.images[0]?.thumbnailUrl %>"
                                 style="max-width: 75px;max-height: 75px;" alt="Product Image"></td>
                         <td>
                             <%= element.title %>

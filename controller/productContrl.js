@@ -1,14 +1,15 @@
 const Product = require('../models/productModel')
 const Category = require('../models/categoryModel')
-const expressHandler = require('express-async-handler')
+const Images = require('../models/imageModel')
+const asyncHandler = require('express-async-handler')
 const sharp = require('sharp')
 const path = require('path')
 
 
-// productManagement--
-const productManagement = expressHandler(async (req, res) => {
+// productManagement list the available products--
+const productManagement = asyncHandler(async (req, res) => {
     try {
-        const findProduct = await Product.find().populate('categoryName');
+        const findProduct = await Product.find().populate('categoryName').populate("images");
         res.render('./admin/pages/products', { title: 'Products', productList: findProduct })
     } catch (error) {
         throw new Error(error)
@@ -16,7 +17,7 @@ const productManagement = expressHandler(async (req, res) => {
 })
 
 // addProduct Page---
-const addProduct = expressHandler(async (req, res) => {
+const addProduct = asyncHandler(async (req, res) => {
     try {
         const category = await Category.find({ isListed: true })
         if (category) {
@@ -28,72 +29,62 @@ const addProduct = expressHandler(async (req, res) => {
 })
 
 // inserting a product--- 
-const insertProduct = expressHandler(async (req, res) => {
+const insertProduct = asyncHandler(async (req, res) => {
     try {
-        const primaryImage = [];
-        for (const e of req.files.primaryImage) {
-            const croppedImage = path.join(__dirname, '../public/admin/uploads', `cropped_${e.filename}`);
-            await sharp(e.path)
-                .resize(800, 1000, {
-                    kernel: sharp.kernel.nearest,
-                    fit: 'fill',
-                    position: 'right top',
-                })
-                .toFile(croppedImage)
-            primaryImage.push({
-                name: `cropped_${e.filename}`,
-                path: croppedImage,
-            });
+        const imageUrls = []; 
 
-        }
+        // Check if req.files exists and has images
+        if (req.files && req.files.images.length > 0) {
+            const images = req.files.images;
 
-        const secondaryImages = [];      /* Secondary images cropping area */
-        for (const e of req.files.secondaryImage) {
-            const croppedImage = path.join(__dirname, '../public/admin/uploads', `cropped_${e.filename}`);
+            for (const file of images) {
+                try {
+                    const imageBuffer = await sharp(file.path)
+                        .resize(600, 800)
+                        .toBuffer();
+                    const thumbnailBuffer = await sharp(file.path)
+                        .resize(300, 300)
+                        .toBuffer();
+                    const imageUrl = path.join("/admin/uploads", file.filename);
+                    const thumbnailUrl = path.join("/admin/uploads", file.filename);
+                    imageUrls.push({ imageUrl, thumbnailUrl });
+                } catch (error) {
+                    console.error("Error processing image:", error);
+                }
+            }
 
-            await sharp(e.path)
-                .resize(1000, 1000, {
-                    kernel: sharp.kernel.nearest,
-                    fit: 'fill',
-                    position: 'right top',
-                })
-                .toFile(croppedImage);
+            const image = await Images.create(imageUrls);
+            const imageId = image.map((image) => image._id).reverse()
 
-            secondaryImages.push({
-                name: `cropped_${e.filename}`,
-                path: croppedImage,
-            });
-        }
+            const newProduct = await Product.create({
+                title: req.body.title,
+                brand: req.body.brand,
+                color: req.body.color,
+                description: req.body.description,
+                categoryName: req.body.categoryName,
+                quantity: req.body.quantity,
+                productPrice: req.body.productPrice,
+                salePrice: req.body.salePrice,
+                images: imageId
+            })
 
-        console.log('secondaryImages after crop', secondaryImages);
-
-
-        const saving = new Product({
-            title: req.body.title,
-            brand: req.body.brand,
-            color: req.body.color,
-            description: req.body.description,
-            categoryName: req.body.categoryName,
-            quantity: req.body.quantity,
-            productPrice: req.body.productPrice,
-            salePrice: req.body.salePrice,
-            primaryImage: primaryImage,
-            secondaryImages: secondaryImages,
-        })
-
-        const inserted = await saving.save()
-        console.log(inserted);
-        if (inserted) {
-
-            res.redirect('/admin/products')
+            console.log('inserted', newProduct);
+            if (newProduct) {
+                res.redirect('/admin/products')
+            }
+        } else {
+            res.status(400).json({ error: "Invalid input: No images provided" });
         }
     } catch (error) {
         throw new Error(error)
     }
-})
+});
+
+
+
 
 // ListProduct---
-const listProduct = expressHandler(async (req, res) => {
+const listProduct = asyncHandler(async (req, res) => {
     try {
 
         const id = req.params.id
@@ -109,7 +100,7 @@ const listProduct = expressHandler(async (req, res) => {
 })
 
 // unlist category---
-const unListProduct = expressHandler(async (req, res) => {
+const unListProduct = asyncHandler(async (req, res) => {
     try {
         const id = req.params.id
         console.log(id);
@@ -125,84 +116,75 @@ const unListProduct = expressHandler(async (req, res) => {
 })
 
 // editProductPage Loading---
-const editProductPage = expressHandler(async (req, res) => {
+const editProductPage = asyncHandler(async (req, res) => {
     try {
         const id = req.params.id
-        console.log(id);
         const category = await Category.find({ isListed: true })
-        const productFound = await Product.findById(id).populate('categoryName').exec()
+        const productFound = await Product.findById(id).populate('categoryName').populate("images");
+        console.log('images', productFound.images);
         console.log(productFound);
         if (productFound) {
             res.render('./admin/pages/editProduct', { title: 'editProduct', product: productFound, catList: category })
         }
-
     } catch (error) {
         throw new Error(error)
     }
 })
-const updateProduct = expressHandler(async (req, res) => {
+
+const updateProduct = asyncHandler(async (req, res) => {
     try {
         const id = req.params.id;
-
-        const existingProduct = await Product.findById(id);
-
-        // Handle primary image
-        let primaryImage;
-        if (req.files.primaryImage) {
-            const primaryImageFile = req.files.primaryImage[0];
-            primaryImage = {
-                name: primaryImageFile.filename,
-                path: primaryImageFile.path,
-            };
-        } else {
-            // No new primary image uploaded, retain the existing one
-            primaryImage = existingProduct.primaryImage[0];
-        }
-
-        // Handle secondary images
-        const secondaryImageIDs = req.body.idSecondaryImage; /* hidden input image id */
-        const secondaryImages = req.files.secondaryImage;
-        const dbImage = existingProduct.secondaryImages;
-        if (secondaryImages) {
-            for (let i = 0; i < secondaryImages.length; i++) {
-                if (secondaryImageIDs[i] === dbImage[i]._id.toString()) {
-                    dbImage[i].name = secondaryImages[i].filename;
-                    dbImage[i].path = secondaryImages[i].path;
-                }
-            }
-        }
-
-        // Save the updated product back to the database
-        existingProduct.primaryImage = [primaryImage];
-        existingProduct.secondaryImages = dbImage;
-
-        await existingProduct.save(); // Assuming you are using Mongoose
-
-
-        const editingProduct = {
-            title: req.body.title,
-            description: req.body.description,
-            brand: req.body.brand,
-            color: req.body.color,
-            categoryName: req.body.categoryName,
-            quantity: req.body.quantity,
-            productPrice: req.body.productPrice,
-            salePrice: req.body.salePrice,
-            primaryImage: [primaryImage] // Include other fields you want to update
-
-        };
-
-        const updatedProduct = await Product.findByIdAndUpdate(id, editingProduct, { new: true });
-        console.log('updated product', updatedProduct);
+        console.log('id  body', req.body);
+        const updateProduct = await Product.findByIdAndUpdate({ _id: id }, req.body);
 
         res.redirect('/admin/products');
 
-
     } catch (error) {
         throw new Error(error)
     }
 
 })
+
+// edit image function---
+const editImage = asyncHandler(async (req, res) => {
+    try {
+        const imageId = req.params.id;
+        const file = req.file;
+        console.log('file', req.file);
+        const imageBuffer = await sharp(file.path).resize(600, 800).toBuffer();
+        const thumbnailBuffer = await sharp(file.path).resize(300, 300).toBuffer();
+        const imageUrl = path.join("/admin/uploads", file.filename);
+        const thumbnailUrl = path.join("/admin/uploads", file.filename);
+
+        const images = await Images.findByIdAndUpdate(imageId, {
+            imageUrl: imageUrl,
+            thumbnailUrl: thumbnailUrl,
+        });
+
+        req.flash("success", "Image updated");
+        res.redirect("back");
+    } catch (error) {
+        throw new Error(error);
+    }
+});
+// Delete image using fetch
+const deleteImage = asyncHandler(async (req, res) => {
+    try {
+        const imageId = req.params.id;
+        // Optionally, you can also remove the image from your database
+        await Images.findByIdAndRemove(imageId);
+        const product = await Product.findOneAndUpdate(
+            { images: imageId },
+            { $pull: { images: imageId } },
+            { new: true }
+        );
+        res.json({ message: "Images Removed" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+});
+
 
 module.exports = {
     addProduct,
@@ -211,5 +193,7 @@ module.exports = {
     listProduct,
     unListProduct,
     editProductPage,
-    updateProduct
+    updateProduct,
+    editImage,
+    deleteImage
 } 

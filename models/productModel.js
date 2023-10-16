@@ -3,72 +3,53 @@ const mongoose = require('mongoose');
 var ProductSchema = new mongoose.Schema({
     title: {
         type: String,
-        required: true, 
-        
+        required: true,
+
     },
     description: {
         type: String,
         required: true,
-        
+
     },
-    productPrice: { 
+    productPrice: {
         type: Number,
         required: true
     },
-    salePrice: { 
-        type: Number, 
+    salePrice: {
+        type: Number,
         required: true
     },
-       categoryName: {  
+    categoryName: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Category' 
+        ref: 'Category'
     },
     brand: {
-        type: String, 
-        required:true 
+        type: String,
+        required: true
     },
     quantity: {
         type: Number,
         required: true
     },
-    sold: {     
+    sold: {
         type: Number,
         default: 0
     },
-    primaryImage:[{
-        name:{
-            type:String, 
-            required:true
-        },
-        path:{
-            type:String, 
-            required:true
-        } 
-    }], 
-    secondaryImages:[{
-        name:{
-            type:String,
-            required:true, 
-        },
-        path:{
-            type:String,
-            required:true, 
-        }
-    }],
+    images: [{ type: mongoose.Schema.Types.ObjectId, ref: "Images" }],
     color: {
         type: String,
-        required:true 
+        required: true
     },
-    ratings: [{ 
+    ratings: [{
         star: Number,
         postedBy: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User'
         }
     }],
-    isListed:{
-        type:Boolean,
-        default:true
+    isListed: {
+        type: Boolean,
+        default: true
     }
 }, { timestamps: true });
 

@@ -12,7 +12,9 @@ const bcrypt = require('bcrypt')
 // loadLandingPage---
 const loadLandingPage = asyncHandler(async (req, res) => {
     try {
-        const products = await Product.find({ isListed: true })
+        const products = await Product.find({ isListed: true }).populate('images').limit(4)
+        console.log(products);
+
         const banner = await Banner.find({ isActive: true })
         res.render('./shop/pages/index', { products: products, banner })
     } catch (error) {
@@ -216,7 +218,6 @@ const viewWalletHistory = asyncHandler(async (req, res) => {
 
 // Shopping Page--
 const shopping = asyncHandler(async (req, res) => {
-    console.log('request from unauth user ');
     try {
         const user = req.user;
         const page = req.query.p || 1;
@@ -229,6 +230,7 @@ const shopping = asyncHandler(async (req, res) => {
         // Find products that belong to the listed categories
         const findProducts = await Product.find(
             { categoryName: { $in: listedCategoryIds }, isListed: true })
+            .populate('images')
             .skip((page - 1) * limit)
             .limit(limit)
 
@@ -265,20 +267,20 @@ const shopping = asyncHandler(async (req, res) => {
 // view Product Page--
 const viewProduct = asyncHandler(async (req, res) => {
     try {
-        const id = req.params.id
+        const id = req.params.id 
         const user = req.user
-        const findProduct = await Product.findOne({ _id: id }).populate('categoryName').exec()
+        const findProduct = await Product.findOne({ _id: id }).populate('categoryName').populate('images')
         if (!findProduct) {
             return res.status(404).render('./shop/pages/404')
         }
-        const products = await Product.find({ isListed: true })
+        const products = await Product.find({ isListed: true }).populate('images').limit(3)
         let cartProductIds;
         if (user) {
             cartProductIds = user.cart.map(cartItem => cartItem.product.toString());
         } else {
             cartProductIds = null;
         }
-        res.render('./shop/pages/productDetail', { product: findProduct, products: products, cartProductIds })
+        res.render('./shop/pages/productDetail', { product: findProduct, products, cartProductIds })
     } catch (error) {
         throw new Error(error)
     }
