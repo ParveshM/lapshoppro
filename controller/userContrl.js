@@ -8,6 +8,7 @@ const { sendOtp, generateOTP } = require('../utility/nodeMailer')
 const { forgetPassMail } = require('../utility/forgetPassMail')
 const crypto = require('crypto')
 const bcrypt = require('bcrypt')
+const { log } = require('console')
 
 // loadLandingPage---
 const loadLandingPage = asyncHandler(async (req, res) => {
@@ -218,59 +219,12 @@ const viewWalletHistory = asyncHandler(async (req, res) => {
 
 
 // Shopping Page--
-// const shopping = asyncHandler(async (req, res) => {
-//     try {
-//         const user = req.user;
-//         const page = req.query.p || 1;
-//         const category = req.query.category
-//         const limit = 2;
-
-//         const listedCategories = await Category.find({ isListed: true });
-//         // Get the IDs of the listed categories
-//         const listedCategoryIds = listedCategories.map(category => category._id);
-
-//         // Find products that belong to the listed categories
-//         const findProducts = await Product.find(
-//             { categoryName: { $in: listedCategoryIds }, isListed: true })
-//             .populate('images')
-//             .skip((page - 1) * limit)
-//             .limit(limit)
-
-//         let cartProductIds;
-//         if (user) {
-//             if (user.cart) {
-//                 cartProductIds = user.cart.map(cartItem => cartItem.product.toString());
-//             }
-
-//         } else {
-//             cartProductIds = null;
-
-//         }
-
-//         const count = await Product.find(
-//             { categoryName: { $in: listedCategoryIds }, isListed: true })
-//             .countDocuments();
-
-
-//         res.render('./shop/pages/shopping', {
-//             products: findProducts,
-//             category: listedCategories,
-//             cartProductIds,
-//             user,
-//             currentPage: page,
-//             totalPages: Math.ceil(count / limit) // Calculating total pages
-//         });
-//     } catch (error) {
-//         throw new Error(error);
-//     }
-// });
-
 const shopping = asyncHandler(async (req, res) => {
     try {
         const user = req.user;
         const page = req.query.p || 1;
         const limit = 2;
-
+        console.log('quere', req.query);
         // Get the IDs of the listed categories
         const listedCategories = await Category.find({ isListed: true });
         const listedCategoryIds = listedCategories.map(category => category._id);
@@ -286,12 +240,41 @@ const shopping = asyncHandler(async (req, res) => {
             filter.categoryName = req.query.category;
         }
 
+        // Check if a search query is provided
+        if (req.query.search) {
+            filter.$or = [
+                { title: { $regex: req.query.search, $options: 'i' } },
+                { description: { $regex: req.query.search, $options: 'i' } },
+            ];
+        }
+
+        let sortCriteria = {};
+
+        // Check for price sorting
+        if (req.query.sort == 'lowtoHigh') {
+            sortCriteria.salePrice = 1;
+        } else if (req.query.sort === 'highToLow') {
+            sortCriteria.salePrice = -1;
+        }
+        // Add the ability to filter by both category and price
+        if (req.query.category && req.query.sort) {
+            filter.categoryName = req.query.category;
+            console.log(req.query.sort === 'lowtoHigh');
+
+            if (req.query.sort) {
+                sortCriteria.salePrice = 1;
+            }
+            if (req.query.sort === 'highToLow') {
+                sortCriteria.salePrice = -1;
+            }
+        }
         // Find products based on the filter
         const findProducts = await Product.find(filter)
             .populate('images')
             .skip((page - 1) * limit)
-            .limit(limit);
-
+            .limit(limit)
+            .sort(sortCriteria);
+        console.log('product found', findProducts);
         // Retrieve cart product IDs (as in your original code)
         let cartProductIds;
         if (user) {
@@ -311,12 +294,13 @@ const shopping = asyncHandler(async (req, res) => {
             cartProductIds,
             user,
             currentPage: page,
-            totalPages: Math.ceil(count / limit)
+            totalPages: Math.ceil(count / limit),
         });
     } catch (error) {
         throw new Error(error);
     }
 });
+
 
 
 // view Product Page--
