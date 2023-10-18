@@ -10,7 +10,7 @@
                         <div class="row">
                             <div class="col-md-3 aspect-ratio aspect-ratio-1x1">
                                 <a href="/viewProduct/<%= item.product._id %>"> <img class="img-fluid"
-                                        src="/admin/uploads/<%= item.product.primaryImage[0].name %>"
+                                        src="<%= item.product.images[0].imageUrl %>"
                                         alt="Ordered Image" />
                                 </a>
                             </div>

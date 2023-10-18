@@ -8,13 +8,16 @@ const asyncHandler = require('express-async-handler');
 const loadCartPage = asyncHandler(async (req, res) => {
     try {
         const userId = req.user.id;
-
-        // Find the user by ID and populate the 'cart.product' field to get product details
-        const userWithCart = await User.findById(userId).populate('cart.product');
+        const userWithCart = await User.findById(userId).populate({
+            path: 'cart.product',
+            populate: {
+                path: 'images',
+            },
+        });
 
         if (userWithCart.cart.length === 0) {
             // User has an empty cart
-            res.render('./shop/pages/cart', { cartItems: [],totalAmount: 0 });
+            res.render('./shop/pages/cart', { cartItems: [], totalAmount: 0 });
         } else {
             const userCart = userWithCart.cart;
 
@@ -22,14 +25,12 @@ const loadCartPage = asyncHandler(async (req, res) => {
             const subtotal = userCart.reduce((total, item) => {
                 return total + item.product.salePrice * item.quantity;
             }, 0);
-
-            res.render('./shop/pages/cart', { cartItems: userCart,subtotal });
+            res.render('./shop/pages/cart', { cartItems: userCart, subtotal });
         }
     } catch (error) {
         throw new Error(error);
     }
 });
-
 
 
 // AddToCart---
@@ -39,7 +40,7 @@ const addtoCart = asyncHandler(async (req, res) => {
         const quantity = req.query.quantity || 1;
 
         const user = req.user
-      
+
         const added = await user.addToCart(productId, quantity); /* calling function from model */
         if (added) {
             res.redirect('/cart')
@@ -92,10 +93,23 @@ const updateCartItemQuantity = asyncHandler(async (req, res) => {
         cartItem.quantity = newQuantity;
         await user.save();
 
-        // Fetch the updated cart items (you may want to customize this part)
-        const updatedCartItems = user.cart;
+        // const updatedCartItems = user.cart;
 
-        res.json({ success: true, cartItems: updatedCartItems });
+
+        // calculate total price
+        const currentCart = await User.findById(user._id).populate('cart.product')
+        const cartItems = currentCart.cart;
+        let totalPrice = 0;
+
+        cartItems.forEach(cartItem => {
+            const product = cartItem.product;
+            const quantity = cartItem.quantity;
+
+            const productPrice = product.salePrice;
+            totalPrice += productPrice * quantity;
+        });
+
+        res.json({ success: true ,totalPrice });
     } catch (error) {
         console.error('Error updating cart item quantity:', error);
         res.status(500).json({ success: false, error: 'Error updating cart item quantity' });

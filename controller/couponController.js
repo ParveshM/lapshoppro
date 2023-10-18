@@ -45,14 +45,14 @@ const createCoupon = asyncHandler(async (req, res) => {
 const editCouponPage = asyncHandler(async (req, res) => {
     try {
         const couponId = req.params.id
-      
-            const findCoupon = await Coupon.findById({ _id: couponId })
-            if (findCoupon) {
-                res.render('./admin/pages/editCoupon', { title: 'editCoupon', coupon: findCoupon });
-            } else {
-                return res.status(404).render('./admin/page404', { title: '404' })
-            }
-        
+
+        const findCoupon = await Coupon.findById({ _id: couponId })
+        if (findCoupon) {
+            res.render('./admin/pages/editCoupon', { title: 'editCoupon', coupon: findCoupon });
+        } else {
+            return res.status(404).render('./admin/page404', { title: '404' })
+        }
+
     } catch (error) {
         throw new Error(error);
     }
@@ -62,28 +62,9 @@ const editCouponPage = asyncHandler(async (req, res) => {
 const editCoupon = asyncHandler(async (req, res) => {
     try {
         const couponId = req.params.id
-
-        const updatedData = {
-            code: req.body.couponCode,
-            discountAmount: req.body.discountAmount,
-            minimumPurchase: req.body.minimumPurchase,
-            maximumPurchase: req.body.maximumPurchase,
-            maximumUses: req.body.maximumUses,
-            description: req.body.description,
-
-        }
-        const updateCoupon = await Coupon.findOneAndUpdate({ _id: couponId }, updatedData, { new: true })
-        console.log('uopdte ', updateCoupon);
-        console.log('body ', req.body);
-        if (req.body.newExpireDate !== '') {
-            const dateBody = req.body.newExpireDate;
-            const normalDate = new Date(dateBody);
-            const isoDate = normalDate.toISOString();
-            updateCoupon.expirationDate = isoDate;
-            updateCoupon.save();
-        }
+        console.log('bidy', req.body);
+        await Coupon.findByIdAndUpdate(couponId, req.body)
         res.redirect('/admin/coupons')
-
     } catch (error) {
         throw new Error(error);
     }

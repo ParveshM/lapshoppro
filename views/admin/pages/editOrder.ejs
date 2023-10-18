@@ -131,8 +131,8 @@
                                                         </div>
                                 </div>
                                 <div class="col-md-4">
-                                    <img src="/admin/uploads/<%= item.product.primaryImage[0].name %>"
-                                        alt="Product Image" class="img-fluid rounded" />
+                                    <img src="<%= item.product.images[0].imageUrl %>" alt="Product Image"
+                                        class="img-fluid rounded" />
                                 </div>
                             </div>
                             <% if(item.status=='Return requested' || item.status=='Refunded' ) { %>
@@ -142,7 +142,6 @@
                                         <button type="submit" class="btn btn-primary">Update Status</button>
                                     </div>
                                     <% } %>
-
                         </div>
                     </div>
                 </form>
@@ -150,5 +149,5 @@
         </div>
         <% }) %>
             <% } else { %>
-                <h2 class="col-md-6">No Orders</h2>
+                <h2 class="col-md-6">No Order found</h2>
                 <% } %>

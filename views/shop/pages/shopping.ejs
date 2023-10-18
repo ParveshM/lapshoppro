@@ -55,13 +55,13 @@
 
                                         <% category.forEach(element=> { %>
 
-                                            <li><a href="#">
+                                            <li><a href="/shop?category=<%= element._id %>">
                                                     <%= element.categoryName %>
                                                 </a></li>
                                             <% }); %>
 
                                                 <% } else { %>
-                                                    <h3>NOOOOO</h3>
+                                                    <h3>NO CATEGORIES</h3>
                                                     <% } %>
 
                                 </ul>
