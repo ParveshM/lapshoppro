@@ -1,5 +1,4 @@
 
-
 // Send an AJAX request to the server to check product availability
 function checkProductAvailability() {
     $.ajax({

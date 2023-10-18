@@ -22,126 +22,127 @@
         </div>
     </div>
 </div>
-<!-- shopping-cart-area start -->
-<div class="cart-main-area pt-40 pb-30">
-    <div class="container ">
-        <div class="row">
-            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <h1 class="cart-heading">Cart</h1>
-                <form action="#">
-                    <div class="table-content mb-0">
-                        <% if (cartItems && cartItems.length <=0) { %>
-                            <div class="container text-center">
-                                <a href="/shop" class="btn btn-success mt-3" style="border-radius: 10px;">
-                                    <i class="ti-shopping-cart"></i> Start Shopping
-                                </a>
-                                <img src="/assets/gif/empty.gif" alt="Empty Cart" class="img-fluid mb-2"
-                                    style="max-width: 300px ; max-height: 300px; overflow: hidden !important;">
-                                <h3 class="text-muted">Your cart is empty.</h3>
+<%- include('../partials/flash.ejs') %>
+    <!-- shopping-cart-area start -->
+    <div class="cart-main-area pt-40 pb-30">
+        <div class="container ">
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <h1 class="cart-heading">Cart</h1>
+                    <form action="#">
+                        <div class="table-content mb-0">
+                            <% if (cartItems && cartItems.length <=0) { %>
+                                <div class="container text-center">
+                                    <a href="/shop" class="btn btn-success mt-3" style="border-radius: 10px;">
+                                        <i class="ti-shopping-cart"></i> Start Shopping
+                                    </a>
+                                    <img src="/assets/gif/empty.gif" alt="Empty Cart" class="img-fluid mb-2"
+                                        style="max-width: 300px ; max-height: 300px; overflow: hidden !important;">
+                                    <h3 class="text-muted">Your cart is empty.</h3>
 
-                            </div>
-                            <% } else { %>
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th>Remove</th>
-                                            <th>Images</th>
-                                            <th>Product</th>
-                                            <th>Price</th>
-                                            <th>Quantity</th>
-                                            <th>Total</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <% if (cartItems && cartItems.length> 0) { %>
-                                            <% cartItems.forEach(element=> { %>
-                                                <tr>
-                                                    <td class="product-remove">
-                                                        <a href="#"
-                                                            onclick="showConfirmation('<%= element?.product?._id %>')">
-                                                            <i class="pe-7s-close"></i>
-                                                        </a>
-                                                    </td>
+                                </div>
+                                <% } else { %>
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Remove</th>
+                                                <th>Images</th>
+                                                <th>Product</th>
+                                                <th>Price</th>
+                                                <th>Quantity</th>
+                                                <th>Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% if (cartItems && cartItems.length> 0) { %>
+                                                <% cartItems.forEach(element=> { %>
+                                                    <tr>
+                                                        <td class="product-remove">
+                                                            <a href="#"
+                                                                onclick="showConfirmation('<%= element?.product?._id %>')">
+                                                                <i class="pe-7s-close"></i>
+                                                            </a>
+                                                        </td>
 
 
-                                                    <td class="product-thumbnail">
-                                                        <a href="#">
-                                                            <img style="max-width: 100px; max-height: 100px;"
-                                                                src="<%= element.product.images[0].imageUrl %>"
-                                                                alt="<%= element.product.title %>">
-                                                        </a>
-                                                    </td>
-                                                    <td class="product-name">
-                                                        <a href="">
-                                                            <%= element.product.title %>
-                                                        </a>
-                                                    </td>
-                                                    <td class="product-price-cart"
-                                                        id="price-<%= element.product._id %>">
-                                                        <span class="amount">
-                                                            ₹<%=(element.product.salePrice).toLocaleString() %>
-                                                        </span>
-                                                    </td>
-                                                    <td class="product-quantity">
-
-                                                        <div class="input-group">
-                                                            <span class="input-group-btn">
-                                                                <button type="button"
-                                                                    class="btn btn-danger quantity-button minus mx-2"
-                                                                    onclick="decrementQuantity(this, '<%= element.product._id %>')">-</button>
+                                                        <td class="product-thumbnail">
+                                                            <a href="#">
+                                                                <img style="max-width: 100px; max-height: 100px;"
+                                                                    src="<%= element.product.images[0].imageUrl %>"
+                                                                    alt="<%= element.product.title %>">
+                                                            </a>
+                                                        </td>
+                                                        <td class="product-name">
+                                                            <a href="">
+                                                                <%= element.product.title %>
+                                                            </a>
+                                                        </td>
+                                                        <td class="product-price-cart"
+                                                            id="price-<%= element.product._id %>">
+                                                            <span class="amount">
+                                                                ₹<%=(element.product.salePrice).toLocaleString() %>
                                                             </span>
-                                                            <input id="quantity-<%= element.product._id %>"
-                                                                value="<%= element.quantity %>" min="1"
-                                                                class="form-control quantity-input" <% if
-                                                                (element.quantity> element.product.quantity) { %>
-                                                            style="pointer-events:none; max-width:30px ;" <% } %> >
+                                                        </td>
+                                                        <td class="product-quantity">
 
+                                                            <div class="input-group">
                                                                 <span class="input-group-btn">
                                                                     <button type="button"
-                                                                        class="btn btn-success quantity-button plus mx-2"
-                                                                        onclick="incrementQuantity(this, '<%= element.product._id %>')">+</button>
+                                                                        class="btn btn-danger quantity-button minus mx-2"
+                                                                        onclick="decrementQuantity(this, '<%= element.product._id %>')">-</button>
                                                                 </span>
-                                                        </div>
-                                                     
+                                                                <input id="quantity-<%= element.product._id %>"
+                                                                    value="<%= element.quantity %>" min="1"
+                                                                    class="form-control quantity-input" <% if
+                                                                    (element.quantity> element.product.quantity) { %>
+                                                                style="pointer-events:none; max-width:30px ;" <% } %> >
 
-                                                        <h5 style="color: rgb(255, 225, 52); font-size: 15px; margin-right: 41px;
+                                                                    <span class="input-group-btn">
+                                                                        <button type="button"
+                                                                            class="btn btn-success quantity-button plus mx-2"
+                                                                            onclick="incrementQuantity(this, '<%= element.product._id %>')">+</button>
+                                                                    </span>
+                                                            </div>
+
+
+                                                            <h5 style="color: rgb(255, 225, 52); font-size: 15px; margin-right: 41px;
                                                          margin-top: 2px; margin-bottom: -25px;"
-                                                            id="AvailableStock-<%= element.product._id %>"></h5>
+                                                                id="AvailableStock-<%= element.product._id %>"></h5>
 
-                                                    </td>
-                                                    <td class="product-subtotal"
-                                                        id="subtotal-<%= element.product._id %>">
-                                                        <%= (element.product.salePrice *
-                                                            element.quantity).toLocaleString() %>
-                                                    </td>
-                                                </tr>
-                                                <% }) %>
-                                                    <% } %>
-                                    </tbody>
-                                </table>
-                    </div>
-            </div>
-            </form>
-            <div class="row ">
-                <div class="col-md-5 ms-auto ">
-                    <div class="cart-page-total mt-0">
-                        <h2>Cart totals</h2>
-                        <ul>
-                            <li>Subtotal<span id="total-amount">₹<%= subtotal.toLocaleString() %></span>
-
-                            </li>
-                        </ul>
-
-                        <a href="/checkout" id="checkout-link"  class="checkout-tag">
-                            Proceed to checkout
-                        </a>
-                    </div>
+                                                        </td>
+                                                        <td class="product-subtotal"
+                                                            id="subtotal-<%= element.product._id %>">
+                                                            <%= (element.product.salePrice *
+                                                                element.quantity).toLocaleString() %>
+                                                        </td>
+                                                    </tr>
+                                                    <% }) %>
+                                                        <% } %>
+                                        </tbody>
+                                    </table>
+                        </div>
                 </div>
-                <% } %>
+                </form>
+                <div class="row ">
+                    <div class="col-md-5 ms-auto ">
+                        <div class="cart-page-total mt-0">
+                            <h2>Cart totals</h2>
+                            <ul>
+                                <li>Subtotal<span id="total-amount">₹<%= subtotal.toLocaleString() %></span>
+
+                                </li>
+                            </ul>
+
+                            <a href="/checkout" id="checkout-link" class="checkout-tag">
+                                Proceed to checkout
+                            </a>
+                        </div>
+                    </div>
+                    <% } %>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 
-<script src="/assets/js/shop/cart.js"></script>
+    <script src="/assets/js/shop/cart.js"></script>

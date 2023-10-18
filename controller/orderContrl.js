@@ -27,6 +27,13 @@ const checkoutPage = asyncHandler(async (req, res) => {
         const addresses = userWithAddresses.addresses;
 
         const totalArray = calculateSubtotal(userWithCart);
+        console.log('check totalarrayt',totalArray);
+        // if the product quantity is less than cart quantity
+        if(!totalArray){
+            console.log('inside not ');
+            req.flash('warning','OOPS! , insufficient stock')
+            return res.redirect('/cart')
+        }
         const [cartItems, cartSubtotal, processingFee, orderTotal] = [...totalArray];
 
 
@@ -34,13 +41,13 @@ const checkoutPage = asyncHandler(async (req, res) => {
         let minBalance = false;
         let walletBalance = 0;
         const findWallet = await User.findById(user).populate('wallet')
-        if (findWallet.wallet) {
+        if (findWallet.wallet) {        
             walletBalance = findWallet.wallet.balance;
-
-            if (walletBalance > orderTotal) {
+        //check if wallet amount can be used or not         
+            if (walletBalance > orderTotal) { 
                 amount = true
             }
-
+            // if wallet has min balance can be used with razorpay
             if (walletBalance > 0 && walletBalance < orderTotal) {
                 minBalance = true;
             }
@@ -56,7 +63,7 @@ const checkoutPage = asyncHandler(async (req, res) => {
             amount,
             minBalance
 
-        });
+        })
     } catch (error) {
         throw new Error(error);
     }
