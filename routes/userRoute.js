@@ -52,6 +52,7 @@ userRoute.get('/wallet-history', ensureAuthenticated, userController.viewWalletH
 userRoute.get('/shop', userController.shopping);   /* shopping page */
 userRoute.get('/viewProduct/:id', validateID, userController.viewProduct); /* view single product */
 userRoute.get('/wishlist', ensureAuthenticated, userController.wishlist);
+userRoute.get('/addTo-wishlist/:id',validateID, ensureAuthenticated, userController.addTowishlist);
 
 // cart_section-- 
 userRoute.get('/cart', ensureAuthenticated, cartController.loadCartPage);

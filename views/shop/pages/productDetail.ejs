@@ -19,7 +19,6 @@
     <div class="container">
         <div class="row">
             <div class="col-md-12 col-lg-7 col-12">
-
                 <!-- Inside the HTML template -->
                 <div class="product-details-img-content">
                     <div class="product-details-tab mr-35 product-details-tab2">
@@ -54,7 +53,6 @@
                         </div>
                     </div>
                 </div>
-
             </div>
             <div class="col-md-12 col-lg-5 col-12">
                 <div class="product-details-content">
@@ -114,9 +112,8 @@
                                                 <% } %>
                                                     <% } %>
                         </div>
-
                         <div class="quickview-btn-wishlist">
-                            <a class="btn-hover" href="#"><i class="pe-7s-like"></i></a>
+                            <a class="btn-hover" href="/addTo-wishlist/<%= product._id %>"><i class="pe-7s-like"></i></a>
                         </div>
                     </div>
                     <div class="product-details-cati-tag mt-35">
@@ -243,7 +240,6 @@
 <style>
     .accordion-button {
         max-width: 500px;
-        /* Adjust the maximum width as needed */
     }
 
     .accordion-body {
@@ -251,7 +247,7 @@
         width: 100%;
         padding: 0;
         border: none;
-       
+
     }
 
     .accordion {
@@ -265,7 +261,7 @@
         border: none;
     }
 
-    
+
 
     .truncate-text {
         white-space: nowrap;

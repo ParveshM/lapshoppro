@@ -97,9 +97,26 @@
         display: none;
     }
 </style>
-<script src="/assets/js/shop/cart.js"></script>
+<!-- <script src="/assets/js/shop/cart.js"></script> -->
 <script>
     $(function () {
         $('[data-toggle="tooltip"]').tooltip();
     });
+
+    function updateCartItemCount() {
+        $.ajax({
+            type: "GET",
+            url: "/getCartItemCount",
+            success: function (response) {
+                // Update the cart items count in the navbar
+                const cartItemCount = response.cartItemCount; // Use the correct property name
+                $("#cartItemCount").text(cartItemCount); // Assuming you have an element with id "cartItemCount" in your navbar
+            },
+            error: function (error) {
+                console.error("Error fetching cart items count: ", error);
+            }
+        });
+    }
+    // Calling this function initially to display the cart items count
+    updateCartItemCount();
 </script>

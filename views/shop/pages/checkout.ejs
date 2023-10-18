@@ -51,7 +51,11 @@
                 <div class="col-lg-6 col-md-12 col-12">
 
                     <div class="checkbox-form">
-                        <h3>Billing Address</h3>
+                        <div class="d-flex">
+                            <h3>Billing Address</h3>
+                            <a class="btn-hover list-btn-style mb-4" data-toggle="tooltip" title="Add new Address"
+                                href="/addAddress">Add</a>
+                        </div>
                         <div class="row">
                             <% if (addresses.length>0 ){ %>
 
@@ -304,6 +308,11 @@
                         orderTotalElement.innerText = total;
                         couponDetails.innerText = `${response.message}`;
                         couponDetails.style.color = 'red';
+                        $('#couponButton').val('Remove Coupon');
+                        $('#couponButton').off('click');
+                        $('#couponButton').on('click', function () {
+                            window.location.reload();
+                        });
 
                     }
                 },

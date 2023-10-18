@@ -68,7 +68,6 @@ const checkCart = asyncHandler(async (req, res) => {
         console.log('req recieved in checkcart');
         const user = req.user;
         const cartItems = req.query.originalCartInput;
-        console.log('cart items from ajax', cartItems);
 
         const userWithCart = await User.findById(user).populate('cart.product');
 
@@ -76,8 +75,6 @@ const checkCart = asyncHandler(async (req, res) => {
             product: cartItem.product,
             quantity: cartItem.quantity,
         }));
-        console.log('cart products in server', cartProduct);
-
         // Compare the arrays
         const cartItemsMatch = checkCartItemsMatch(cartItems, cartProduct);
 
@@ -107,7 +104,7 @@ const updateWalletInCheckout = asyncHandler(async (req, res) => {
             let amountTopay = total - walletBalance;
 
             if (couponCode) {
-                const findCoupon = await isValidCoupon(couponCode)
+                const findCoupon = await isValidCoupon(couponCode, user, total)
                 if (findCoupon.coupon) {
                     const orderTotal = calculateCouponDiscount(findCoupon.coupon, total)
                     const [discountTotal, discountAmount] = [...orderTotal]
@@ -115,16 +112,11 @@ const updateWalletInCheckout = asyncHandler(async (req, res) => {
                 }
             }
 
-
             res.json({ success: true, amountTopay, walletBalance })
         } else {
             console.log('error: wallet Amount is greater than Total  ');
             res.json({ error: 404 })
         }
-
-
-
-
 
     } catch (error) {
         throw new Error(error);
@@ -136,8 +128,9 @@ const applyCoupon = asyncHandler(async (req, res) => {
     try {
         const user = req.user;
         const { couponCode, total, walAmount } = req.body;
+        console.log();
 
-        const findCoupon = await isValidCoupon(couponCode, user);
+        const findCoupon = await isValidCoupon(couponCode, user, total);
 
         if (findCoupon.coupon) {
             const orderTotal = calculateCouponDiscount(findCoupon.coupon, total);
@@ -151,12 +144,6 @@ const applyCoupon = asyncHandler(async (req, res) => {
             if (total > findCoupon.coupon.minimumPurchase && total < findCoupon.coupon.maximumPurchase) {
 
                 res.json({ success: true, amountToPay, discountAmount, message: findCoupon.message });
-            } else {
-
-                const minimumPurchase = findCoupon.coupon.minimumPurchase;
-                const maximumPurchase = findCoupon.coupon.maximumPurchase;
-                const message = `Order total must be greater than ${minimumPurchase} , less than ${maximumPurchase} to get this coupon `;
-                res.json({ success: false, message: message });
             }
         } else {
             res.json({ success: false, message: findCoupon.message });
@@ -175,7 +162,7 @@ const placeOrder = asyncHandler(async (req, res) => {
     try {
         const user = req.user;
         const { couponCode, address, paymentMethod } = req.body
-        console.log('bosiuhf', req.body);
+        // console.log('bosiuhf', req.body);
 
         console.log('body of user', req.body, couponCode);
 
@@ -184,7 +171,7 @@ const placeOrder = asyncHandler(async (req, res) => {
         if (userWithCart.cart && userWithCart.cart.length > 0) {
             const totalArray = calculateSubtotal(userWithCart);
             const [cartItems, cartSubtotal, processingFee, orderTotal] = [...totalArray]; //calculating 
-
+            console.log('order total', orderTotal);
 
             const orderItems = cartItems.map(item => ({ //get the productId and quantity in the cart
                 product: item.product._id,
@@ -203,11 +190,12 @@ const placeOrder = asyncHandler(async (req, res) => {
                 total: orderTotal
             }
 
+
             if (paymentMethod === 'COD' || paymentMethod === 'Wallet') {
                 const createOrder = await Order.create(newOrder);
 
                 if (couponCode) {
-                    const findCoupon = await isValidCoupon(couponCode, user)
+                    var findCoupon = await isValidCoupon(couponCode, user, orderTotal)
                     if (findCoupon.coupon) {
                         console.log('orderto', createOrder.total, findCoupon.coupon);
                         const orderTotal = calculateCouponDiscount(findCoupon.coupon, createOrder.total)
@@ -215,7 +203,6 @@ const placeOrder = asyncHandler(async (req, res) => {
                         createOrder.discount = discountAmount;
                         createOrder.save()
                         await User.findByIdAndUpdate(user._id, { coupons: findCoupon.coupon._id });
-
                     }
                 }
                 if (createOrder) { //if order is created
@@ -229,7 +216,7 @@ const placeOrder = asyncHandler(async (req, res) => {
                     }
                     await user.clearCart()
                     if (paymentMethod == 'Wallet') {
-                        if (couponCode !== '') {
+                        if (findCoupon.coupon) {
                             await Order.findByIdAndUpdate(
                                 { _id: createOrder._id },
                                 { paymentStatus: 'Paid', amountPaid: amountToPay, walletPayment: amountToPay });
@@ -255,29 +242,22 @@ const placeOrder = asyncHandler(async (req, res) => {
             } else if (paymentMethod == 'WalletWithRazorpay') {
 
                 const createOrder = await Order.create(newOrder);
-
                 if (couponCode) {
-                    const findCoupon = await isValidCoupon(couponCode, user)
+                    const findCoupon = await isValidCoupon(couponCode, user, orderTotal)
                     if (findCoupon.coupon) {
                         const orderTotal = calculateCouponDiscount(findCoupon.coupon, createOrder.total)
                         var [amountToPay, discountAmount] = [...orderTotal]
                         createOrder.discount = discountAmount;
                         createOrder.save()
                         await User.findByIdAndUpdate(user._id, { coupons: findCoupon.coupon._id });
-
                     }
-
                 }
-
                 const userData = await User.findById({ _id: user._id }).populate('wallet')
-
                 let totalAmountToPay = walletAmount(userData, orderTotal)
-                if (couponCode) {
+                if (findCoupon) {
                     totalAmountToPay = amountToPay;
                 }
-
                 if (createOrder) { //if order is created
-
                     for (const item of orderItems) {
                         const orderQuantity = item.quantity;
 
@@ -300,7 +280,7 @@ const placeOrder = asyncHandler(async (req, res) => {
 
                 let totalAmountToPay = orderTotal
                 if (couponCode) {
-                    const findCoupon = await isValidCoupon(couponCode, user)
+                    const findCoupon = await isValidCoupon(couponCode, user, orderTotal)
                     if (findCoupon.coupon) {
                         const orderTotal = calculateCouponDiscount(findCoupon.coupon, createOrder.total)
                         var [amountToPay, discountAmount] = [...orderTotal]
@@ -431,10 +411,14 @@ const orders = asyncHandler(async (req, res) => {
         const orderItems = await Order.find({ user: userId })
             .populate({
                 path: 'items.product',
-                model: 'Product'
+                model: 'Product',
+                populate: {
+                    path: 'images',
+                },
             })
             .populate('billingAddress')
             .sort({ orderDate: -1 });
+
         res.render('./shop/pages/orders', { orders: orderItems });
 
     } catch (error) {
@@ -451,7 +435,10 @@ const viewOrder = asyncHandler(async (req, res) => {
         const order = await Order.findOne({ _id: orderId })
             .populate({
                 path: 'items.product',
-                model: 'Product'
+                model: 'Product',
+                populate: {
+                    path: 'images',
+                },
             })
             .populate('billingAddress');
 
@@ -591,10 +578,15 @@ const editOrderPage = asyncHandler(async (req, res) => {
         const orderId = req.params.id
         console.log('orderid', orderId);
         const findOrder = await Order.findOne({ _id: orderId })
-            .populate('items.product')
+            .populate({
+                path: 'items.product',
+                model: 'Product',
+                populate: {
+                    path: 'images',
+                },
+            })
             .populate('billingAddress')
             .populate('user')
-
         res.render('./admin/pages/editOrder', { title: 'editOrder', viewOrder: findOrder })
     } catch (error) {
         throw new Error(error)

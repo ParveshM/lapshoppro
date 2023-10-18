@@ -1,68 +1,55 @@
 
 
-// Send an AJAX request to the server to check product availability only if the user is in the cart page
-if (window.location.pathname.includes('/cart') || $('#checkout-link').length > 0) {
-    function checkProductAvailability() {
-        $.ajax({
-            type: "GET",
-            url: "/checkProductAvailability",
-            success: function (response) {
-                let allProductsAvailable = true;
-                response.cartItems.forEach(item => {
-                    const productId = item.product._id;
-                    const quantityInput = $(`#quantity-${productId}`);
-                    const href = $('#checkout-link');
-                    const checkoutButton = $('.checkout-tag');
- 
-                    // Check if the product is out of stock
-                    if (item.quantity > item.product.quantity) {
-                        // Disable the quantity input and display a message
-                        quantityInput.remove("disabled", true);
-                        quantityInput.val("0");
-                        allProductsAvailable = false; // Set the flag to false
-                        $(`#outOfStock-${productId}`).text("Out of Stock!");
-                    } else {
-                        // Enable the quantity input
-                        quantityInput.removeAttr("disabled");
-                        // Update the subtotal based on the updated quantity and price
-                        const subtotal = item.product.salePrice * item.quantity;
-                        $(`#subtotal-${productId}`).text(`₹${subtotal.toLocaleString()}`);
-                    }
-                    if (allProductsAvailable) {
-                        $(`#outOfStock-${productId}`).text("");
-                        checkoutButton.prop("disabled", false);
-                        href.attr('href', '/checkout');
-                    } else {
-                        checkoutButton.prop("disabled", true);
-                        href.removeAttr('href');
-                    }
-                });
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                console.error("Error checking product availability:", textStatus, errorThrown);
-            }
-        });
-    }
-    setInterval(checkProductAvailability, 500);
-} 
-
-
-function updateCartItemCount() {
+// Send an AJAX request to the server to check product availability
+function checkProductAvailability() {
     $.ajax({
         type: "GET",
-        url: "/getCartItemCount",
+        url: "/checkProductAvailability",
         success: function (response) {
-            // Update the cart items count in the navbar
-            const cartItemCount = response.cartItemCount; // Use the correct property name
-            $("#cartItemCount").text(cartItemCount); // Assuming you have an element with id "cartItemCount" in your navbar
+            let allProductsAvailable = true;
+            response.cartItems.forEach(item => {
+                const productId = item.product._id;
+                const quantityInput = $(`#quantity-${productId}`);
+                const href = $('#checkout-link');
+                const checkoutButton = $('.checkout-tag');
+
+                // Check if the product is out of stock
+                if (item.quantity > item.product.quantity) {
+                    // Disable the quantity input and display a message
+                    quantityInput.remove("disabled", true);
+                    quantityInput.val('0');
+                    allProductsAvailable = false; // Set the flag to false
+                    $(`#AvailableStock-${productId}`).text(`Available stock ${item.product.quantity}`);
+                    $(`#subtotal-${productId}`).text(`OUT OF STOCK!`);
+                    $(`#subtotal-${productId}`).css('color', 'red')
+                } else {
+                    // Enable the quantity input
+                    quantityInput.removeAttr("disabled");
+                    // Update the subtotal based on the updated quantity and price
+                    const subtotal = item.product.salePrice * item.quantity;
+                    $(`#subtotal-${productId}`).text(`₹${subtotal.toLocaleString()}`);
+                }
+
+                if (allProductsAvailable) {
+                    $(`#outOfStock-${productId}`).text("");
+                    $(`#AvailableStock-${productId}`).text('')
+                    $(`#subtotal-${productId}`).css('color', '')
+                    checkoutButton.prop("disabled", false);
+                    href.attr('href', '/checkout');
+                } else {
+                    checkoutButton.prop("disabled", true);
+                    href.removeAttr('href');
+                }
+            });
         },
-        error: function (error) {
-            console.error("Error fetching cart items count: ", error);
+        error: function (textStatus, errorThrown) {
+            console.error("Error checking product availability:", textStatus, errorThrown);
         }
     });
 }
-// Call this function initially to display the cart items count
-updateCartItemCount();
+checkProductAvailability();
+
+
 /***********************************************/
 
 /**** Sending an AJAX request to the backend to update the quantity ****/
@@ -79,17 +66,8 @@ function updateCartItemQuantity(productId, newQuantity) {
             const subtotal = productPrice * newQuantity;
             $(`#subtotal-${productId}`).text(`₹${subtotal.toLocaleString()}`);
 
-            // Update the total amount for all products in the cart
-            totalAmount = 0; // Reset the total amount
-            const updatedCartItems = response.cartItems;
-            console.log('cart', updatedCartItems);
-            updatedCartItems.forEach(item => {
-                const itemPrice = productPrice
-                const itemQuantity = item.quantity;
-                totalAmount += itemPrice * itemQuantity;
-            });
             // Update the HTML element that displays the total amount
-            $('#total-amount').text(`₹${totalAmount.toLocaleString()}`);
+            $('#total-amount').text(`₹${response.totalPrice.toLocaleString()}`);
 
         },
         error: function (jqXHR, textStatus, errorThrown) {
@@ -109,6 +87,7 @@ function incrementQuantity(button, productId) {
     const currentQuantity = parseInt($(`#quantity-${productId}`).val());
     const newQuantity = currentQuantity + 1;
     updateCartItemQuantity(productId, newQuantity);
+    checkProductAvailability();
 }
 
 function decrementQuantity(button, productId) {
@@ -116,6 +95,7 @@ function decrementQuantity(button, productId) {
     if (currentQuantity > 1) {
         const newQuantity = currentQuantity - 1;
         updateCartItemQuantity(productId, newQuantity);
+        checkProductAvailability();
     }
 }
 /********************************************************************/

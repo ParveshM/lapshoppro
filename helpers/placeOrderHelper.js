@@ -13,7 +13,7 @@ function walletAmount(userData, orderTotal) {
 }
 
 // checking for valid Coupon
-async function isValidCoupon(couponCode, user) {
+async function isValidCoupon(couponCode, user, total) {
     const currentDate = new Date();
     const findCoupon = await Coupon.findOne({ code: couponCode });
 
@@ -22,23 +22,30 @@ async function isValidCoupon(couponCode, user) {
             return { coupon: null, message: 'Coupon is expired' };
 
         } else if (findCoupon.maximumUses > 0) {
-            console.log('user.in', user.coupons);
             if (user.coupons) {
+                console.log('user.in', user.coupons);
                 const couponId = String(findCoupon._id); //finding matching productId from orderDb
                 const isCouponused = user.coupons.find(coupon => String(coupon._id) === couponId);
+               
                 if (isCouponused) {
                     return { coupon: null, message: 'Coupon is invalid.' };
                 }
             }
         }
 
+        if (total < findCoupon.minimumPurchase || total > findCoupon.maximumPurchase) {
+             console.log('ksdkflj max check',);
+            const minimumPurchase = findCoupon.minimumPurchase;
+            const maximumPurchase = findCoupon.maximumPurchase;
+            return { coupon: null, message: `Order total must be greater than ${minimumPurchase} , less than ${maximumPurchase} to get this coupon ` };
+        }
+
         return { coupon: findCoupon, message: findCoupon.description };
+
     } else {
         return { coupon: null, message: 'Coupon is not valid! , try another one.' };
     }
 }
-
-
 
 // calculate amount after coupon discount
 function calculateCouponDiscount(findCoupon, total) {
@@ -49,7 +56,6 @@ function calculateCouponDiscount(findCoupon, total) {
     orderTotal.push(finalTotal, discountAmount)
     return orderTotal
 }
-
 
 
 // changing the payment status and updating walletBalance--

@@ -67,7 +67,7 @@
                                                     <td class="product-thumbnail">
                                                         <a href="#">
                                                             <img style="max-width: 100px; max-height: 100px;"
-                                                                src="/admin/uploads/<%= element.product.primaryImage[0].name %>"
+                                                                src="<%= element.product.images[0].imageUrl %>"
                                                                 alt="<%= element.product.title %>">
                                                         </a>
                                                     </td>
@@ -102,9 +102,11 @@
                                                                         onclick="incrementQuantity(this, '<%= element.product._id %>')">+</button>
                                                                 </span>
                                                         </div>
-                                                        <h4 style="color: red; font-size: 20px; margin-right: 41px;
+                                                     
+
+                                                        <h5 style="color: rgb(255, 225, 52); font-size: 15px; margin-right: 41px;
                                                          margin-top: 2px; margin-bottom: -25px;"
-                                                            id="outOfStock-<%= element.product._id %>"></h4>
+                                                            id="AvailableStock-<%= element.product._id %>"></h5>
 
                                                     </td>
                                                     <td class="product-subtotal"
@@ -130,7 +132,7 @@
                             </li>
                         </ul>
 
-                        <a href="/checkout" id="checkout-link" class="checkout-tag">
+                        <a href="/checkout" id="checkout-link"  class="checkout-tag">
                             Proceed to checkout
                         </a>
                     </div>

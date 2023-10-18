@@ -13,8 +13,6 @@ const bcrypt = require('bcrypt')
 const loadLandingPage = asyncHandler(async (req, res) => {
     try {
         const products = await Product.find({ isListed: true }).populate('images').limit(4)
-        console.log(products);
-
         const banner = await Banner.find({ isActive: true })
         res.render('./shop/pages/index', { products: products, banner })
     } catch (error) {
@@ -177,15 +175,15 @@ const userLogout = async (req, res) => {
 // userProfile---
 const userProfile = asyncHandler(async (req, res) => {
     try {
-        const user = req.user.id
+        const user = req.user
 
         const findWallet = await User.findById(user).populate('wallet')
-        console.log('din wlalet', findWallet);
-        const walletId = findWallet.wallet._id
-        const wal = await Wallet.find(walletId).populate('transactions').exec()
-
-
-        const walletBalance = findWallet.wallet.balance;
+        let walletBalance = 0;
+        if (findWallet.wallet) {
+            const walletId = findWallet.wallet._id
+            const wal = await Wallet.find(walletId).populate('transactions').exec()
+            walletBalance = findWallet.wallet.balance;
+        }
 
         res.render('./shop/pages/profile', { user, walletBalance })
     } catch (error) {
@@ -198,16 +196,19 @@ const viewWalletHistory = asyncHandler(async (req, res) => {
     try {
         const user = req.user;
         const findWallet = await User.findById(user).populate('wallet')
-        const walletId = findWallet.wallet._id
+        let walletHistory = false;
+        if (findWallet.wallet) {
+            const walletId = findWallet.wallet._id
 
-        const walletTransaction = await Wallet.findById({ _id: walletId })
-            .populate({
-                path: 'transactions',
-                options: {
-                    sort: { timestamp: -1 } // Sort in descending order (latest first)
-                }
-            });
-        const walletHistory = walletTransaction.transactions
+            const walletTransaction = await Wallet.findById({ _id: walletId })
+                .populate({
+                    path: 'transactions',
+                    options: {
+                        sort: { timestamp: -1 } // Sort in descending order (latest first)
+                    }
+                });
+            walletHistory = walletTransaction.transactions
+        }
 
         res.render('./shop/pages/walletHistory', { walletHistory })
     } catch (error) {
@@ -217,38 +218,92 @@ const viewWalletHistory = asyncHandler(async (req, res) => {
 
 
 // Shopping Page--
+// const shopping = asyncHandler(async (req, res) => {
+//     try {
+//         const user = req.user;
+//         const page = req.query.p || 1;
+//         const category = req.query.category
+//         const limit = 2;
+
+//         const listedCategories = await Category.find({ isListed: true });
+//         // Get the IDs of the listed categories
+//         const listedCategoryIds = listedCategories.map(category => category._id);
+
+//         // Find products that belong to the listed categories
+//         const findProducts = await Product.find(
+//             { categoryName: { $in: listedCategoryIds }, isListed: true })
+//             .populate('images')
+//             .skip((page - 1) * limit)
+//             .limit(limit)
+
+//         let cartProductIds;
+//         if (user) {
+//             if (user.cart) {
+//                 cartProductIds = user.cart.map(cartItem => cartItem.product.toString());
+//             }
+
+//         } else {
+//             cartProductIds = null;
+
+//         }
+
+//         const count = await Product.find(
+//             { categoryName: { $in: listedCategoryIds }, isListed: true })
+//             .countDocuments();
+
+
+//         res.render('./shop/pages/shopping', {
+//             products: findProducts,
+//             category: listedCategories,
+//             cartProductIds,
+//             user,
+//             currentPage: page,
+//             totalPages: Math.ceil(count / limit) // Calculating total pages
+//         });
+//     } catch (error) {
+//         throw new Error(error);
+//     }
+// });
+
 const shopping = asyncHandler(async (req, res) => {
     try {
         const user = req.user;
         const page = req.query.p || 1;
         const limit = 2;
 
-        const listedCategories = await Category.find({ isListed: true });
         // Get the IDs of the listed categories
+        const listedCategories = await Category.find({ isListed: true });
         const listedCategoryIds = listedCategories.map(category => category._id);
 
-        // Find products that belong to the listed categories
-        const findProducts = await Product.find(
-            { categoryName: { $in: listedCategoryIds }, isListed: true })
+        // Define a filter object to use in the query
+        const filter = {
+            categoryName: { $in: listedCategoryIds },
+            isListed: true,
+        };
+
+        // Check if a category filter is provided in the request
+        if (req.query.category) {
+            filter.categoryName = req.query.category;
+        }
+
+        // Find products based on the filter
+        const findProducts = await Product.find(filter)
             .populate('images')
             .skip((page - 1) * limit)
-            .limit(limit)
+            .limit(limit);
 
+        // Retrieve cart product IDs (as in your original code)
         let cartProductIds;
         if (user) {
             if (user.cart) {
                 cartProductIds = user.cart.map(cartItem => cartItem.product.toString());
             }
-
         } else {
             cartProductIds = null;
-
         }
 
-        const count = await Product.find(
-            { categoryName: { $in: listedCategoryIds }, isListed: true })
-            .countDocuments();
-
+        // Count the total number of matching products
+        const count = await Product.find(filter).countDocuments();
 
         res.render('./shop/pages/shopping', {
             products: findProducts,
@@ -256,7 +311,7 @@ const shopping = asyncHandler(async (req, res) => {
             cartProductIds,
             user,
             currentPage: page,
-            totalPages: Math.ceil(count / limit) // Calculating total pages
+            totalPages: Math.ceil(count / limit)
         });
     } catch (error) {
         throw new Error(error);
@@ -267,7 +322,7 @@ const shopping = asyncHandler(async (req, res) => {
 // view Product Page--
 const viewProduct = asyncHandler(async (req, res) => {
     try {
-        const id = req.params.id 
+        const id = req.params.id
         const user = req.user
         const findProduct = await Product.findOne({ _id: id }).populate('categoryName').populate('images')
         if (!findProduct) {
@@ -394,6 +449,21 @@ const wishlist = asyncHandler(async (req, res) => {
     }
 })
 
+// add to wishlist --
+const addTowishlist = asyncHandler(async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const productId = req.params.id
+
+        const findProduct = await Product.findOne({ _id: productId })
+        const addtoWishlist = await User.findByIdAndUpdate(userId, { $push: { wishlist: findProduct._id } })
+        // res.render('./shop/pages/wishlist')
+        res.redirect('/')
+    } catch (error) {
+        throw new Error(error)
+    }
+})
+
 // contact page--
 const contact = asyncHandler(async (req, res) => {
     try {
@@ -427,6 +497,7 @@ module.exports = {
     shopping,
     viewProduct,
     wishlist,
+    addTowishlist,
     contact,
     aboutUs,
     forgotPasswordpage,
