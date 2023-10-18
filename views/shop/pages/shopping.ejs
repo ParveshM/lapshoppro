@@ -25,23 +25,26 @@
                     <div class="sidebar-widget mb-50">
                         <h3 class="sidebar-title">Search Products</h3>
                         <div class="sidebar-search">
-                            <form action="#">
-                                <input placeholder="Search Products..." type="text">
+                            <form action="/shop" method="GET">
+                                <input placeholder="Search Products..." type="text" name="search">
                                 <button><i class="ti-search"></i></button>
                             </form>
                         </div>
                     </div>
-                    <div class="sidebar-widget mb-40">
+                    <div class="sidebar-widget mb-20">
                         <h3 class="sidebar-title">Filter by Price</h3>
-                        <div class="price_filter">
-                            <div id="slider-range"></div>
-                            <div class="price_slider_amount">
-                                <div class="label-input">
-                                    <label>price : </label>
-                                    <input type="text" id="amount" name="price" placeholder="Add Your Price" />
-                                </div>
-                                <button type="button">Filter</button>
-                            </div>
+                        <div class="sidebar-categories">
+                            <ul>
+                                <li><a href="/shop">
+                                        Default
+                                    </a></li>
+                                <li><a href="/shop?sort=lowToHigh" id="lowToHigh">
+                                        Low to High
+                                    </a></li>
+                                <li><a href="/shop?sort=highToLow" id="highToLow">
+                                        High to low
+                                    </a></li>
+                            </ul>
                         </div>
                     </div>
                     <% if (products.length> 0) { %>
@@ -55,7 +58,7 @@
 
                                         <% category.forEach(element=> { %>
 
-                                            <li><a href="/shop?category=<%= element._id %>">
+                                            <li><a href="/shop?p=<%= currentPage %>&category=<%= element._id %>">
                                                     <%= element.categoryName %>
                                                 </a></li>
                                             <% }); %>
@@ -131,8 +134,8 @@
                                                 <div
                                                     class="product-wrapper mb-30 single-product-list product-list-right-pr mb-60">
                                                     <div class="product-img list-img-width">
-                                                        <% if (Array.isArray(element.images) &&
-                                                            element.images.length> 0) { %>
+                                                        <% if (Array.isArray(element.images) && element.images.length>
+                                                            0) { %>
                                                             <a href="/viewProduct/<%= element?._id %>">
                                                                 <img src="<%= element.images[0].imageUrl %>"
                                                                     alt="ProductImage">
@@ -206,45 +209,88 @@
                 <div class="pagination-style mt-10 text-center">
                     <ul>
                         <% if (currentPage> 1) { %>
-                            <li><a href="?p=<%= parseInt(currentPage) - 1 %>"><i class="ti-angle-left"></i></a></li>
+                            <li><a href="#" onclick="navigatePage(`<%= parseInt(currentPage) - 1 %>`)"><i
+                                        class="ti-angle-left"></i></a></li>
                             <% } else { %>
                                 <li class="disabled"><span><i class="ti-angle-left"></i></span></li>
                                 <% } %>
 
                                     <% for (let i=1; i <=totalPages; i++) { %>
                                         <li class="<%= i === currentPage ? 'active' : '' %>">
-                                            <a href="?p=<%= i %>">
+                                            <a href="#" onclick="navigatePage(`<%= i %>`)">
                                                 <%= i %>
+
                                             </a>
                                         </li>
                                         <% } %>
 
                                             <% if (currentPage < totalPages) { %>
-                                                <li><a href="?p=<%= parseInt(currentPage) + 1 %>">
-                                                        <i class="ti-angle-right"></i></a>
-                                                </li>
+                                                <li><a href=""
+                                                        onclick="navigatePage(`<%= parseInt(currentPage) + 1 %>`)">
+                                                        <i class="ti-angle-right"></i>
+                                                    </a></li>
                                                 <% } else { %>
                                                     <li class="disabled"><span><i class="ti-angle-right"></i></span>
                                                     </li>
-                                                <% } %>
-                        </ul>
-                    </div>
+                                                    <% } %>
+                    </ul>
                 </div>
             </div>
         </div>
     </div>
+</div>
+
 <style>
     hr {
         margin-bottom: 20px !important;
         color: grey;
-        /* Set the color you want */
         border: 0;
-        /* Remove any border (optional) */
         height: 1px;
-        /* Set the desired height (1px for a horizontal line) */
         background-color: grey;
-        /* Set the background color to match the line color */
         margin: 10px 0;
-        /* Adjust margin as needed */
     }
 </style>
+
+<script>
+    const query = window.location.search;
+    const queryParams = new URLSearchParams(query);
+    const lowtoHigh = document.getElementById('lowToHigh')
+    const highToLow = document.getElementById('highToLow')
+    const pages = queryParams.get('p')
+    const selectedCategory = queryParams.get('category')
+    const baseURL = 'http://localhost:3000/shop';
+
+    const queryParameters = [];
+
+    if (selectedCategory) {
+        queryParameters.push(`category=${selectedCategory}`);
+    }
+
+    // Use the finalURL for your API request or redirection
+    lowtoHigh.addEventListener('click', (e) => {
+        e.preventDefault()
+        queryParameters.push(`sort=lowtoHigh`);
+
+        const finalURL = baseURL + (queryParameters.length > 0 ? `?${queryParameters.join('&')}` : '');
+        console.log(finalURL);
+        window.location.href = finalURL
+    })
+
+    highToLow.addEventListener('click', (e) => {
+        e.preventDefault()
+        console.log('butt clicked');
+        queryParameters.push(`sort=highToLow`);
+        const finalURL = baseURL + (queryParameters.length > 0 ? `?${queryParameters.join('&')}` : '');
+        console.log(finalURL);
+        window.location.href = finalURL
+
+    })
+
+    function navigatePage(page) {
+        const queryParams = new URLSearchParams(window.location.search);
+        queryParams.set('p', page); // Update the 'p' query parameter with the new page value
+        const newURL = `${window.location.pathname}?${queryParams.toString()}`;
+        window.location.href = newURL; // Navigate to the new URL
+    }
+
+</script>
