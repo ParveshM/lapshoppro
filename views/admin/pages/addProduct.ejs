@@ -1,7 +1,11 @@
 <div class="container ">
     <h2 mt-2>Add Product</h2>
 
-    <form action="/admin/product/addProduct" method="post" enctype="multipart/form-data">
+    <form action="/admin/product/addProduct" method="post" enctype="multipart/form-data"
+        onsubmit=" return validateProductForm()">
+        <!-- <div class="alert alert-danger fade show mt-3 col-md-6 text-center" id="error-message" role="alert"
+            style="display: none; ">
+        </div> -->
         <div class="card">
             <div class="card-body">
                 <hr class="mb-4 mt-0">
@@ -12,20 +16,26 @@
                     <div class="col-md-9">
                         <div class="mb-4">
                             <label class="form-label">Product title</label>
-                            <input type="text" placeholder="Type here" name="title" class="form-control">
+                            <input type="text" placeholder="Type here" id="title" name="title"
+                                class="form-control common-input">
+                            <div class="error-message"></div> <!-- Error message for title -->
                         </div>
                         <div class="mb-4">
                             <label class="form-label">Description</label>
-                            <textarea placeholder="Type here" class="form-control" name="description"
-                                rows="4"></textarea>
+                            <textarea placeholder="Type here" class="form-control common-input" id="description"
+                                name="description" rows="2"></textarea>
+                            <div class="error-message"></div> <!-- Error message for description -->
                         </div>
                         <div class="mb-4">
                             <label class="form-label">Colors</label>
-                            <input type="text" placeholder="Type here" name="color" class="form-control">
+                            <input type="text" placeholder="Type here" id="color" name="color"
+                                class="form-control common-input">
+                            <div class="error-message"></div> <!-- Error message for color -->
                         </div>
                         <div class="mb-4">
                             <label class="form-label">Brand name</label>
-                            <input placeholder="Type here" class="form-control" name="brand">
+                            <input placeholder="Type here" id="brand" class="form-control common-input" name="brand">
+                            <div class="error-message"></div> 
                         </div>
                     </div> <!-- col.// -->
                 </div> <!-- row.// -->
@@ -37,7 +47,7 @@
                     </div>
                     <div class="col-md-9">
                         <div class="mb-4">
-                            <select class="form-select" name="categoryName" id="category" required>
+                            <select class="form-select" name="categoryName" id="category">
                                 <option value="">Select category</option>
                                 <% catList.forEach(category=> { %>
                                     <option value="<%= category?._id %>">
@@ -45,6 +55,7 @@
                                     </option>
                                     <% }) %>
                             </select>
+                            <div class="error-message"></div> 
                         </div>
                     </div>
                 </div>
@@ -57,11 +68,14 @@
                     <div class="col-md-9">
                         <div class="mb-4">
                             <label for="Productprice">Product Price</label>
-                            <input type="text" placeholder="₹" name="productPrice" class="form-control">
+                            <input type="text" placeholder="₹" name="productPrice" id="productPrice"
+                                class="form-control">
+                                <div class="error-message"></div> 
                         </div>
                         <div class="mb-4">
                             <label for="salePrice">Sale Price</label>
-                            <input type="text" placeholder="₹" name="salePrice" class="form-control">
+                            <input type="text" placeholder="₹" name="salePrice" id="salePrice" class="form-control">
+                            <div class="error-message"></div> 
                         </div>
                     </div> <!-- col.// -->
                 </div> <!-- row.// -->
@@ -70,19 +84,20 @@
 
                 <div class="row">
                     <div class="col-md-3">
-                        <h6>4. Units</h6>
+                        <h6>4. Stock</h6>
                     </div>
                     <div class="col-md-9">
                         <div class="mb-4">
                             <label for="Quantity">Quantity</label>
-                            <input type="text" placeholder="No's" name="quantity" class="form-control">
+                            <input type="text" placeholder="No's" name="quantity" id="quantity" class="form-control">
+                            <div class="error-message"></div> 
                         </div>
                     </div> <!-- col.// -->
                 </div> <!-- row.// -->
                 <hr class="mb-4 mt-0">
 
                 <div class="row">
-                    
+
                     <div class="col-md-3">
                         <h6>5. Media</h6>
                     </div>
@@ -90,7 +105,9 @@
                         <div class="card p-md-5 p-2 me-md-5">
                             <h5>Choose product images </h5>
                             <div class="form-group mt-2">
-                                <input type="file" class="form-control " name="images" id="image" accept="image/*" multiple required>
+                                <input type="file" class="form-control " name="images" id="image" accept="image/*"
+                                    multiple>
+                                    <div class="error-message"></div> 
                             </div>
                         </div>
                         <button type="submit" class="btn btn-primary mb-4 mt-2 ">Add Product</button>
@@ -101,12 +118,4 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    const message = document.getElementById('message');
-
-    const hide = () => {
-        message.style.display = 'none';
-    }
-
-    setTimeout(hide, 3000);
-</script>
+<script src="/admin/assets/js/admin/addProductValidation.js"></script>
