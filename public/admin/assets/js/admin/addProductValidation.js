@@ -81,7 +81,6 @@ function validateProductForm() {
         displayError(imageInput, "Field is required");
         return false; // Prevent form submission
     }
-
     const selectedFiles = imageInput.files;
     const maxImageCount = 4;
     if (selectedFiles.length > maxImageCount) {

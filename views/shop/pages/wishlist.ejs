@@ -22,30 +22,43 @@
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <h1 class="cart-heading">wishlist</h1>
                 <form action="#">
-                    <div class="table-content table-responsive">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>remove</th>
-                                    <th>images</th>
-                                    <th>Product</th>
-                                    <th>Price</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="product-remove"><a href="#"><i class="pe-7s-close"></i></a></td>
-                                    <td class="product-thumbnail">
-                                        <a href="#"><img src="assets/img/cart/2.jpg" alt=""></a>
-                                    </td>
-                                    <td class="product-name"><a href="#">Vestibulum dictum</a></td>
-                                    <td class="product-price-cart"><span class="amount">$150.00</span></td>
-                                    
-                                </tr>
-                               
-                            </tbody>
-                        </table>
-                    </div>
+                    <% if (wishlist.length> 0) { %>
+                        <div class="table-content table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>remove</th>
+                                        <th>images</th>
+                                        <th>Product</th>
+                                        <th>Price</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% wishlist.forEach(item=> { %>
+                                        <tr>
+                                            <td class="product-remove"><a href="/removeWishlist/<%= item._id %>"><i
+                                                        class="pe-7s-close"></i></a></td>
+                                            <td class="product-thumbnail">
+                                                <a href="/viewProduct/<%= item._id %>"><img
+                                                        src="<%= item.images[0].thumbnailUrl %>" alt="Product image"
+                                                        style="max-width: 100px;"></a>
+                                            </td>
+                                            <td class="product-name"><a href="/viewProduct/<%= item._id %>">
+                                                    <%= item.title %>
+                                                </a></td>
+                                            <td class=" product-price-cart"><span class="amount">₹<%= item.salePrice %>
+                                                </span></td>
+                                        </tr>
+                                        <% }); %>
+                                            <% } else { %>
+                                                <div class="d-flex justify-content-center align-items-center">
+                                                    <img src="/assets/img/no-wish-list.png" alt="">
+                                                </div>
+                                                <% } %>
+
+                                </tbody>
+                            </table>
+                        </div>
                 </form>
             </div>
         </div>
