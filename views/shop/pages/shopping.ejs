@@ -185,13 +185,25 @@
                                                                                         <% } %>
                                                             </div>
                                                             <div class="product-list-wishlist">
-                                                                <a class="btn-hover list-btn-wishlist" href="#">
-                                                                    <i class="pe-7s-like"></i>
+                                                                <a class="btn-hover list-btn-wishlist" id="wishlist"
+                                                                    href=""
+                                                                    onclick="addTowishlist(`<%= element._id %>`)">
+                                                                    <% if (userWishlist.includes(element._id)) { %>
+                                                                        <i class="pe-7s-like" style="color: red;"></i>
+                                                                        <% } else { %>
+                                                                            <i class="pe-7s-like"></i>
+                                                                            <% } %>
                                                                 </a>
                                                             </div>
 
-                                                        </div>
 
+                                                        </div>
+                                                        <div id="fixed-div"
+                                                            class="mt-2 fixed-div border rounded-pill p-2"
+                                                            style="display: none;">
+                                                            <p id="wishlist-message"
+                                                                class=" mb-0 text-light text-center"></p>
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <hr>
@@ -249,49 +261,12 @@
         background-color: grey;
         margin: 10px 0;
     }
+
+    .fixed-div {
+        position: fixed;
+        bottom: 10px;
+        right: 40px;
+    }
 </style>
 
-// Script for filtering product
-<script>
-    const query = window.location.search;
-    const queryParams = new URLSearchParams(query);
-    const lowtoHigh = document.getElementById('lowToHigh')
-    const highToLow = document.getElementById('highToLow')
-    const pages = queryParams.get('p')
-    const selectedCategory = queryParams.get('category')
-    const baseURL = 'http://localhost:3000/shop';
-
-    const queryParameters = [];
-
-    if (selectedCategory) {
-        queryParameters.push(`category=${selectedCategory}`);
-    }
-
-    // Use the finalURL for your API request or redirection
-    lowtoHigh.addEventListener('click', (e) => {
-        e.preventDefault()
-        queryParameters.push(`sort=lowtoHigh`);
-
-        const finalURL = baseURL + (queryParameters.length > 0 ? `?${queryParameters.join('&')}` : '');
-        console.log(finalURL);
-        window.location.href = finalURL
-    })
-
-    highToLow.addEventListener('click', (e) => {
-        e.preventDefault()
-        console.log('butt clicked');
-        queryParameters.push(`sort=highToLow`);
-        const finalURL = baseURL + (queryParameters.length > 0 ? `?${queryParameters.join('&')}` : '');
-        console.log(finalURL);
-        window.location.href = finalURL
-
-    })
-
-    function navigatePage(page) {
-        const queryParams = new URLSearchParams(window.location.search);
-        queryParams.set('p', page); // Update the 'p' query parameter with the new page value
-        const newURL = `${window.location.pathname}?${queryParams.toString()}`;
-        window.location.href = newURL; // Navigate to the new URL
-    }
-
-</script>
+<script src="/assets/js/shop/wishlist.js"></script>

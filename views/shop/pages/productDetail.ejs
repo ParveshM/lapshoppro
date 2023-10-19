@@ -77,11 +77,11 @@
                         <span>₹<%= (product.salePrice).toLocaleString() %></span>
                     </div>
                     <div class="stock mb-3 text-warning">
-                        <% if (product.quantity < 5) { %>
-                            <span>
-                                Hurry Only <%= product.quantity%> left!
-                            </span>
-                            <% }%>
+                        <% if (product.quantity>1 && product.quantity < 5 ) { %>
+                                <span>
+                                    Hurry Only <%= product.quantity%> left!
+                                </span>
+                                <% }%>
                     </div>
 
                     <div class="quick-view-select">
@@ -113,7 +113,15 @@
                                                     <% } %>
                         </div>
                         <div class="quickview-btn-wishlist">
-                            <a class="btn-hover" href="/addTo-wishlist/<%= product._id %>"><i class="pe-7s-like"></i></a>
+                            <a class="btn-hover" href="" onclick="addTowishlist(`<%= product._id %>`)">
+                                <% if (wishlist.includes(product._id)) { %>
+                                    <i class="pe-7s-like" style="color: red;"></i>
+                                    <% } else { %>
+                                        <i class="pe-7s-like"></i>
+                                        <% } %>
+                        </div>
+                        <div id="fixed-div" class="mt-2 fixed-div border rounded-pill p-2" style="display: none;">
+                            <p id="wishlist-message" class=" mb-0 text-light text-center"></p>
                         </div>
                     </div>
                     <div class="product-details-cati-tag mt-35">
@@ -228,6 +236,7 @@
                                                 <i class="pe-7s-cart"></i>
                                             </a>
                                         </div>
+
                                     </div>
                         </div>
                     </div>
@@ -299,4 +308,11 @@
         /* Adjust font size as needed */
         /* Add more styles as desired */
     }
+
+    .fixed-div {
+        position: fixed;
+        bottom: 10px;
+        right: 40px;
+    }
 </style>
+<script src="/assets/js/shop/wishlist.js"></script>

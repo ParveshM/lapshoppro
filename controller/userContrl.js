@@ -6,9 +6,9 @@ const Banner = require('../models/bannerModel')
 const asyncHandler = require('express-async-handler')
 const { sendOtp, generateOTP } = require('../utility/nodeMailer')
 const { forgetPassMail } = require('../utility/forgetPassMail')
+const { isValidQueryId } = require('../middlewares/idValidation')
 const crypto = require('crypto')
 const bcrypt = require('bcrypt')
-const { log } = require('console')
 
 // loadLandingPage---
 const loadLandingPage = asyncHandler(async (req, res) => {
@@ -224,7 +224,6 @@ const shopping = asyncHandler(async (req, res) => {
         const user = req.user;
         const page = req.query.p || 1;
         const limit = 2;
-        console.log('quere', req.query);
         // Get the IDs of the listed categories
         const listedCategories = await Category.find({ isListed: true });
         const listedCategoryIds = listedCategories.map(category => category._id);
@@ -237,6 +236,9 @@ const shopping = asyncHandler(async (req, res) => {
 
         // Check if a category filter is provided in the request
         if (req.query.category) {
+            if (!isValidQueryId(req.query.category)) {
+                return res.render('./shop/pages/404')
+            }
             filter.categoryName = req.query.category;
         }
 
@@ -258,6 +260,9 @@ const shopping = asyncHandler(async (req, res) => {
         }
         // Add the ability to filter by both category and price
         if (req.query.category && req.query.sort) {
+            if (!isValidQueryId(req.query.category)) {
+                return res.render('./shop/pages/404')
+            }
             filter.categoryName = req.query.category;
             console.log(req.query.sort === 'lowtoHigh');
 
@@ -274,7 +279,6 @@ const shopping = asyncHandler(async (req, res) => {
             .skip((page - 1) * limit)
             .limit(limit)
             .sort(sortCriteria);
-        console.log('product found', findProducts);
         // Retrieve cart product IDs (as in your original code)
         let cartProductIds;
         if (user) {
@@ -287,12 +291,14 @@ const shopping = asyncHandler(async (req, res) => {
 
         // Count the total number of matching products
         const count = await Product.find(filter).countDocuments();
+        const userWishlist = user.wishlist
 
         res.render('./shop/pages/shopping', {
             products: findProducts,
             category: listedCategories,
             cartProductIds,
             user,
+            userWishlist,
             currentPage: page,
             totalPages: Math.ceil(count / limit),
         });
@@ -319,7 +325,7 @@ const viewProduct = asyncHandler(async (req, res) => {
         } else {
             cartProductIds = null;
         }
-        res.render('./shop/pages/productDetail', { product: findProduct, products, cartProductIds })
+        res.render('./shop/pages/productDetail', { product: findProduct, products, cartProductIds, wishlist: user.wishlist })
     } catch (error) {
         throw new Error(error)
     }
@@ -427,7 +433,15 @@ const resetPassword = asyncHandler(async (req, res) => {
 // wishlist--
 const wishlist = asyncHandler(async (req, res) => {
     try {
-        res.render('./shop/pages/wishlist')
+        const user = req.user
+        const userWishlist = await User.findById({ _id: user.id }).populate({
+            path: 'wishlist',
+            populate: {
+                path: 'images',
+            },
+        });
+        console.log('dsfs', userWishlist.wishlist);
+        res.render('./shop/pages/wishlist', { wishlist: userWishlist.wishlist })
     } catch (error) {
         throw new Error(error)
     }
@@ -438,11 +452,28 @@ const addTowishlist = asyncHandler(async (req, res) => {
     try {
         const userId = req.user.id;
         const productId = req.params.id
+        // checking if the product already existing in the wishlist
+        const user = await User.findById(userId);
+        if (user.wishlist.includes(productId)) {
+            console.log('product found');
+            await User.findByIdAndUpdate(userId, { $pull: { wishlist: productId } })
+            return res.json({ success: false, message: 'Product removed from wishlist' });
+        }
 
-        const findProduct = await Product.findOne({ _id: productId })
-        const addtoWishlist = await User.findByIdAndUpdate(userId, { $push: { wishlist: findProduct._id } })
-        // res.render('./shop/pages/wishlist')
-        res.redirect('/')
+        await User.findByIdAndUpdate(userId, { $push: { wishlist: productId } })
+        res.json({ success: true, message: 'Product Added to wishlist' })
+    } catch (error) {
+        throw new Error(error)
+    }
+})
+
+// Remove item from wishlist
+const removeItemfromWishlist = asyncHandler(async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const productId = req.params.id
+        await User.findByIdAndUpdate(userId, { $pull: { wishlist: productId } })
+        res.redirect('/wishlist')
     } catch (error) {
         throw new Error(error)
     }
@@ -482,6 +513,7 @@ module.exports = {
     viewProduct,
     wishlist,
     addTowishlist,
+    removeItemfromWishlist,
     contact,
     aboutUs,
     forgotPasswordpage,

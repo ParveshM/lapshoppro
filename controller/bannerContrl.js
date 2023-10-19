@@ -29,24 +29,6 @@ const createBanner = expressHandler(async (req, res) => {
 
     try {
         console.log('body', req.body);
-        // if (req.file) {
-        //     const base64Image = req.body.base64_image; // Assuming you have the base64 image in your request body
-        //     const dataUrlParts = base64Image.split(';base64,');
-        //     const contentType = dataUrlParts[0].split(':')[1];
-        //     const data = Buffer.from(dataUrlParts[1], 'base64');
-        //     const timestamp = new Date().toISOString().replace(/[-T:]/g, '').split('.')[0];
-        //     const thumbName = "thumb_" + timestamp + ".png";
-        //     const thumbPath = path.join(__dirname, '../public/admin/uploads', thumbName);
-
-        //     fs.writeFileSync(thumbPath, data);
-
-        //     // Extract the name of the image from thumbPath
-        //     const imageName = path.basename(thumbPath);
-
-        //     console.log('Image name:', imageName);
-        //     console.log('Image path:', thumbPath);
-        // }
-
         let bannerImage = [];
         if (req.file) {
             bannerImage.push({
@@ -79,7 +61,7 @@ const updateBannerStatus = expressHandler(async (req, res) => {
         const bannerId = req.params.id;
         const status = req.body.isActive
         const findBanner = await Banner.findByIdAndUpdate(bannerId, { isActive: status })
-        res.json({success:true})
+        res.json({ success: true})
     } catch (error) {
         throw new Error(error)
     }
