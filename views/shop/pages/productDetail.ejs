@@ -71,93 +71,103 @@
                             <span>2 Rating's</span>
                         </div>
                     </div>
-                    <span class="text-decoration-line-through">
-                        ₹<%= (product.productPrice).toLocaleString() %></span>
-                    <div class="details-price">
-                        <span>₹<%= (product.salePrice).toLocaleString() %></span>
-                    </div>
-                    <div class="stock mb-3 text-warning">
-                        <% if (product.quantity>1 && product.quantity < 5 ) { %>
-                                <span>
-                                    Hurry Only <%= product.quantity%> left!
-                                </span>
-                                <% }%>
-                    </div>
+                    <% if (product.productPrice !==product.salePrice) { %>
+                        <span class="text-decoration-line-through">
+                            ₹<%= (product.productPrice).toLocaleString() %></span>
+                        <% } %>
+                            <div class="details-price mb-0">
+                                <span>₹<%= (product.salePrice).toLocaleString() %></span>
+                            </div>
+                            <div class="stock mb-2 text-warning">
+                                <% if (product.quantity>1 && product.quantity < 5 ) { %>
+                                        <span>
+                                            Hurry Only <%= product.quantity%> left!
+                                        </span>
+                                        <% }%>
+                            </div>
 
-                    <div class="quick-view-select">
-                        <div class="select-option-part">
-                            <ul class="row">
-                                <li class="col-auto"><label>Color*</label></li>
-                                <li class="col-auto">
-                                    <%= product.color %>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="quickview-plus-minus">
-                        <div class="product-list-cart">
-                            <% if (!user) { %>
-                                <a class="btn-hover list-btn-style" href="/login">Add to
-                                    Cart</a>
-                                <% }else { %>
-                                    <% if (cartProductIds.includes(product._id.toString())) { %>
-                                        <a class="btn-hover list-btn-style" href="/cart">Go Cart
-                                        </a>
-                                        <% } else if (product.quantity> 0) { %>
-                                            <a class="btn-hover list-btn-style" href="/addtoCart/<%= product._id %>">Add
-                                                to
-                                                Cart</a>
+                            <div class="quick-view-select">
+                                <div class="select-option-part my-0">
+                                    <ul class="list-unstyled">
+                                        <li class="d-inline-block"><label>Color*</label></li>
+                                        <li class="d-inline-block">
+                                            <%= product.color %>
+                                    </ul>
+                                  </div>
+                            </div>
+                            <div class="quickview-plus-minus">
+                                <div class="product-list-cart">
+                                    <% if (!user) { %>
+                                        <a class="btn-hover list-btn-style" href="/login">Add to
+                                            Cart</a>
+                                        <% }else { %>
+                                            <% if (cartProductIds.includes(product._id.toString())) { %>
+                                                <a class="btn-hover list-btn-style" href="/cart">Go Cart
+                                                </a>
+                                                <% } else if (product.quantity> 0) { %>
+                                                    <a class="btn-hover list-btn-style"
+                                                        href="/addtoCart/<%= product._id %>">Add
+                                                        to
+                                                        Cart</a>
+                                                    <% } else { %>
+                                                        <h3>Out of Stock</h3>
+                                                        <% } %>
+                                                            <% } %>
+                                </div>
+                                <div class="quickview-btn-wishlist">
+                                    <a class="btn-hover" href="" onclick="addTowishlist(`<%= product._id %>`)">
+                                        <% if (wishlist.includes(product._id)) { %>
+                                            <i class="pe-7s-like" style="color: red;"></i>
                                             <% } else { %>
-                                                <h3>Out of Stock</h3>
+                                                <i class="pe-7s-like"></i>
                                                 <% } %>
-                                                    <% } %>
-                        </div>
-                        <div class="quickview-btn-wishlist">
-                            <a class="btn-hover" href="" onclick="addTowishlist(`<%= product._id %>`)">
-                                <% if (wishlist.includes(product._id)) { %>
-                                    <i class="pe-7s-like" style="color: red;"></i>
-                                    <% } else { %>
-                                        <i class="pe-7s-like"></i>
+                                </div>
+                                <div id="fixed-div" class="mt-2 fixed-div border rounded-pill p-2"
+                                    style="display: none;">
+                                    <p id="wishlist-message" class=" mb-0 text-light text-center"></p>
+                                </div>
+                            </div>
+                            <div class="product-details-cati-tag mt-35">
+                                <ul>
+                                    <li class="categories-title">Category :</li>
+                                    <li><a href="#">
+                                            <%= product.categoryName.categoryName %>
+                                        </a></li>
+                                    <% if (product.productPrice !==product.salePrice) { %>
+                                        <li class="d-inline-block text-success ">
+                                            <strong>
+                                                <%= product.categoryName.description %>
+                                            </strong>
+                                        </li>
                                         <% } %>
-                        </div>
-                        <div id="fixed-div" class="mt-2 fixed-div border rounded-pill p-2" style="display: none;">
-                            <p id="wishlist-message" class=" mb-0 text-light text-center"></p>
-                        </div>
-                    </div>
-                    <div class="product-details-cati-tag mt-35">
-                        <ul>
-                            <li class="categories-title">Category :</li>
-                            <li><a href="#">
-                                    <%= product.categoryName.categoryName %>
-                                </a></li>
-                        </ul>
-                    </div>
-                    <br>
-                    <div class="product-share">
-                        <ul>
-                            <li class="categories-title">Share :</li>
-                            <li>
-                                <a href="#">
-                                    <i class="icofont icofont-social-facebook"></i>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                    <i class="icofont icofont-social-twitter"></i>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                    <i class="icofont icofont-social-pinterest"></i>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                    <i class="icofont icofont-social-flikr"></i>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
+                                </ul>
+                            </div>
+                            <br>
+                            <div class="product-share">
+                                <ul>
+                                    <li class="categories-title">Share :</li>
+                                    <li>
+                                        <a href="#">
+                                            <i class="icofont icofont-social-facebook"></i>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#">
+                                            <i class="icofont icofont-social-twitter"></i>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#">
+                                            <i class="icofont icofont-social-pinterest"></i>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#">
+                                            <i class="icofont icofont-social-flikr"></i>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
                 </div>
             </div>
         </div>

@@ -1,6 +1,48 @@
+<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+<div class="container my-3">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Edit Category</h3>
+                </div>
+                <div class="card-body">
+                    <form action="" method="post">
+                        <div class="form-group">
+                            <label for="categoryName">Category Name</label>
+                            <input type="text" class="form-control" name="updatedName" id="categoryName"
+                                value="" placeholder="Enter category name" required>
+                            <label for="categoryName" class="mt-2">Offer Percentage:</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="Offer" name="offer">
+                                <div class="input-group-append">
+                                    <span class="input-group-text">%</span>
+                                </div>
+                            </div>
+                            <label for="startDate" class="mt-2">Start Date:</label>
+                            <input type="date" class="form-control" id="startDate" name="startDate">
+                            <label for="endDate" class="mt-2">End Date:</label>
+                            <input type="date" class="form-control" id="endDate" name="endDate">
+
+                            <label for="description" class="mt-2">Description:</label>
+                            <textarea class="form-control" id="description" rows="1" name="description"></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Update Category</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> -->
+
+
+
+
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
-<div class="container mt-5">
+<div class="container my-3">
     <div class="row justify-content-center">
         <div class="col-md-6">
             <div class="card">
@@ -13,6 +55,25 @@
                             <label for="categoryName">Category Name</label>
                             <input type="text" class="form-control" name="updatedName" id="categoryName"
                                 value="<%= values.categoryName %>" placeholder="Enter category name" required>
+                            <label for="categoryName" class="mt-2">Offer Percentage:</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="Offer" name="offer"
+                                    value="<%= values.offer ? values.offer:'' %>">
+                                <div class="input-group-append">
+                                    <span class="input-group-text">%</span>
+                                </div>
+                            </div>
+                            <label for="startDate" class="mt-2">Start Date:</label>
+                            <input type="date" class="form-control" id="startDate" name="startDate"
+                                value="<%= values.startDate ? values.startDate.toISOString().split('T')[0] : '' %>">
+
+                            <label for="endDate" class="mt-2">End Date:</label>
+                            <input type="date" class="form-control" id="endDate" name="endDate"
+                                value="<%= values.endDate ? values.endDate.toISOString().split('T')[0] :'' %>">
+
+                            <label for="description" class="mt-2">Description:</label>
+                            <textarea class="form-control" id="description" rows="1"
+                                name="description"><%= values.description ? values.description:'' %></textarea>
                         </div>
 
                         <button type="submit" class="btn btn-primary">Update Category</button>
