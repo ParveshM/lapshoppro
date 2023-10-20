@@ -317,6 +317,7 @@ const shopping = asyncHandler(async (req, res) => {
         // Find products based on the filter
         const findProducts = await Product.find(filter)
             .populate('images')
+            .populate('categoryName')
             .skip((page - 1) * limit)
             .limit(limit)
             .sort(sortCriteria);

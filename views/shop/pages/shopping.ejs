@@ -66,7 +66,6 @@
                                                 <% } else { %>
                                                     <h3>NO CATEGORIES</h3>
                                                     <% } %>
-
                                 </ul>
                             </div>
                         </div>
@@ -77,23 +76,6 @@
             <div class="col-lg-9 order-1 order-lg-2">
                 <div class="shop-product-wrapper">
                     <div class="shop-bar-area">
-                        <div class="shop-bar pb-60">
-                            <div class="shop-found-selector">
-                                <div class="shop-found">
-                                    <p><span>23</span> Product Found of <span>50</span></p>
-                                </div>
-                                <div class="shop-selector">
-                                    <label>Sort By : </label>
-                                    <select name="select">
-                                        <option value="">Default</option>
-                                        <option value="">A to Z</option>
-                                        <option value=""> Z to A</option>
-                                        <option value="">In stock</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                        </div>
 
                         <div class="shop-product-content tab-content">
                             <div id="grid-sidebar" class="tab-pane fade active show">
@@ -150,14 +132,27 @@
                                                                     <%= element.title %>
                                                                 </a></h4>
                                                             <span class="text-decoration-line-through">
-                                                                ₹<%= (element.productPrice).toLocaleString() %></span>
+                                                                <% if (element.productPrice !==element.salePrice) { %>
+                                                                    ₹<%= element.productPrice %>
+                                                                        <% } %>
+                                                            </span>
                                                             <span>₹<%= (element.salePrice).toLocaleString() %></span>
                                                             <p>
-                                                            <ul class="row">
-                                                                <li class="col-auto "><label>Color:</label></li>
-                                                                <li class="col-auto">
+                                                            <ul class="list-unstyled">
+                                                                <li class="d-inline-block"><label>Color:</label></li>
+                                                                <li class="d-inline-block">
                                                                     <%= element.color %>
+                                                            </ul>
+                                                            <ul class="list-unstyled">
+                                                                <li class="d-inline-block"><label>Category:</label></li>
+                                                                <li class="d-inline-block">
+                                                                    <%= element.categoryName.categoryName %>
                                                                 </li>
+                                                                <% if (element.productPrice !==element.salePrice) { %>
+                                                                    <li class="d-inline-block text-success ">
+                                                                       <strong><%= element.categoryName.description %></strong> 
+                                                                    </li>
+                                                                    <% } %>
                                                             </ul>
                                                             </p>
                                                         </div>
