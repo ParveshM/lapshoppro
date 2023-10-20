@@ -30,6 +30,10 @@ const userSchema = new Schema({
     wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }],
     wallet: { type: mongoose.Schema.Types.ObjectId, ref: 'Wallet' },
     coupons: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Coupon' }],
+    referralCode:{
+        type:String,
+        unique:true
+    },
     passwordChangedAt: Date,
     passwordResetToken: String,
     passwordResetTokenExpires: Date,

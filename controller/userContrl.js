@@ -7,6 +7,7 @@ const asyncHandler = require('express-async-handler')
 const { sendOtp, generateOTP } = require('../utility/nodeMailer')
 const { forgetPassMail } = require('../utility/forgetPassMail')
 const { isValidQueryId } = require('../middlewares/idValidation')
+const { generateReferralCode, creditforRefferedUser, creditforNewUser } = require('../helpers/referralHelper')
 const crypto = require('crypto')
 const bcrypt = require('bcrypt')
 
@@ -33,6 +34,7 @@ const loadRegister = async (req, res) => {
 // inserting User-- 
 const insertUser = async (req, res) => {
     try {
+        console.log('req bodt', req.body);
         const emailCheck = req.body.email;
         const checkData = await User.findOne({ email: emailCheck });
         if (checkData) {
@@ -43,10 +45,14 @@ const insertUser = async (req, res) => {
                 email: req.body.email,
                 password: req.body.password,
             };
+            if (req.body.referralCode) {
+                UserData.referralCode = req.body.referralCode
+            }
+            console.log('data for inserting', UserData);
+
 
             const OTP = generateOTP() /** otp generating **/
             req.session.otpUser = { ...UserData, otp: OTP };
-            // req.session.mail = req.body.email;  
 
             /***** otp sending ******/
             try {
@@ -80,20 +86,37 @@ const verifyOTP = asyncHandler(async (req, res) => {
         const enteredOTP = req.body.otp;
         const storedOTP = req.session.otpUser.otp; // Getting the stored OTP from the session
         const user = req.session.otpUser;
-
+        console.log('stored otp ', storedOTP , 'user' , user);
         if (enteredOTP == storedOTP) {
+            // if referral is found the reffered user get cashback
+            let userFound = null;
+            if (user.referralCode) {
+                const referralCode = user.referralCode.trim()
+                userFound = await creditforRefferedUser(referralCode)
+            }
             const newUser = await User.create(user);
-
+            if (newUser) {
+                const referalCode = generateReferralCode(8)
+                const createWallet = await Wallet.create({ user: newUser._id })
+                newUser.wallet = createWallet._id
+                newUser.referralCode = referalCode;
+                newUser.save();
+                if (userFound) {
+                    await creditforNewUser(newUser)
+                }
+            }
             delete req.session.otpUser.otp;
+            if (!userFound) {
+                req.flash('warning', 'Registration success , Please login , Invalid referral code!')
+            } else {
+                req.flash('success', 'Registration success , Please login')
+            }
             res.redirect('/login');
         } else {
-            var messages = 'Verification failed, please check the OTP or resend it.';
+            const messages = 'Verification failed, please check the OTP or resend it.';
             console.log('verification failed');
-
+            res.render('./shop/pages/verifyOTP', { messages })
         }
-        res.render('./shop/pages/verifyOTP', { messages })
-
-
     } catch (error) {
         throw new Error(error);
     }
@@ -133,15 +156,33 @@ const verifyResendOTP = asyncHandler(async (req, res) => {
         const user = req.session.otpUser;
 
         if (enteredOTP == storedOTP.otp) {
-            console.log('inside verification');
+            let userFound = null;
+            if (user.referralCode) {
+                const referralCode = user.referralCode.trim()
+                userFound = await creditforRefferedUser(referralCode)
+            }
             const newUser = await User.create(user);
             if (newUser) {
-                console.log('new user insert in resend page', newUser);
-            } else { console.log('error in insert user') }
+                const referalCode = generateReferralCode(8)
+                const createWallet = await Wallet.create({ user: newUser._id })
+                newUser.wallet = createWallet._id
+                newUser.referralCode = referalCode;
+                newUser.save();
+                if (userFound) {
+                    await creditforNewUser(newUser._id)
+                }
+            } else {
+                console.log('error in insert user')
+            }
             delete req.session.otpUser.otp;
-            res.redirect('/login');
+
+            if (!userFound) {
+                req.flash('warning', 'Registration success , Please login , Invalid referral code!')
+            } else {
+                req.flash('success', 'Registration success , Please login')
+            } res.redirect('/login');
         } else {
-            console.log('verification failed');
+            res.redirect('/register')
         }
     } catch (error) {
         throw new Error(error);

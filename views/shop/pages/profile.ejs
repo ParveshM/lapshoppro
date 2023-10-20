@@ -8,18 +8,34 @@
         <div class="col-md-6">
           <div class="mb-4">
             <h2 class="h4 fw-bold">Name:</h2>
-            <p class="lead"><%= user.userName %></p>
+            <p class="lead">
+              <%= user.userName %>
+            </p>
           </div>
           <div class="mb-4">
             <h2 class="h4 fw-bold">Email:</h2>
-            <p class="lead"><%= user.email %></p>
+            <p class="lead">
+              <%= user.email %>
+            </p>
+          </div>
+          <div class="mb-4">
+            <h2 class="h6 fw-bold">Refer a friend and earn upto 30 cashback</h2>
+            <p class="lead">
+              <span id="referral-code">
+                <%= user.referralCode %>
+              </span>
+              <button class="btn btn-sm ml-2" id="copy-button">
+                <i class="fas fa-copy text-dark fa-sm mb-3" data-toggle="tooltip" data-placement="top"></i>
+              </button>
+            </p>
           </div>
         </div>
-        <div class="col-md-6">
-          <div class="userWallet card add-btn text-center p-4"> 
+        <div class=" col-md-6">
+          <div class="userWallet card add-btn text-center p-4">
             <p class="h4 fw-bold  mb-2">My Wallet</p>
-           <a href="/wallet-history"><i class="fas fa-wallet text-warning fa-3x mb-3"></i></a>
-            <h3 class="h2 fw-bold ">₹<%= (walletBalance).toLocaleString() %></h3>
+            <a href="/wallet-history"><i class="fas fa-wallet text-warning fa-3x mb-3"></i></a>
+            <h3 class="h2 fw-bold ">₹<%= (walletBalance).toLocaleString() %>
+            </h3>
           </div>
         </div>
       </div>
@@ -64,5 +80,34 @@
     </div>
   </div>
 </main>
+<style>
+  .fa-copy {
+    font-size: 22px;
+  }
+</style>
 
+<script>
+  // Initialize Bootstrap tooltips
+  $(function () {
+    $('[data-toggle="tooltip"]').tooltip();
+  });
 
+  document.getElementById("copy-button").addEventListener("click", function () {
+    const referralCodeElement = document.getElementById("referral-code");
+    const referralCode = referralCodeElement.textContent;
+    const tempInput = document.createElement("input");
+    tempInput.value = referralCode;
+    document.body.appendChild(tempInput);
+    tempInput.select();
+    document.execCommand("copy");
+    document.body.removeChild(tempInput);
+
+    // Show the "Copied" tooltip
+    $('#copy-button').attr('title', 'Copied').tooltip('show');
+
+    // Hide the tooltip after a short delay
+    setTimeout(function () {
+      $('#copy-button').tooltip('hide');
+    }, 2000); // Adjust the duration (in milliseconds) as needed
+  });
+</script>

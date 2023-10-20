@@ -1,4 +1,4 @@
-  <div class="breadcrumb-content text-center text-dark" >
+<div class="breadcrumb-content text-center text-dark">
     <h2 style="color: black;">Login</h2>
     <ul>
         <li><a style="color: black;" href="#">Home</a></li>
@@ -6,31 +6,34 @@
     </ul>
 </div>
 <%- include('../partials/flash.ejs') %>
-<div class="register-area ptb-20 mt-0" >
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-12 col-12 col-lg-6 col-xl-6 ms-auto me-auto">
-                <div class="login">
-                    <div class="login-form-container">
-                        <div class="login-form">
-                            <form action="#" method="post">
-                                <label for="email">Email:</label>
-                                <input type="text" id="email" name="email" placeholder="Email" >
-                                <label for="password">Password:</label>
-                                <input type="password" id="password" name="password" placeholder="Password" >
-                                <div class="button-box">
-                                    <div class="login-toggle-btn">
-                                        
-                                        <a href="/forgetPassword">Forgot Password?</a>
+    <div class="register-area ptb-20 mt-0">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12 col-12 col-lg-6 col-xl-6 ms-auto me-auto">
+                    <div class="login">
+                        <div class="login-form-container">
+                            <div class="login-form">
+                                <form action="#" method="post">
+                                    <label for="email">Email:</label>
+                                    <input type="text" id="email" name="email" placeholder="Email">
+                                    <label for="password">Password:</label>
+                                    <input type="password" id="password" name="password" placeholder="Password">
+                                    <div class="button-box">
+                                        <div class="login-toggle-btn">
+                                            <a href="/forgetPassword">Forgot Password?</a>
+                                        </div>
+                                        <button type="submit" class="default-btn floatright mx-3">Login</button>
+                                        <div class="d-flex justify-content-end">
+                                            <a href="/register">Don't have an account ?</a>
+                                            <a href="/register" class="ml-2">Register now</a>
+                                        </div>
+                                        <!-- <a href="/register">Don't have an account ? Register now</a> -->
                                     </div>
-                                    <button type="submit" class="default-btn floatright mx-3 ">Login</button>
-                                <a href="/register">Don't have an account ? Register now</a>
-                                </div>
-                            </form>                          
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>

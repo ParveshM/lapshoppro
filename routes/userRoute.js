@@ -8,7 +8,7 @@ const orderController = require('../controller/orderContrl')
 const addressController = require('../controller/addressContrl')
 
 const { ensureNotAuthenticated, ensureAuthenticated } = require('../middlewares/userAuth')
-const {validateID} = require('../middlewares/idValidation')
+const { validateID } = require('../middlewares/idValidation')
 
 userRoute.use((req, res, next) => {
   req.app.set('layout', 'shop/layouts/user');
@@ -52,8 +52,8 @@ userRoute.get('/wallet-history', ensureAuthenticated, userController.viewWalletH
 userRoute.get('/shop', userController.shopping);   /* shopping page */
 userRoute.get('/viewProduct/:id', validateID, userController.viewProduct); /* view single product */
 userRoute.get('/wishlist', ensureAuthenticated, userController.wishlist);
-userRoute.get('/addTo-wishlist/:id',validateID, ensureAuthenticated, userController.addTowishlist);
-userRoute.get('/removeWishlist/:id',validateID, ensureAuthenticated, userController.removeItemfromWishlist);
+userRoute.get('/addTo-wishlist/:id', validateID, ensureAuthenticated, userController.addTowishlist);
+userRoute.get('/removeWishlist/:id', validateID, ensureAuthenticated, userController.removeItemfromWishlist);
 
 // cart_section-- 
 userRoute.get('/cart', ensureAuthenticated, cartController.loadCartPage);
@@ -75,7 +75,7 @@ userRoute.get('/deleteAddress/:id', validateID, ensureAuthenticated, addressCont
 
 //checkout and palceOrder section
 userRoute.get('/checkout', ensureAuthenticated, orderController.checkoutPage); //checkout page
-userRoute.get('/checkCart', ensureAuthenticated, orderController.checkCart); 
+userRoute.get('/checkCart', ensureAuthenticated, orderController.checkCart);
 userRoute.post('/placeOrder', ensureAuthenticated, orderController.placeOrder);
 userRoute.get('/orderPlaced', ensureAuthenticated, orderController.orderPlacedPage);
 
