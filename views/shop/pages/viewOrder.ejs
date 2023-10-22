@@ -81,11 +81,27 @@
                                                 <span>Didn't like the product ? , you can return it within 7
                                                     days.</span>
                                             </p>
-                                            <form action="/return-product/<%= order._id %>?_method=PUT" method="POST">
-                                                <input type="hidden" name="productId" value="<%= product._id %>">
-                                                <button type="submit" class="btn btn-success h-auto">Return
-                                                    Product</button>
-                                            </form>
+                                            <div class="row">
+                                                <!-- Column for the "Return Product" button -->
+                                                <div class="col-md-6">
+                                                    <form action="/return-product/<%= order._id %>?_method=PUT"
+                                                        method="POST">
+                                                        <input type="hidden" name="productId"
+                                                            value="<%= product._id %>">
+                                                        <button type="submit" class="btn btn-success"
+                                                            style="height: 40px;">Return Product</button>
+                                                    </form>
+                                                </div>
+                                                <!-- Column for the "Download Invoice" button -->
+                                                <div class="col-md-6">
+                                                    <button type="button" class="btn btn-info" id="invoiceBtn"
+                                                        data-invoice-id="<%= order._id %>"
+                                                        style="height: 40px; font-size: 10px;">Download Invoice</button>
+                                                </div>
+                                            </div>
+
+
+
 
                                             <% } else if (status=='Return requested' ){ %>
                                                 <p class="card-text text-muted">
@@ -165,6 +181,42 @@
 <script>
     const cancelButton = document.getElementById('cancel-button')
     const cancelForm = document.getElementById('cancelForm')
+
+
+    document.getElementById("invoiceBtn").addEventListener("click", function (orderId) {
+        var invoiceButton = this;
+        var invoiceId = this.getAttribute("data-invoice-id");
+
+        // Disable the button and change its text
+        invoiceButton.disabled = true;
+
+        fetch(`/download-invoice/${invoiceId}`)
+            .then((response) => {
+                if (response.ok) {
+                    return response.blob();
+                } else {
+                    console.error("Failed to download the invoice");
+                }
+            })
+            .then((blob) => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "invoice.pdf";
+                a.click();
+                window.URL.revokeObjectURL(url);
+
+                // Re-enable the button and restore its original text
+                invoiceButton.disabled = false;
+            })
+            .catch((error) => {
+
+                // Re-enable the button and restore its original text
+                invoiceButton.disabled = false;
+
+                console.error("An error occurred:", error);
+            });
+    });
 
     cancelButton.addEventListener('click', (e) => {
         e.preventDefault()

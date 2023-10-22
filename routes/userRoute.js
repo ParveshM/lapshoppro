@@ -93,6 +93,7 @@ userRoute.get('/orders', ensureAuthenticated, orderController.orders);
 userRoute.post('/viewOrder/:id', ensureAuthenticated, orderController.viewOrder);
 userRoute.put('/cancelOrder/:id', ensureAuthenticated, orderController.cancelOrder);
 userRoute.put('/return-product/:id', ensureAuthenticated, orderController.returnProduct);
+userRoute.get('/download-invoice/:id', ensureAuthenticated, orderController.downloadInvoice);
 
 
 // 404 notfound page--
