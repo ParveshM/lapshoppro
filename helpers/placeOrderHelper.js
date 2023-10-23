@@ -88,92 +88,200 @@ const generateInvoice = async (orderId) => {
         .populate('billingAddress')
 
 
-        const docDefinition = {
-            content: [
-                {
-                    text: 'INVOICE',
-                    style: 'header',
-                    alignment: 'center', // Center-align the "INVOICE" text
-                },
-                {
-                    columns: [
-                        {
-                            width: '*',
-                            stack: [
-                                { text: `Order Date: ${orderData.orderDate.toLocaleDateString()}` },
-                                { text: `Order ID: ${orderData.orderId}` },
-                            ],
-                        },
-                        {
-                            width: '*',
-                            stack: [
-                                { text: `Delivered Date: ${orderData.deliveredDate.toLocaleDateString()}`, alignment: 'right' },
-                            ],
-                        },
-                    ],
-                },
-                { text: 'Billing Address:', style: 'subheader' },
-                {
-                    text: [
-                        orderData.billingAddress.name,
-                        orderData.billingAddress.address,
-                        orderData.billingAddress.town,
-                        orderData.billingAddress.state,
-                        orderData.billingAddress.postCode,
-                        orderData.billingAddress.phone,
-                    ].join('\n'),
-                    style: 'address',
-                },
-                { text: 'Payment Information:', style: 'subheader' },
-                {
-                    text: `Payment Method: ${orderData.paymentMethod}\nPayment Status: ${orderData.paymentStatus}\nWallet Payment: ₹${orderData.walletPayment}`,
-                    style: 'info',
-                },
-                { text: 'Order Summary:', style: 'subheader' },
-                {
-                    table: {
-                        widths: ['*', '*', '*'],
-                        body: [
-                            [{ text: 'Product', style: 'tableHeader' }, { text: 'Quantity', style: 'tableHeader' }, { text: 'Price', style: 'tableHeader' }],
-                            ...orderData.items.map(item => [item.product.title, item.quantity, `₹${item.price}`]),
-                            ['Subtotal', '', `₹${orderData.subtotal}`],
-                            ['Processing Fee', '', `₹${orderData.processingFee}`],
-                            ['Total', '', `₹${orderData.total}`],
+    // const docDefinition = {
+    //     content: [
+    //         {
+    //             text: 'INVOICE',
+    //             style: 'header',
+    //             alignment: 'center', // Center-align the "INVOICE" text
+    //         },
+    //         {
+    //             columns: [
+    //                 {
+    //                     width: '*',
+    //                     stack: [
+    //                         { text: `Order Date: ${orderData.orderDate.toLocaleDateString()}` },
+    //                         { text: `Order ID: ${orderData.orderId}` },
+    //                     ],
+    //                 },
+    //                 {
+    //                     width: '*',
+    //                     stack: [
+    //                         { text: `Delivered Date: ${orderData.deliveredDate.toLocaleDateString()}`, alignment: 'right' },
+    //                     ],
+    //                 },
+    //             ],
+    //         },
+    //         { text: 'Billing Address:', style: 'subheader' },
+    //         {
+    //             text: [
+    //                 orderData.billingAddress.name,
+    //                 orderData.billingAddress.address,
+    //                 orderData.billingAddress.town,
+    //                 orderData.billingAddress.state,
+    //                 orderData.billingAddress.postCode,
+    //                 orderData.billingAddress.phone,
+    //             ].join('\n'),
+    //             style: 'address',
+    //         },
+    //         { text: 'Payment Information:', style: 'subheader' },
+    //         {
+    //             text: `Payment Method: ${orderData.paymentMethod}\nPayment Status: ${orderData.paymentStatus}\nWallet Payment: ₹${orderData.walletPayment}`,
+    //             style: 'info',
+    //         },
+    //         { text: 'Order Summary:', style: 'subheader' },
+    //         {
+    //             table: {
+    //                 widths: ['*', '*', '*'],
+    //                 body: [
+    //                     [{ text: 'Product', style: 'tableHeader' }, { text: 'Quantity', style: 'tableHeader' }, { text: 'Price', style: 'tableHeader' }],
+    //                     ...orderData.items.map(item => [item.product.title, item.quantity, `₹${item.price}`]),
+    //                     ['Subtotal', '', `₹${orderData.subtotal}`],
+    //                     ['Processing Fee', '', `₹${orderData.processingFee}`],
+    //                     ['Total', '', `₹${orderData.total}`],
+    //                 ],
+    //             },
+    //         },
+    //     ],
+    //     styles: {
+    //         header: {
+    //             fontSize: 20,
+    //             bold: true,
+    //         },
+    //         subheader: {
+    //             fontSize: 14,
+    //             bold: true,
+    //             margin: [0, 10, 0, 5],
+    //         },
+    //         address: {
+    //             fontSize: 12,
+    //             margin: [0, 0, 0, 10],
+    //         },
+    //         info: {
+    //             fontSize: 12,
+    //             margin: [0, 0, 0, 10],
+    //         },
+    //         tableHeader: {
+    //             fillColor: '#337ab7',
+    //             color: '#ffffff',
+    //             alignment: 'center',
+    //             bold: true,
+    //         },
+    //         tableCell: {
+    //             fillColor: '#f2f2f2',
+    //             alignment: 'center',
+    //         },
+    //     },
+    // };
+    const docDefinition = {
+        content: [
+            {
+                text: 'INVOICE',
+                style: 'header',
+                alignment: 'center', // Center-align the "INVOICE" text
+            },
+            {
+                columns: [
+                    {
+                        width: '*',
+                        stack: [
+                            { text: `Order Date: ${orderData.orderDate.toLocaleDateString()}` },
+                            { text: `Order ID: ${orderData.orderId}` },
                         ],
                     },
-                },
-            ],
-            styles: {
-                header: {
-                    fontSize: 20,
-                    bold: true,
-                },
-                subheader: {
-                    fontSize: 14,
-                    bold: true,
-                    margin: [0, 10, 0, 5],
-                },
-                address: {
-                    fontSize: 12,
-                    margin: [0, 0, 0, 10],
-                },
-                info: {
-                    fontSize: 12,
-                    margin: [0, 0, 0, 10],
-                },
-                tableHeader: {
-                    fillColor: '#337ab7',
-                    color: '#ffffff',
-                    alignment: 'center',
-                    bold: true,
-                },
-                tableCell: {
-                    fillColor: '#f2f2f2',
-                    alignment: 'center',
+                    {
+                        width: '*',
+                        stack: [
+                            { text: `Delivered Date: ${orderData.deliveredDate.toLocaleDateString()}`, alignment: 'right' },
+                        ],
+                    },
+                ],
+            },
+            {
+                columns: [
+                    {
+                        width: '*',
+                        stack: [
+                            { text: 'Billing Address:', style: 'subheader' },
+                            {
+                                text: [
+                                    orderData.billingAddress.name,
+                                    orderData.billingAddress.address,
+                                    orderData.billingAddress.town,
+                                    orderData.billingAddress.state,
+                                    orderData.billingAddress.postCode,
+                                    orderData.billingAddress.phone,
+                                ].join('\n'),
+                                style: 'address',
+                            },
+                        ],
+                    },
+                    {
+                        width: '*',
+                        stack: [
+                            { text: 'Payment Information:', style: 'subheader', alignment: 'right' },
+                            {
+                                text: `Payment Method: ${orderData.paymentMethod}\nPayment Status: ${orderData.paymentStatus}\nWallet Payment: ₹${orderData.walletPayment},`,
+                                style: 'info',
+                                alignment: 'right'
+                            },
+                        ],
+                    },
+                ],
+            },
+            { text: 'Order Summary:', style: 'subheader' },
+            {
+                table: {
+                    widths: ['*', '*', '*'],
+                    body: [
+                        [{ text: 'Product', style: 'tableHeader' }, { text: 'Quantity', style: 'tableHeader' }, { text: 'Price', style: 'tableHeader' }],
+                        ...orderData.items.map(item => [item.product.title, item.quantity, `₹${item.price.toLocaleString()}`]),
+                        ['Subtotal', '', `₹${orderData.subtotal.toLocaleString()}`],
+                        ['Processing Fee', '', `₹${orderData.processingFee}`],
+                        ['Total', '', `₹${orderData.total.toLocaleString()}`],
+                    ],
                 },
             },
-        };
-        
+            {
+
+                text: 'Thank you for shopping with us , Have a good day.', // You can customize this text
+                alignment: 'center', // Adjust the alignment as needed
+                style: 'footer',
+                margin: [0, 20, 0, 0]
+
+            }
+        ],
+        styles: {
+            header: {
+                fontSize: 20,
+                bold: true,
+            },
+            subheader: {
+                fontSize: 14,
+                bold: true,
+                margin: [0, 10, 0, 5],
+            },
+            address: {
+                fontSize: 12,
+                margin: [0, 0, 0, 10],
+            },
+            info: {
+                fontSize: 12,
+                margin: [0, 0, 0, 10],
+            },
+            tableHeader: {
+                fillColor: '#337ab7',
+                color: '#ffffff',
+                alignment: 'center',
+                bold: true,
+            },
+            tableCell: {
+                fillColor: '#f2f2f2',
+                alignment: 'center',
+            },
+        },
+    };
+
 
     // Your PDF generation and download code...
 

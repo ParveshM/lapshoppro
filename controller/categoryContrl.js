@@ -98,34 +98,11 @@ const editCategory = expressHandler(async (req, res) => {
     }
 })
 
-// update Category name --
-// const updateCategory = expressHandler(async (req, res) => {
-//     try {
-//         const id = req.params.id
-//         const {updatedName,offer,description,startDate,endDate,} = req.body
-//         console.log('body',req.body);
-//         // await category.findByIdAndUpdate(id, { $set: { categoryName: updatedName } })
-//         const updatedData = {
-//             categoryName: updatedName,
-//             offer:offer,
-//             description:description,
-//             startDate:startDate,
-//             endDate:endDate
-//         }
-//         const upserting = await category.findOneAndUpdate({_id:id},updatedData,{upsert:true})
-//         console.log('upsertign',upserting);
-//         res.redirect('/admin/category')
-//     } catch (error) {
-//         throw new Error(error)
-//     }
-// })
-
+// update Category name and add offer if there is any--
 const updateCategory = expressHandler(async (req, res) => {
     try {
         const id = req.params.id
         const { updatedName, offer, description, startDate, endDate, } = req.body
-        console.log('body', req.body);
-        // await category.findByIdAndUpdate(id, { $set: { categoryName: updatedName } })
         const cat = await category.findById(id)
         cat.categoryName = updatedName;
         cat.offer = offer;
@@ -133,8 +110,6 @@ const updateCategory = expressHandler(async (req, res) => {
         cat.startDate = startDate;
         cat.endDate = endDate
         const saved = await cat.save()
-        // const upserting = await category.findOneAndUpdate({ _id: id }, updatedData, { upsert: true })
-        console.log('inserting', saved);
         res.redirect('/admin/category')
     } catch (error) {
         throw new Error(error)

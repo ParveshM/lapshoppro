@@ -1,11 +1,6 @@
 const User = require('../models/userModel')
 const Product = require('../models/productModel')
 const Order = require('../models/orderModel')
-const Address = require('../models/addressModel')
-const Wallet = require('../models/walletModel')
-const Coupon = require('../models/couponModel')
-const pdfMake = require('pdfmake');
-const fs = require('fs');
 const asyncHandler = require('express-async-handler');
 const { calculateSubtotal } = require('../utility/ordercalculation')
 const { generateRazorPay, verifyingPayment } = require('../config/razorpay')

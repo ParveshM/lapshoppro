@@ -150,7 +150,9 @@
                                                                 </li>
                                                                 <% if (element.productPrice !==element.salePrice) { %>
                                                                     <li class="d-inline-block text-success ">
-                                                                       <strong><%= element.categoryName.description %></strong> 
+                                                                        <strong>
+                                                                            <%= element.categoryName.description %>
+                                                                        </strong>
                                                                     </li>
                                                                     <% } %>
                                                             </ul>
@@ -183,11 +185,15 @@
                                                                 <a class="btn-hover list-btn-wishlist" id="wishlist"
                                                                     href=""
                                                                     onclick="addTowishlist(`<%= element._id %>`)">
-                                                                    <% if (userWishlist.includes(element._id)) { %>
-                                                                        <i class="pe-7s-like" style="color: red;"></i>
-                                                                        <% } else { %>
-                                                                            <i class="pe-7s-like"></i>
-                                                                            <% } %>
+                                                                    <% if (userWishlist) { %>
+
+                                                                        <% if (userWishlist.includes(element._id)) { %>
+                                                                            <i class="pe-7s-like"
+                                                                                style="color: red;"></i>
+                                                                            <% } else { %>
+                                                                                <i class="pe-7s-like"></i>
+                                                                                <% } %>
+                                                                                    <% } %>
                                                                 </a>
                                                             </div>
 

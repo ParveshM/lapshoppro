@@ -86,7 +86,7 @@ const verifyOTP = asyncHandler(async (req, res) => {
         const enteredOTP = req.body.otp;
         const storedOTP = req.session.otpUser.otp; // Getting the stored OTP from the session
         const user = req.session.otpUser;
-        console.log('stored otp ', storedOTP , 'user' , user);
+        console.log('stored otp ', storedOTP, 'user', user);
         if (enteredOTP == storedOTP) {
             // if referral is found the reffered user get cashback
             let userFound = null;
@@ -323,17 +323,20 @@ const shopping = asyncHandler(async (req, res) => {
             .sort(sortCriteria);
         // Retrieve cart product IDs (as in your original code)
         let cartProductIds;
+        let userWishlist;
         if (user) {
-            if (user.cart) {
+            if (user.cart || user.wishlist) {
                 cartProductIds = user.cart.map(cartItem => cartItem.product.toString());
+                userWishlist = user.wishlist;
+
             }
         } else {
             cartProductIds = null;
+            userWishlist = null;
         }
 
         // Count the total number of matching products
         const count = await Product.find(filter).countDocuments();
-        const userWishlist = user.wishlist
 
         res.render('./shop/pages/shopping', {
             products: findProducts,

@@ -1,11 +1,11 @@
-const expressHandler = require('express-async-handler')
+const asyncHandler = require('express-async-handler')
 const User = require('../models/userModel')
 const Product = require('../models/productModel')
 const Order = require('../models/orderModel')
 const Category = require('../models/categoryModel')
 const graphHelper = require('../helpers/graphHelper')
 // Loading loginPage--   
-const loadLogin = expressHandler(async (req, res) => {
+const loadLogin = asyncHandler(async (req, res) => {
 
     try {
         res.render('./admin/pages/login', { title: 'Login' })
@@ -14,7 +14,7 @@ const loadLogin = expressHandler(async (req, res) => {
     }
 })
 // verifyAdmin--
-const verifyAdmin = expressHandler(async (req, res) => {
+const verifyAdmin = asyncHandler(async (req, res) => {
 
     try {
 
@@ -42,7 +42,7 @@ const verifyAdmin = expressHandler(async (req, res) => {
 
 
 // loadDashboard---  
-const loadDashboard = expressHandler(async (req, res) => {
+const loadDashboard = asyncHandler(async (req, res) => {
     try {
         const products = await Product.find({ isListed: true }).count()
         const category = await Category.find({ isListed: true }).count()
@@ -52,6 +52,7 @@ const loadDashboard = expressHandler(async (req, res) => {
 
         const total = await graphHelper.calculateRevenue();
         const [totalRevenue, monthlyRevenue] = [...total]
+        
 
         const salesData = await graphHelper.calculateSalesData()
         const usersData = await graphHelper.countUsers()
@@ -77,7 +78,7 @@ const loadDashboard = expressHandler(async (req, res) => {
 })
 
 // UserManagement-- 
-const userManagement = expressHandler(async (req, res) => {
+const userManagement = asyncHandler(async (req, res) => {
 
     try {
         const findUsers = await User.find();
@@ -88,7 +89,7 @@ const userManagement = expressHandler(async (req, res) => {
     }
 })
 // searchUser
-const searchUser = expressHandler(async (req, res) => {
+const searchUser = asyncHandler(async (req, res) => {
 
     try {
 
@@ -106,7 +107,7 @@ const searchUser = expressHandler(async (req, res) => {
     }
 })
 // Block a User
-const blockUser = expressHandler(async (req, res) => {
+const blockUser = asyncHandler(async (req, res) => {
     try {
         const id = req.params.id;
         const finduser = await User.findByIdAndUpdate(id, { isBlock: true }, { new: true });
@@ -118,7 +119,7 @@ const blockUser = expressHandler(async (req, res) => {
 });
 
 // Unblock a User
-const unBlockUser = expressHandler(async (req, res) => {
+const unBlockUser = asyncHandler(async (req, res) => {
     try {
         const id = req.params.id;
         await User.findByIdAndUpdate(id, { isBlock: false }, { new: true });
@@ -127,6 +128,50 @@ const unBlockUser = expressHandler(async (req, res) => {
         throw new Error(error);
     }
 });
+// Loading sales report form page 
+const salesReportPage = asyncHandler(async (req, res) => {
+    try {
+        res.render('./admin/pages/salesReport', { title: 'Sales Report' })
+    } catch (error) {
+        throw new Error(error)
+    }
+})
+// Post method of sales report page
+const generateSalesReport = asyncHandler(async (req, res) => {
+    try {
+        console.log('body', req.body);
+
+        const fromDate = new Date(req.body.fromDate);
+        const toDate = new Date(req.body.toDate);
+        const matchedOrders = await Order.aggregate([
+            {
+                $match: {
+                    orderDate: { $gte: fromDate, $lte: toDate },
+                },
+            },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'user',
+                    foreignField: '_id',
+                    as: 'userData',
+                },
+            },
+            {
+                $unwind: '$userData',
+            },
+            {
+                $addFields: {
+                    userName: '$userData.userName',
+                },
+            },
+        ])
+
+        res.json(matchedOrders)
+    } catch (error) {
+        throw new Error(error)
+    }
+})
 
 // Admin Logout--
 const logout = (req, res) => {
@@ -147,5 +192,7 @@ module.exports = {
     searchUser,
     blockUser,
     unBlockUser,
-    logout
+    logout,
+    salesReportPage,
+    generateSalesReport
 }

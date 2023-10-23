@@ -218,6 +218,7 @@
             });
     });
 
+    // when clicking cancelButton show a confirmation alert
     cancelButton.addEventListener('click', (e) => {
         e.preventDefault()
         showConfirmation()
@@ -234,7 +235,7 @@
             confirmButtonText: 'Yes'
         }).then((result) => {
             if (result.isConfirmed) {
-                // If the user clicks "Yes," redirect to the removeProduct endpoint
+                // If the user clicks "Yes," cancel the product 
                 cancelForm.submit()
             }
         });
