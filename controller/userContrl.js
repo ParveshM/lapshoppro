@@ -45,7 +45,7 @@ const insertUser = async (req, res) => {
                 email: req.body.email,
                 password: req.body.password,
             };
-            if (req.body.referralCode) {
+            if (req.body.referralCode !== '') {
                 UserData.referralCode = req.body.referralCode
             }
             console.log('data for inserting', UserData);
@@ -86,11 +86,11 @@ const verifyOTP = asyncHandler(async (req, res) => {
         const enteredOTP = req.body.otp;
         const storedOTP = req.session.otpUser.otp; // Getting the stored OTP from the session
         const user = req.session.otpUser;
-        console.log('stored otp ', storedOTP, 'user', user);
+        console.log('stored otp', storedOTP, 'user', user);
         if (enteredOTP == storedOTP) {
             // if referral is found the reffered user get cashback
             let userFound = null;
-            if (user.referralCode) {
+            if (user.referralCode && user.referralCode !== '') {
                 const referralCode = user.referralCode.trim()
                 userFound = await creditforRefferedUser(referralCode)
             }
@@ -106,7 +106,7 @@ const verifyOTP = asyncHandler(async (req, res) => {
                 }
             }
             delete req.session.otpUser.otp;
-            if (!userFound) {
+            if (!userFound && user.referralCode) {
                 req.flash('warning', 'Registration success , Please login , Invalid referral code!')
             } else {
                 req.flash('success', 'Registration success , Please login')
@@ -157,7 +157,7 @@ const verifyResendOTP = asyncHandler(async (req, res) => {
 
         if (enteredOTP == storedOTP.otp) {
             let userFound = null;
-            if (user.referralCode) {
+            if (user.referralCode && user.referralCode !== '') {
                 const referralCode = user.referralCode.trim()
                 userFound = await creditforRefferedUser(referralCode)
             }
@@ -176,11 +176,12 @@ const verifyResendOTP = asyncHandler(async (req, res) => {
             }
             delete req.session.otpUser.otp;
 
-            if (!userFound) {
+            if (!userFound && user.referralCode) {
                 req.flash('warning', 'Registration success , Please login , Invalid referral code!')
             } else {
                 req.flash('success', 'Registration success , Please login')
-            } res.redirect('/login');
+            }
+            res.redirect('/login');
         } else {
             res.redirect('/register')
         }

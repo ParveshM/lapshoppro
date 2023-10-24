@@ -86,7 +86,7 @@ const updateCartItemQuantity = asyncHandler(async (req, res) => {
 
         if (newQuantity > product.quantity) {
             const message = 'Out of Stock';
-            return res.status(400).json({ success: false, message });
+            return res.json({ success: false, message });
         }
 
         // Update the quantity of the cart item
