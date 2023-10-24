@@ -237,7 +237,7 @@ const userProfile = asyncHandler(async (req, res) => {
 const editUserName = asyncHandler(async (req, res) => {
     try {
         const userId = req.user.id
-    
+
     } catch (error) {
         throw new Error(error);
     }
@@ -342,7 +342,7 @@ const shopping = asyncHandler(async (req, res) => {
             }
         } else {
             cartProductIds = null;
-            userWishlist = null;
+            userWishlist = false;
         }
 
         // Count the total number of matching products
@@ -380,7 +380,14 @@ const viewProduct = asyncHandler(async (req, res) => {
         } else {
             cartProductIds = null;
         }
-        res.render('./shop/pages/productDetail', { product: findProduct, products, cartProductIds, wishlist: user.wishlist })
+        let wishlist = false
+        if (user) {
+            wishlist = user.wishlist;
+        }
+        res.render('./shop/pages/productDetail', {
+            product: findProduct, products,
+            cartProductIds, wishlist
+        })
     } catch (error) {
         throw new Error(error)
     }

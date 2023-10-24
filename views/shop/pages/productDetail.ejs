@@ -93,7 +93,7 @@
                                         <li class="d-inline-block">
                                             <%= product.color %>
                                     </ul>
-                                  </div>
+                                </div>
                             </div>
                             <div class="quickview-plus-minus">
                                 <div class="product-list-cart">
@@ -115,12 +115,18 @@
                                                             <% } %>
                                 </div>
                                 <div class="quickview-btn-wishlist">
-                                    <a class="btn-hover" href="" onclick="addTowishlist(`<%= product._id %>`)">
-                                        <% if (wishlist.includes(product._id)) { %>
-                                            <i class="pe-7s-like" style="color: red;"></i>
-                                            <% } else { %>
-                                                <i class="pe-7s-like"></i>
-                                                <% } %>
+                                    <% if(wishlist) { %>
+                                        <a class="btn-hover" href="" onclick="addTowishlist(`<%= product._id %>`)">
+                                            <% if (wishlist.includes(product._id)) { %>
+                                                <i class="pe-7s-like" style="color: red;"></i>
+                                                <% } else { %>
+                                                    <i class="pe-7s-like"></i>
+                                                    <% } %>
+                                                        <% } else { %>
+                                                            <a class="btn-hover" href="/login">
+                                                                <i class="pe-7s-like"></i></a>
+                                                            <% } %>
+                                    </a>
                                 </div>
                                 <div id="fixed-div" class="mt-2 fixed-div border rounded-pill p-2"
                                     style="display: none;">

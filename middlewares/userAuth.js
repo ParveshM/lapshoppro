@@ -1,24 +1,29 @@
 const User = require('../models/userModel')
 
 async function ensureAuthenticated(req, res, next) {
+    console.log('inside enusure authenticated');
 
     if (req.isAuthenticated()) {
         if (req.user.id) {   /* checking the id of user  */
             const user = await isBlockCheck(req.user.id);
-            if(user.isBlock) {    /*** if user status is blocked user will be redirected to
+            if (user.isBlock) {    /*** if user status is blocked user will be redirected to
                                               login page after clearing the session ***/
                 req.logout(function (err) {
                     if (err) {
                         next(err);
                     }
                 })
+              
                 res.redirect('/login')
 
-            }else {
+            } else {
                 next();
             }
         }
-    }else{
+    } else {
+        // if (req.headers.host != req.headers.referer) {
+        //   return  res.status(401).send('Un autherised User');
+        // }
         res.redirect('/login')
     }
 }

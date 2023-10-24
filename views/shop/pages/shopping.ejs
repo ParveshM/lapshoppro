@@ -182,10 +182,10 @@
                                                                                         <% } %>
                                                             </div>
                                                             <div class="product-list-wishlist">
-                                                                <a class="btn-hover list-btn-wishlist" id="wishlist"
-                                                                    href=""
-                                                                    onclick="addTowishlist(`<%= element._id %>`)">
-                                                                    <% if (userWishlist) { %>
+                                                                <% if (userWishlist) { %>
+                                                                    <a class="btn-hover list-btn-wishlist" id="wishlist"
+                                                                        href=""
+                                                                        onclick="addTowishlist(`<%= element._id %>`)">
 
                                                                         <% if (userWishlist.includes(element._id)) { %>
                                                                             <i class="pe-7s-like"
@@ -193,8 +193,12 @@
                                                                             <% } else { %>
                                                                                 <i class="pe-7s-like"></i>
                                                                                 <% } %>
-                                                                                    <% } %>
-                                                                </a>
+                                                                    </a>
+                                                                    <% } else { %>
+                                                                        <a class="btn-hover list-btn-wishlist"
+                                                                            href="/login"> <i
+                                                                                class="pe-7s-like"></i></a>
+                                                                        <% } %>
                                                             </div>
 
 
