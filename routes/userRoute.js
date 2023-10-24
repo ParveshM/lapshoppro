@@ -45,6 +45,7 @@ userRoute.put('/resetPassword/:token', ensureNotAuthenticated, userController.re
 userRoute.get('/contact', userController.contact);
 userRoute.get('/about', userController.aboutUs);
 userRoute.get('/profile', ensureAuthenticated, userController.userProfile);
+userRoute.get('/profile/editUser', ensureAuthenticated, userController.editUserName);
 // wallet history
 userRoute.get('/wallet-history', ensureAuthenticated, userController.viewWalletHistory);
 

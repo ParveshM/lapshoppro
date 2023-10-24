@@ -10,7 +10,10 @@
             <h2 class="h4 fw-bold">Name:</h2>
             <p class="lead">
               <%= user.userName %>
+                <!-- <button class="btn btn btn-sm ml-2" onclick="editUserName(`<%= user._id %>`)"><i
+                    class="fas fa-edit"></i></i></button> -->
             </p>
+
           </div>
           <div class="mb-4">
             <h2 class="h4 fw-bold">Email:</h2>
@@ -110,4 +113,25 @@
       $('#copy-button').tooltip('hide');
     }, 2000); // Adjust the duration (in milliseconds) as needed
   });
+
+  // editUserName
+  function editUserName(userId) {
+    $.ajax({
+      type: "GET",
+      url: `/profile/editUser/${userId}`,
+      success: function (response) {
+      console.log('res',response);
+      },
+      error: function (jqXHR, textStatus, errorThrown) {
+        if (jqXHR.status === 400) {
+          // Handle out of stock or other errors
+          console.error("Request rejected:", jqXHR.responseJSON.message);
+        } else {
+          // Handle other error cases
+          console.error("Error:", textStatus, errorThrown);
+        }
+      }
+    });
+  }
+
 </script>

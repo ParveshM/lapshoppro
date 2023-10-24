@@ -233,6 +233,16 @@ const userProfile = asyncHandler(async (req, res) => {
     }
 });
 
+// Edit users name
+const editUserName = asyncHandler(async (req, res) => {
+    try {
+        const userId = req.user.id
+    
+    } catch (error) {
+        throw new Error(error);
+    }
+});
+
 // view wallet history ---
 const viewWalletHistory = asyncHandler(async (req, res) => {
     try {
@@ -553,6 +563,7 @@ module.exports = {
     loadLogin,
     userLogout,
     userProfile,
+    editUserName,
     viewWalletHistory,
     shopping,
     viewProduct,
