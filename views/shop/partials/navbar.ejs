@@ -1,122 +1,194 @@
 <header>
-    <div class="header-top-furniture wrapper-padding-2 res-header-sm">
-        <div class="container-fluid">
-            <div class="header-bottom-wrapper">
-                <div class="logo-2 furniture-logo ptb-30">
-                    <a href="/">
-                        <img class="logo-img" src="/assets/img/logo/LapshopPro.png" alt="">
-                    </a>
-                </div>
-                <div class="menu-style-2 furniture-menu menu-hover">
-                    <nav>
-                        <ul>
-                            <li><a href="/">home</a></li>
-                            <li><a href="/shop">Shop</a>
-                            </li>
-                            <li><a href="/about">About Us</a>
-                            </li>
-                            <li><a href="/contact">contact</a></li>
-                            <li>
-                                <div class="dropdown" id="userDropdown">
-                                    <a class="dropdown-toggle" id="userMenu" data-toggle="dropdown" aria-haspopup="true"
-                                        aria-expanded="false">
-                                        <% if (!user) { %>
-                                            Account
-                                            <% } else {%>
-                                                <%= user.userName %>
+    <header>
+        <div class="header-top-furniture wrapper-padding-2 res-header-sm">
+            <div class="container-fluid">
+                <div class="header-bottom-wrapper">
+                    <div class="logo-2 furniture-logo ptb-30">
+                        <a href="/">
+                            <img class="logo-img" src="/assets/img/logo/LapshopPro.png" alt="Company Logo">
+                        </a>
+                    </div>
+                    <div class="menu-style-2 furniture-menu menu-hover">
+                        <nav>
+                            <ul>
+                                <li><a href="/">home</a></li>
+                                <li><a href="/shop">Shop</a>
+                                </li>
+                                <li><a href="/about">About Us</a>
+                                </li>
+                                <li><a href="/contact">contact</a></li>
+                                <li>
+                                    <div class="dropdown" id="userDropdown">
+                                        <a class="dropdown-toggle" id="userMenu" data-toggle="dropdown"
+                                            aria-haspopup="true" aria-expanded="false">
+                                            <% if (!user) { %>
+                                                Account
+                                                <% } else {%>
+                                                    <%= user.userName %>
+                                                        <% } %>
+                                        </a>
+                                        <div class="dropdown-menu" aria-labelledby="userMenu">
+                                            <% if (!user) { %>
+                                                <a class="dropdown-item" href="/login">Login</a>
+                                                <a class="dropdown-item" href="/register">Register</a>
+                                                <% } else { %>
+                                                    <a class="dropdown-item" href="/logout">Logout</a>
+                                                    <a class="dropdown-item" href="/profile">Profile</a>
                                                     <% } %>
-                                    </a>
-                                    <div class="dropdown-menu" aria-labelledby="userMenu">
-                                        <% if (!user) { %>
-                                            <a class="dropdown-item" href="/login">Login</a>
-                                            <a class="dropdown-item" href="/register">Register</a>
-                                            <% } else { %>
-                                                <a class="dropdown-item" href="/logout">Logout</a>
-                                                <a class="dropdown-item" href="/profile">Profile</a>
-                                                <% } %>
+                                        </div>
                                     </div>
-                                </div>
-                            </li>
+                                </li>
 
-                        </ul>
-                    </nav>
-                </div>
-                <div class="col-md-3">
-                    <div class="d-flex justify-content-end align-items-center">
-                        <div class="user-avatar">
+                            </ul>
+                        </nav>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="d-flex justify-content-end align-items-center">
+                            <div class="header-cart">
+                                <a class="icon-wishlist" href="/wishlist" data-toggle="tooltip" data-placement="top"
+                                    title="Wishlist">
+                                    <i class="ti-heart"></i>
+                                </a>
+                            </div>
 
-                        </div>
-
-
-                        <div class="header-cart">
-                            <a class="icon-wishlist" href="/wishlist" data-toggle="tooltip" data-placement="top"
-                                title="Wishlist">
-                                <i class="ti-heart"></i>
-                            </a>
-                        </div>
-
-                        <div class="header-">
-                            <a class="icon-cart-furniture" href="/cart" data-toggle="tooltip" data-placement="top"
-                                title="View Cart">
-
-                                <i class="ti-shopping-cart"></i>
-
-                                <span class="shop-count-furniture green" id="cartItemCount"></span>
-
-
-                            </a>
+                            <div class="header-cart-icon">
+                                <a class="icon-cart-furniture" href="/cart" data-toggle="tooltip" data-placement="top"
+                                    title="View Cart">
+                                    <i class="ti-shopping-cart"></i>
+                                    <span class="shop-count-furniture green" id="cartItemCount"></span>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="mobile-menu-area d-md-block col-md-12 col-lg-12 col-12 d-lg-none d-xl-none">
+                        <div class="mobile-menu">
+                            <nav id="mobile-menu-active">
+                                <ul class="menu-overflow">
+                                    <li>
+                                        <a href="#" data-toggle="collapse" data-target="#accountDropdown">
+                                            <% if (!user) { %>
+                                                Account
+                                                <% } else {%>
+                                                    <%= user.userName %>
+                                                        <% } %>
+                                        </a>
+                                        <ul class="collapse" id="accountDropdown">
+                                            <% if (!user) { %>
+                                                <li><a href="/login">Login</a></li>
+                                                <li><a href="/register">Register</a></li>
+                                                <% } else { %>
+                                                    <li><a href="/logout">Logout</a></li>
+                                                    <li><a href="/profile">Profile</a></li>
+                                                    <% } %>
+                                        </ul>
+                                    </li>
+                                    <li><a href="/">Home</a></li>
+                                    <li><a href="/shop">Shop</a></li>
+                                    <li><a href="/about">About Us</a></li>
+                                    <li><a href="/contact">Contact</a></li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+
             </div>
-</header>
-<style>
-    .icon-wishlist {
-        font-size: 26px;
-    }
+        </div>
+    </header>
 
-    .logo-img {
-        max-width: 100px;
-        max-height: 100px;
-    }
+    <!-- og header -->
 
-    #userDropdown:hover .dropdown-menu {
-        display: block;
-    }
-
-    #userDropdown {
-        color: #000000;
-        display: inline-block;
-        font-size: 16px;
-        font-weight: bold;
-        padding: 50px 0 51px;
-        text-transform: capitalize;
-    }
-
-    .dropdown-toggle::after {
-        display: none;
-    }
-</style>
-<!-- <script src="/assets/js/shop/cart.js"></script> -->
-<script>
-    $(function () {
-        $('[data-toggle="tooltip"]').tooltip();
-    });
-
-    function updateCartItemCount() {
-        $.ajax({
-            type: "GET",
-            url: "/getCartItemCount",
-            success: function (response) {
-                // Update the cart items count in the navbar
-                const cartItemCount = response.cartItemCount; // Use the correct property name
-                $("#cartItemCount").text(cartItemCount); // Assuming you have an element with id "cartItemCount" in your navbar
-            },
-            error: function (error) {
-                console.error("Error fetching cart items count: ", error);
+    <style>
+        @media only screen and (max-width: 1024px) {
+            .header-cart-icon {
+                position: absolute;
+                top: 21px;
+                right: 63px;
             }
+
+            .header-cart {
+                position: absolute;
+                top: 55px;
+                right: 73px;
+            }
+        }
+
+        @media screen and (min-width:768px) {
+            .header-cart-icon {
+                position: absolute;
+                top: 21px;
+                right: 94px;
+            }
+
+            .header-cart {
+                position: absolute;
+                top: 55px;
+                right: 73px;
+            }
+        }
+
+        @media screen and (min-width:1024px) {
+            .header-cart-icon {
+                position: absolute;
+                top: 10px;
+                right: 39px;
+            }
+
+            .header-cart {
+                position: absolute;
+                top: 45px;
+                right: 85px;
+            }
+        }
+
+        .icon-wishlist {
+            font-size: 26px;
+        }
+
+        .logo-img {
+            max-width: 100px;
+            max-height: 100px;
+        }
+
+        #userDropdown:hover .dropdown-menu {
+            display: block;
+        }
+
+        #userDropdown {
+            color: #000000;
+            display: inline-block;
+            font-size: 16px;
+            font-weight: bold;
+            padding: 50px 0 51px;
+            text-transform: capitalize;
+        }
+
+        .dropdown-toggle::after {
+            display: none;
+        }
+    </style>
+
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip();
         });
-    }
-    // Calling this function initially to display the cart items count
-    updateCartItemCount();
-</script>
+
+        function updateCartItemCount() {
+            $.ajax({
+                type: "GET",
+                url: "/getCartItemCount",
+                success: function (response) {
+                    // Update the cart items count in the navbar
+                    const cartItemCount = response.cartItemCount; // Use the correct property name
+                    $("#cartItemCount").text(cartItemCount); // Assuming you have an element with id "cartItemCount" in your navbar
+                },
+                error: function (error) {
+                    console.error("Error fetching cart items count: ", error);
+                }
+            });
+        }
+        // Calling this function initially to display the cart items count
+        updateCartItemCount();
+    </script>

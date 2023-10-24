@@ -1,0 +1,340 @@
+<div class="report-form-container mt-3 mb-0">
+    <h1>Sales Report</h1>
+    <form action="/admin/dashboard/sales-report" method="POST">
+        <div class="form-group">
+            <label for="fromDate">From Date</label>
+            <input type="date" id="fromDate" name="fromDate" required>
+        </div>
+        <div class="form-group">
+            <label for="toDate">To Date</label>
+            <input type="date" id="toDate" name="toDate" required>
+        </div>
+        <div class="form-group text-center">
+            <button type="submit">Generate Report</button>
+        </div>
+</div>
+
+</div>
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary col-md-2 btn-sm float-right mx-3 mb-2" data-toggle="modal"
+    data-target="#exampleModalCenter">
+    Export
+</button>
+
+<div id="table-container">
+    <!-- The table will be inserted here after the AJAX response -->
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Export Options</h5>
+            </div>
+            <div class="modal-body d-flex justify-content-around">
+                <div>
+                    <a href="" id="downloadCSV" class="btn btn-primary"></i>Export as Excel</a>
+                </div>
+                <div>
+                    <a href="" id="downloadPDF" class="btn btn-primary"></i>Export as PDF</a>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary col-md-3" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    // click event for download excel
+    document.getElementById('downloadCSV').addEventListener('click', (e) => {
+        e.preventDefault()
+        downloadCSV()
+    })
+    document.getElementById('downloadPDF').addEventListener('click', (e) => {
+        e.preventDefault()
+        downloadPDF()
+    })
+    document.querySelector('form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const fromDate = document.getElementById('fromDate').value;
+        const toDate = document.getElementById('toDate').value;
+        // Retrieve user input
+
+        // Make an AJAX request to retrieve sales report data
+        try {
+            const response = await fetch('/admin/dashboard/sales-report', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ fromDate, toDate }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch data');
+            }
+            const data = await response.json();
+            if (!data.length) {
+                alert('No data in the dates')
+                return
+            }
+            // Call a function to create and populate the table
+            createTable(data);
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    });
+
+    function createTable(data) {
+        const tableContainer = document.getElementById('table-container');
+
+        // Clear any existing table content
+        tableContainer.innerHTML = '';
+
+        // Create a table element and set its class for styling
+        const table = document.createElement('table');
+        table.className = 'responsive-table';
+
+        // Create table header
+        const tableHeader = document.createElement('thead');
+        const headerRow = document.createElement('tr');
+        headerRow.innerHTML = `
+        <th>Order ID</th>
+        <th>Order Date</th>
+        <th>Customer</th>
+        <th>Payment Method</th>
+        <th>Payment Status</th>
+        <th>Total</th>
+    `;
+        tableHeader.appendChild(headerRow);
+        table.appendChild(tableHeader);
+
+        // Create table body and populate with data
+        const tableBody = document.createElement('tbody');
+        data.forEach(order => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+            <td>${order.orderId}</td>
+            <td>${new Date(order.orderDate).toDateString()}</td>
+            <td>${order.userName}</td>
+            <td>${order.paymentMethod}</td>
+            <td>${order.paymentStatus}</td>
+            <td>₹${order.total}</td> 
+        `;
+            tableBody.appendChild(row);
+        });
+
+        table.appendChild(tableBody);
+        tableContainer.appendChild(table);
+    }
+
+    // dowload as excelsheet
+    function downloadCSV() {
+        const tableContainer = document.getElementById('table-container');
+
+        // Find the table element within the container
+        const table = tableContainer.querySelector('table');
+
+        if (!table) {
+            alert('No data to download.');
+            return;
+        }
+
+        // Create a CSV content string
+        let csvContent = "Order ID,Order Date,Customer,Payment Method,Payment Status,Total\n";
+
+        // Iterate through the rows of the table to extract data
+        let rows = table.querySelectorAll('tbody tr');
+        rows.forEach(row => {
+            const columns = row.querySelectorAll('td');
+            if (columns.length === 6) {
+                csvContent += `${columns[0].textContent},${columns[1].textContent},${columns[2].textContent},${columns[3].textContent},${columns[4].textContent},${columns[5].textContent}\n`;
+            }
+        });
+
+        // Create a Blob containing the CSV data
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+
+        // Create a temporary URL for the Blob
+        const url = URL.createObjectURL(blob);
+        const fromDate = document.getElementById('fromDate').value;
+        const toDate = document.getElementById('toDate').value;
+        // Create an anchor element for downloading the CSV file
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `sales_report-${fromDate}-${toDate}.csv`;
+
+        // Trigger a click event to start the download
+        a.click();
+
+        // Clean up by revoking the temporary URL
+        URL.revokeObjectURL(url);
+    }
+
+    function downloadPDF() {
+        const tableContainer = document.getElementById('table-container');
+        const table = tableContainer.querySelector('table');
+
+        if (!table) {
+            alert('No data to download.');
+            return;
+        }
+
+        const data = [];
+        const header = [];
+        const body = [];
+
+        // Extract header cells
+        table.querySelectorAll('thead th').forEach(cell => {
+            header.push({ text: cell.textContent, style: 'tableHeader' });
+        });
+
+        // Extract table data
+        table.querySelectorAll('tbody tr').forEach(row => {
+            const rowData = [];
+            row.querySelectorAll('td').forEach(cell => {
+                rowData.push({ text: cell.textContent, style: 'tableCell' });
+            });
+            body.push(rowData);
+        });
+
+        data.push(header, ...body);
+
+        const docDefinition = {
+            content: [
+                { text: 'Sales Report', style: 'header' },
+                {
+                    table: {
+                        widths: 'auto',
+                        body: data,
+                    },
+                    layout: {
+                        fillColor: function (rowIndex, node, columnIndex) {
+                            return rowIndex === 0 ? '#337ab7' : null;
+                        },
+                    },
+                },
+            ],
+            styles: {
+                header: {
+                    fontSize: 16,
+                    bold: true,
+                    alignment: 'center',
+                    margin: [0, 0, 0, 10],
+                },
+                tableHeader: {
+                    fillColor: '#337ab7',
+                    color: '#ffffff',
+                    alignment: 'center',
+                    bold: true,
+                },
+                tableCell: {
+                    alignment: 'center',
+                },
+            },
+        };
+        const fromDate = document.getElementById("fromDate").value;
+        const toDate = document.getElementById("toDate").value;
+        pdfMake.createPdf(docDefinition).download(`sales-report-${fromDate}--${toDate}.pdf`);
+    }
+
+</script>
+
+<style>
+    /* styles.css */
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f0f0;
+        margin: 0;
+        padding: 0;
+    }
+
+    .report-form-container {
+        max-width: 500px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+        text-align: center;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    label {
+        display: block;
+        font-weight: bold;
+    }
+
+    input,
+    button {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 16px;
+        /* Increase font size for better readability */
+    }
+
+    button {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+
+    /* Add styles for the table */
+    table.responsive-table {
+        width: 100%;
+        border-collapse: collapse;
+        background-color: #fff;
+        border: 1px solid #ddd;
+    }
+
+    table.responsive-table th,
+    table.responsive-table td {
+        padding: 10px;
+        border: 1px solid #ddd;
+        text-align: center;
+    }
+
+    table.responsive-table th {
+        background-color: #007bff;
+        color: #fff;
+        font-weight: bold;
+    }
+
+    table.responsive-table td {
+        background-color: #f9f9f9;
+    }
+
+    table.responsive-table tr:nth-child(even) {
+        background-color: #f2f2f2;
+        margin-bottom: 10px;
+    }
+
+    table.responsive-table tr:hover {
+        background-color: #ccc;
+        cursor: pointer;
+    }
+
+    /* Add some spacing to the table container */
+    #table-container {
+        margin-top: 15px;
+        margin-bottom: 20px;
+
+    }
+</style>

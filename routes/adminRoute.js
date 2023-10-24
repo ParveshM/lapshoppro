@@ -23,8 +23,12 @@ adminRoute.get('/', isAdminLoggedOut, adminController.loadLogin)
 adminRoute.post('/', adminController.verifyAdmin);
 adminRoute.get('/logout', isAdminLoggedIn, adminController.logout)
 
-// adminController.userManagement---
+//Dashboard and salesReport
 adminRoute.get('/dashboard', isAdminLoggedIn, adminController.loadDashboard)
+adminRoute.get('/dashboard/sales-report', isAdminLoggedIn, adminController.salesReportPage)
+adminRoute.post('/dashboard/sales-report', isAdminLoggedIn, adminController.generateSalesReport)
+
+// adminController userManagement---
 adminRoute.get('/user', isAdminLoggedIn, adminController.userManagement)
 adminRoute.post('/user/search', isAdminLoggedIn, adminController.searchUser)
 adminRoute.post('/user/blockUser/:id', adminValidateID, isAdminLoggedIn, adminController.blockUser)
@@ -72,7 +76,6 @@ adminRoute.post('/coupons/edit-coupon/:id', adminValidateID, isAdminLoggedIn, co
 adminRoute.get('/banners', isAdminLoggedIn, bannerController.listBanners)
 adminRoute.get('/banner/add-banner', isAdminLoggedIn, bannerController.addBannerPage)
 adminRoute.post('/banner/add-banner', upload.single("bannerImage"), isAdminLoggedIn, bannerController.createBanner)
-// adminRoute.get('/banner/edit-banner/:id', isAdminLoggedIn, bannerController.editBannerPage)
 adminRoute.post('/banner/updateBannerStatus/:id', adminValidateID, isAdminLoggedIn, bannerController.updateBannerStatus)
 
 

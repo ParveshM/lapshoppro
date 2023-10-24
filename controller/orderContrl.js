@@ -1,15 +1,15 @@
 const User = require('../models/userModel')
 const Product = require('../models/productModel')
 const Order = require('../models/orderModel')
-const Address = require('../models/addressModel')
-const Wallet = require('../models/walletModel')
-const Coupon = require('../models/couponModel')
 const asyncHandler = require('express-async-handler');
 const { calculateSubtotal } = require('../utility/ordercalculation')
 const { generateRazorPay, verifyingPayment } = require('../config/razorpay')
 const { checkCartItemsMatch } = require('../helpers/checkCartHelper');
+const { generateReferralCode } = require('../helpers/referralHelper');
 const { decreaseQuantity, updateWalletAmount, decreaseWalletAmount } = require('../helpers/productReturnHelper')
-const { walletAmount, calculateCouponDiscount, isValidCoupon, changePaymentStatus } = require('../helpers/placeOrderHelper')
+const { walletAmount, calculateCouponDiscount,
+    isValidCoupon, changePaymentStatus,
+    generateInvoice } = require('../helpers/placeOrderHelper')
 
 
 /*********** User Side **************/
@@ -27,11 +27,11 @@ const checkoutPage = asyncHandler(async (req, res) => {
         const addresses = userWithAddresses.addresses;
 
         const totalArray = calculateSubtotal(userWithCart);
-        console.log('check totalarrayt',totalArray);
+        console.log('check totalarrayt', totalArray);
         // if the product quantity is less than cart quantity
-        if(!totalArray){
+        if (!totalArray) {
             console.log('inside not ');
-            req.flash('warning','OOPS! , insufficient stock')
+            req.flash('warning', 'OOPS! , insufficient stock')
             return res.redirect('/cart')
         }
         const [cartItems, cartSubtotal, processingFee, orderTotal] = [...totalArray];
@@ -41,10 +41,10 @@ const checkoutPage = asyncHandler(async (req, res) => {
         let minBalance = false;
         let walletBalance = 0;
         const findWallet = await User.findById(user).populate('wallet')
-        if (findWallet.wallet) {        
+        if (findWallet.wallet) {
             walletBalance = findWallet.wallet.balance;
-        //check if wallet amount can be used or not         
-            if (walletBalance > orderTotal) { 
+            //check if wallet amount can be used or not         
+            if (walletBalance > orderTotal) {
                 amount = true
             }
             // if wallet has min balance can be used with razorpay
@@ -532,7 +532,6 @@ const cancelOrder = asyncHandler(async (req, res) => {
 // return request from user--
 const returnProduct = asyncHandler(async (req, res) => {
     try {
-        console.log('recived requrest');
         const orderId = req.params.id;
         const productId = req.body.productId;
         const findOrder = await Order.findOne({ _id: orderId })
@@ -549,6 +548,33 @@ const returnProduct = asyncHandler(async (req, res) => {
         } else {
             res.render('./shop/pages/404')
         }
+    } catch (error) {
+        throw new Error(error);
+    }
+});
+
+// download invoice
+const downloadInvoice = asyncHandler(async (req, res) => {
+    try {
+        const orderId = req.params.id;
+
+        const docDefinition = await generateInvoice(orderId)
+        const pdfMake = require('pdfmake/build/pdfmake');
+        const vfsFonts = require('pdfmake/build/vfs_fonts');
+        pdfMake.vfs = vfsFonts.pdfMake.vfs;
+
+        // Create a PDF document
+        const pdfDoc = pdfMake.createPdf(docDefinition);
+        // Generate the PDF and send it as a response
+        pdfDoc.getBuffer((buffer) => {
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', `attachment; filename=invoice-${orderId}.pdf`);
+
+            res.end(buffer);
+        });
+
+
+
     } catch (error) {
         throw new Error(error);
     }
@@ -693,6 +719,7 @@ module.exports = {
     viewOrder,
     cancelOrder,
     returnProduct,
+    downloadInvoice,
     ordersPage,
     editOrderPage,
     updateOrder
