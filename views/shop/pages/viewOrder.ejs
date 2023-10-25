@@ -99,10 +99,6 @@
                                                         style="height: 40px; font-size: 10px;">Download Invoice</button>
                                                 </div>
                                             </div>
-
-
-
-
                                             <% } else if (status=='Return requested' ){ %>
                                                 <p class="card-text text-muted">
                                                     <span>Return request sent, Once the the request is confirmed the
@@ -183,6 +179,7 @@
     const cancelForm = document.getElementById('cancelForm')
     // when clicking cancelButton show a confirmation alert
     cancelButton.addEventListener('click', (e) => {
+        console.log('button');
         e.preventDefault()
         showConfirmation()
     })
@@ -206,9 +203,6 @@
 
 </script>
 <script>
-
-
-
     document.getElementById("invoiceBtn").addEventListener("click", function (orderId) {
         var invoiceButton = this;
         var invoiceId = this.getAttribute("data-invoice-id");

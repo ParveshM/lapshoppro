@@ -51,8 +51,7 @@ const loadDashboard = asyncHandler(async (req, res) => {
         const newUsers = await User.find({ isBlock: false }).sort({ createdAt: -1 }).limit(3)
 
         const total = await graphHelper.calculateRevenue();
-        const [totalRevenue, monthlyRevenue] = [...total]
-        
+        const [totalRevenue, slice] = [...total]
 
         const salesData = await graphHelper.calculateSalesData()
         const usersData = await graphHelper.countUsers()
@@ -65,7 +64,7 @@ const loadDashboard = asyncHandler(async (req, res) => {
                 category,
                 orders,
                 totalRevenue,
-                monthlyRevenue,
+                monthlyRevenue:slice,
                 latestOrders,
                 salesData,
                 newUsers,

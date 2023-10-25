@@ -1,6 +1,6 @@
 const User = require('../models/userModel')
 
-async function ensureAuthenticated(req, res, next) {
+async function ensureAuthenticated(req, res, next) { 
     if (req.isAuthenticated()) {
         if (req.user.id) {   /* checking the id of user  */
             const user = await isBlockCheck(req.user.id);
