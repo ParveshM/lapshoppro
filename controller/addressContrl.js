@@ -18,7 +18,12 @@ const savedAddress = asyncHandler(async (req, res) => {
 // loading address page---
 const addAddressPage = asyncHandler(async (req, res) => {
     try {
-        res.render('./shop/pages/addAddress')
+        let from = false;
+        if (req.query.from) {
+            from = req.query.from;
+        }
+        console.log('form',from);
+        res.render('./shop/pages/addAddress', { from })
     } catch (error) {
         throw new Error(error)
     }
@@ -33,6 +38,9 @@ const insertAddress = asyncHandler(async (req, res) => {
         user.addresses.push(address._id); //pushing the added address
         await user.save(); //save the user 
         console.log(address);
+        if (req.body.from) {
+            return res.redirect('/checkout')
+        }
         res.redirect('/savedAddress')
     } catch (error) {
         throw new Error(error)

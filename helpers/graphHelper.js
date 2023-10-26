@@ -55,8 +55,9 @@ async function calculateRevenue() {
         }
     ])
     const monthlyRevenue = total[0].monthlyRevenue;
+    const slice = monthlyRevenue.slice(-1)[0].totalRevenue
     const totalRevenue = total[0].totalRevenue;
-    return [totalRevenue, monthlyRevenue]
+    return [totalRevenue, slice]
 }
 
 

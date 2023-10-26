@@ -52,21 +52,33 @@ checkProductAvailability();
 /***********************************************/
 
 /**** Sending an AJAX request to the backend to update the quantity ****/
+const cartMessage = document.getElementById('cart-message')
+const hideMessage = () => {
+    cartMessage.style.display = 'none'
+}
 function updateCartItemQuantity(productId, newQuantity) {
     $.ajax({
         type: "POST",
         url: `/updateCartItem/${productId}`,
         data: { quantity: newQuantity },
         success: function (response) {
-            $(`#quantity-${productId}`).val(newQuantity);
+            if (response.success) {
+                $(`#quantity-${productId}`).val(newQuantity);
 
-            // Update the subtotal for the individual product
-            const productPrice = parseFloat($(`#price-${productId}`).text().replace(/[^0-9.-]+/g, ""));
-            const subtotal = productPrice * newQuantity;
-            $(`#subtotal-${productId}`).text(`₹${subtotal.toLocaleString()}`);
+                // Update the subtotal for the individual product
+                const productPrice = parseFloat($(`#price-${productId}`).text().replace(/[^0-9.-]+/g, ""));
+                const subtotal = productPrice * newQuantity;
+                $(`#subtotal-${productId}`).text(`₹${subtotal.toLocaleString()}`);
 
-            // Update the HTML element that displays the total amount
-            $('#total-amount').text(`₹${response.totalPrice.toLocaleString()}`);
+                // Update the HTML element that displays the total amount
+                $('#total-amount').text(`₹${response.totalPrice.toLocaleString()}`);
+            }
+            if (!response.success) {
+                console.log(response.message);
+                cartMessage.innerText = `${response.message}! `
+                cartMessage.style.display = 'block'
+                setTimeout(hideMessage, 1000);
+            }
 
         },
         error: function (jqXHR, textStatus, errorThrown) {

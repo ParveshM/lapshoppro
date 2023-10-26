@@ -71,6 +71,7 @@ function addTowishlist(productId) {
             }
         },
         error: function (textStatus, errorThrown) {
+
             console.log('Errro in sending addtowishlist request', textStatus, errorThrown);
         }
     })

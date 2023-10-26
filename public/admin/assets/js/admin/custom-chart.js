@@ -40,7 +40,7 @@
 
             // The data for our dataset
             data: {
-                labels: chartDataSales.months,
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
                 datasets: [{
                     label: 'Sales',
                     tension: 0.3,

@@ -99,10 +99,6 @@
                                                         style="height: 40px; font-size: 10px;">Download Invoice</button>
                                                 </div>
                                             </div>
-
-
-
-
                                             <% } else if (status=='Return requested' ){ %>
                                                 <p class="card-text text-muted">
                                                     <span>Return request sent, Once the the request is confirmed the
@@ -181,8 +177,32 @@
 <script>
     const cancelButton = document.getElementById('cancel-button')
     const cancelForm = document.getElementById('cancelForm')
+    // when clicking cancelButton show a confirmation alert
+    cancelButton.addEventListener('click', (e) => {
+        console.log('button');
+        e.preventDefault()
+        showConfirmation()
+    })
 
+    function showConfirmation() {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'Do you really want to cancel this product?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // If the user clicks "Yes," cancel the product 
+                cancelForm.submit()
+            }
+        });
+    }
 
+</script>
+<script>
     document.getElementById("invoiceBtn").addEventListener("click", function (orderId) {
         var invoiceButton = this;
         var invoiceId = this.getAttribute("data-invoice-id");
@@ -218,27 +238,5 @@
             });
     });
 
-    // when clicking cancelButton show a confirmation alert
-    cancelButton.addEventListener('click', (e) => {
-        e.preventDefault()
-        showConfirmation()
-    })
-
-    function showConfirmation() {
-        Swal.fire({
-            title: 'Are you sure?',
-            text: 'Do you really want to cancel this product?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // If the user clicks "Yes," cancel the product 
-                cancelForm.submit()
-            }
-        });
-    }
 
 </script>

@@ -3,6 +3,21 @@
         max-width: 30px;
         max-height: 30px;
     }
+
+    @media (max-width: 768px) {
+        .quantity-input {
+            width: 30px !important;
+            max-height: 30px;
+            margin-left: 10px !important;
+            margin-top: 4px;
+            margin-bottom: 4px;
+        }
+
+        #plusButton,
+        #minusButton {
+            width: 39px;
+        }
+    }
 </style>
 
 <div class="breadcrumb-area" style="background-color: black; color: white;">
@@ -23,25 +38,25 @@
     </div>
 </div>
 <%- include('../partials/flash.ejs') %>
-    <!-- shopping-cart-area start -->
-    <div class="cart-main-area pt-40 pb-30">
-        <div class="container ">
-            <div class="row">
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                    <h1 class="cart-heading">Cart</h1>
-                    <form action="#">
-                        <div class="table-content mb-0">
-                            <% if (cartItems && cartItems.length <=0) { %>
-                                <div class="container text-center">
-                                    <a href="/shop" class="btn btn-success mt-3" style="border-radius: 10px;">
-                                        <i class="ti-shopping-cart"></i> Start Shopping
-                                    </a>
-                                    <img src="/assets/gif/empty.gif" alt="Empty Cart" class="img-fluid mb-2"
-                                        style="max-width: 300px ; max-height: 300px; overflow: hidden !important;">
-                                    <h3 class="text-muted">Your cart is empty.</h3>
 
-                                </div>
-                                <% } else { %>
+    <!-- shopping-cart-area start -->
+    <div class="container cart-main-area pt-4 pb-3">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <h1 class="cart-heading">Cart</h1>
+                <form action="#">
+                    <div class="table-content mb-0">
+                        <% if (cartItems && cartItems.length <=0) { %>
+                            <div class="container text-center">
+                                <a href="/shop" class="btn btn-success mt-3" style="border-radius: 10px;">
+                                    <i class="ti-shopping-cart"></i> Start Shopping
+                                </a>
+                                <img src="/assets/gif/empty.gif" alt="Empty Cart" class="img-fluid mb-2"
+                                    style="max-width: 300px; max-height: 300px; overflow: hidden !important;">
+                                <h3 class="text-muted">Your cart is empty.</h3>
+                            </div>
+                            <% } else { %>
+                                <div class="table-responsive">
                                     <table class="table">
                                         <thead>
                                             <tr>
@@ -63,11 +78,9 @@
                                                                 <i class="pe-7s-close"></i>
                                                             </a>
                                                         </td>
-
-
                                                         <td class="product-thumbnail">
                                                             <a href="#">
-                                                                <img style="max-width: 100px; max-height: 100px;"
+                                                                <img class="img-fluid"
                                                                     src="<%= element.product.images[0].imageUrl %>"
                                                                     alt="<%= element.product.title %>">
                                                             </a>
@@ -79,15 +92,14 @@
                                                         </td>
                                                         <td class="product-price-cart"
                                                             id="price-<%= element.product._id %>">
-                                                            <span class="amount">
-                                                                ₹<%=(element.product.salePrice).toLocaleString() %>
+                                                            <span class="amount">₹
+                                                                <%=(element.product.salePrice).toLocaleString() %>
                                                             </span>
                                                         </td>
                                                         <td class="product-quantity">
-
                                                             <div class="input-group">
                                                                 <span class="input-group-btn">
-                                                                    <button type="button"
+                                                                    <button type="button" id="minusButton"
                                                                         class="btn btn-danger quantity-button minus mx-2"
                                                                         onclick="decrementQuantity(this, '<%= element.product._id %>')">-</button>
                                                                 </span>
@@ -95,20 +107,18 @@
                                                                     value="<%= element.quantity %>" min="1"
                                                                     class="form-control quantity-input" <% if
                                                                     (element.quantity> element.product.quantity) { %>
-                                                                style="pointer-events:none; max-width:30px ;" <% } %> >
-
+                                                                style="pointer-events:none; width:30px;" <% } %> >
                                                                     <span class="input-group-btn">
-                                                                        <button type="button"
+                                                                        <button type="button" id="plusButton"
                                                                             class="btn btn-success quantity-button plus mx-2"
                                                                             onclick="incrementQuantity(this, '<%= element.product._id %>')">+</button>
                                                                     </span>
                                                             </div>
-
-
-                                                            <h5 style="color: rgb(255, 225, 52); font-size: 15px; margin-right: 41px;
-                                                         margin-top: 2px; margin-bottom: -25px;"
+                                                            <div id="cart-message" class="p-2 rounded-pill bg-danger"
+                                                                style="display: none; position: absolute; top: 70%; right:0px;color:rgb(255, 255, 255)">
+                                                            </div>
+                                                            <h5 style="color: rgb(255, 225, 52); font-size: 15px; margin-right: 41px; margin-top: 2px; margin-bottom: -25px;"
                                                                 id="AvailableStock-<%= element.product._id %>"></h5>
-
                                                         </td>
                                                         <td class="product-subtotal"
                                                             id="subtotal-<%= element.product._id %>">
@@ -120,22 +130,17 @@
                                                         <% } %>
                                         </tbody>
                                     </table>
-                        </div>
-                </div>
+                                </div>
+                    </div>
                 </form>
-                <div class="row ">
-                    <div class="col-md-5 ms-auto ">
+                <div class="row">
+                    <div class="col-md-5 ms-auto">
                         <div class="cart-page-total mt-0">
                             <h2>Cart totals</h2>
                             <ul>
-                                <li>Subtotal<span id="total-amount">₹<%= subtotal.toLocaleString() %></span>
-
-                                </li>
+                                <li>Subtotal<span id="total-amount">₹<%= subtotal.toLocaleString() %></span></li>
                             </ul>
-
-                            <a href="/checkout" id="checkout-link" class="checkout-tag">
-                                Proceed to checkout
-                            </a>
+                            <a href="/checkout" id="checkout-link" class="checkout-tag">Proceed to checkout</a>
                         </div>
                     </div>
                     <% } %>
@@ -143,6 +148,5 @@
             </div>
         </div>
     </div>
-
 
     <script src="/assets/js/shop/cart.js"></script>

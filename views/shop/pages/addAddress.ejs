@@ -4,6 +4,9 @@
             <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1 col-12">
                 <form action="/addAddress" method="POST" class="address-form">
                     <h3>Add Address</h3>
+                    <% if (from) { %>
+                      <input type="hidden" name="from" value="Checkout">
+                    <% } %>
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
