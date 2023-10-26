@@ -420,6 +420,7 @@ const sendResetLink = asyncHandler(async (req, res) => {
         await user.save();
 
         const resetUrl = `${req.protocol}://${req.get("host")}/resetPassword/${resetToken}`;
+        console.log('resetUrl',resetUrl);
 
         try {
             forgetPassMail(email, resetUrl, user.userName);

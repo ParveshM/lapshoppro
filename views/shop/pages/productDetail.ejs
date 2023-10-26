@@ -126,7 +126,7 @@
                                                             <a class="btn-hover" href="/login">
                                                                 <i class="pe-7s-like"></i></a>
                                                             <% } %>
-                                    </a>
+                                        </a>
                                 </div>
                                 <div id="fixed-div" class="mt-2 fixed-div border rounded-pill p-2"
                                     style="display: none;">
@@ -153,23 +153,17 @@
                                 <ul>
                                     <li class="categories-title">Share :</li>
                                     <li>
-                                        <a href="#">
-                                            <i class="icofont icofont-social-facebook"></i>
+                                        <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Flocalhost:3000%2FviewProduct%2F<%= product._id %>&amp;quote=<%= encodeURIComponent('Check out this awesome product: ' + product.title) %>"
+                                            class="fb-xfbml-parse-ignore">
+                                            <i class="icofont icofont-social-facebook text-primary"></i>
                                         </a>
+
+
                                     </li>
                                     <li>
-                                        <a href="#">
-                                            <i class="icofont icofont-social-twitter"></i>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="#">
-                                            <i class="icofont icofont-social-pinterest"></i>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="#">
-                                            <i class="icofont icofont-social-flikr"></i>
+                                        <a
+                                            href="whatsapp://send?text=<%= encodeURIComponent('*Check out this awesome product:* ' + product.title) %>-%20http%3A%2F%2Flocalhost:3000%2FviewProduct%2F<%= product._id %>">
+                                            <i class="icofont icofont-social-whatsapp text-success"></i>
                                         </a>
                                     </li>
                                 </ul>
