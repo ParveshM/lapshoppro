@@ -24,9 +24,6 @@
                     <tbody>
                         <% if (orders.length> 0) { %>
                             <% orders.forEach(orders=> { %>
-
-
-
                                 <tr>
                                     <td>
                                         <%= orders.orderId %>
@@ -68,7 +65,7 @@
 
 <script>
     $(document).ready(function () {
-        new DataTable('#example',{
+        new DataTable('#example', {
             order: [[4, 'desc']]
         });
 
