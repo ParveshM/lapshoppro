@@ -5,7 +5,7 @@ const lowtoHigh = document.getElementById('lowToHigh')
 const highToLow = document.getElementById('highToLow')
 const pages = queryParams.get('p')
 const selectedCategory = queryParams.get('category')
-const baseURL = '/parveshm.site/shop';
+const baseURL = '/shop';
 
 const queryParameters = [];
 
