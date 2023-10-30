@@ -72,7 +72,8 @@ const insertUser = async (req, res) => {
 const sendOTPpage = asyncHandler(async (req, res) => {
     try {
         const email = req.session.otpUser.email
-        res.render('./shop/pages/verifyOTP', { email })
+        console.log(req.session.otpUser , 'email', email);
+        res.render('./shop/pages/verifyOTP', { message: email })
     } catch (error) {
         throw new Error(error)
     }
@@ -93,6 +94,7 @@ const verifyOTP = asyncHandler(async (req, res) => {
             if (user.referralCode && user.referralCode !== '') {
                 const referralCode = user.referralCode.trim()
                 userFound = await creditforRefferedUser(referralCode)
+                delete user.referralCode
             }
             const newUser = await User.create(user);
             if (newUser) {
@@ -113,9 +115,9 @@ const verifyOTP = asyncHandler(async (req, res) => {
             }
             res.redirect('/login');
         } else {
-            const messages = 'Verification failed, please check the OTP or resend it.';
+            const message = 'Verification failed, please check the OTP or resend it.';
             console.log('verification failed');
-            res.render('./shop/pages/verifyOTP', { messages })
+            res.render('./shop/pages/verifyOTP', { errorMessage:message })
         }
     } catch (error) {
         throw new Error(error);
@@ -137,7 +139,7 @@ const reSendOTP = async (req, res) => {
         try {
             sendOtp(email, OTP, userName);
             console.log('otp is sent');
-            return res.render('./shop/pages/reSendOTP', { email });
+            return res.render('./shop/pages/reSendOTP', { message:email });
         } catch (error) {
             console.error('Error sending OTP:', error);
             return res.status(500).send('Error sending OTP');
@@ -160,6 +162,7 @@ const verifyResendOTP = asyncHandler(async (req, res) => {
             if (user.referralCode && user.referralCode !== '') {
                 const referralCode = user.referralCode.trim()
                 userFound = await creditforRefferedUser(referralCode)
+                delete user.referralCode
             }
             const newUser = await User.create(user);
             if (newUser) {
@@ -420,7 +423,7 @@ const sendResetLink = asyncHandler(async (req, res) => {
         await user.save();
 
         const resetUrl = `${req.protocol}://${req.get("host")}/resetPassword/${resetToken}`;
-        console.log('resetUrl',resetUrl);
+        console.log('resetUrl', resetUrl);
 
         try {
             forgetPassMail(email, resetUrl, user.userName);
