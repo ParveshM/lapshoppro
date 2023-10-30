@@ -1,9 +1,14 @@
 <div class="container mt-5 my-5">
     <div class="row justify-content-center">
         <div class="col-md-6">
-            <% if ( messages && messages.length>0) { %>
+            <% if ( typeof message !== 'undefined' ) { %>
+                <div class="alert alert-info fade show mt-3 " id="message" role="alert">
+                    <%= message %>
+                </div>
+                <% } %>
+            <% if ( typeof errorMessage !== 'undefined') { %>
                 <div class="alert alert-danger fade show mt-3 " id="message" role="alert">
-                    <%= messages %>
+                    <%= errorMessage %>
                 </div>
                 <% } %>
                    

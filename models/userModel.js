@@ -32,7 +32,8 @@ const userSchema = new Schema({
     coupons: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Coupon' }],
     referralCode:{
         type:String,
-        unique:true
+        unique:true,
+        default:'ReferralCode'
     },
     passwordChangedAt: Date,
     passwordResetToken: String,
