@@ -50,10 +50,10 @@
     <% if (title==="Login" ) { %>
         <%- body %>
             <% } else { %>
-                <%- include('./partials/sideBar.ejs') %>
-                    <%- include('./partials/navbar.ejs') %>
+                <%- include('sideBar.ejs') %>
+                    <%- include('navbar.ejs') %>
                         <%- body%>
-                            <%- include('./partials/footer.ejs') %>
+                            <%- include('footer.ejs') %>
                                 <% } %>
 
 
