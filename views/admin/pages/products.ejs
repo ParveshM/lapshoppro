@@ -1,82 +1,187 @@
-<section class="content-main">
-    <div class="content-header">
+<div class="screen-overlay"></div>
+<aside class="navbar-aside" id="offcanvas_aside">
+    <div class="aside-top">
+        <a href="/admin/dashboard" class="brand-wrap">
+            <img class="logo-img" src="/admin/assets/imgs/theme/LapshopPro.png" class="logo" alt="Evara Dashboard">
+        </a>
         <div>
-            <h2 class="content-title card-title">Products List</h2>
-
+            <button class="btn btn-icon btn-aside-minimize"> <i class="text-muted material-icons md-menu_open"></i>
+            </button>
         </div>
-        <div>
-            <!-- <a href="#" class="btn btn-light rounded font-md">Export</a>
+    </div>
+    <nav>
+        <ul class="menu-aside">
+            <li class="menu-item ">
+                <a class="menu-link" href="/admin/dashboard"> <i class="icon material-icons md-home"></i>
+                    <span class="text">Dashboard</span>
+                </a>
+            </li>
+            <li class="menu-item has-submenu mx-2 my-2">
+                <a class="" href="/admin/user"> <i class="icon material-icons md-person"></i>
+                    <span class="text">Users</span>
+                </a>
+
+            </li>
+            <li class="menu-item has-submenu mx-2 my-2">
+                <a class="" href="/admin/orders"> <i class="icon material-icons md-shopping_cart"></i>
+                    <span class="text">Orders</span>
+                </a>
+
+            </li>
+            <li class="menu-item has-submenu mx-2 my-2">
+                <a class="" href="/admin/products"> <i class="icon material-icons md-shopping_bag"></i>
+                    <span class="text">Products</span>
+                </a>
+
+            </li>
+            <li class="menu-item has-submenu pl-1 mx-2 my-2">
+                <a class="" href="/admin/category"> <i class="fa fa-list-alt"></i>
+                    <span class="text pl-3">Category</span>
+                </a>
+            </li>
+            <li class="menu-item has-submenu pl-1 mx-2 my-2">
+                <a class="" href="/admin/coupons"> <i class="fa fa-gift"></i>
+                    <span class="text pl-3">coupons</span>
+                </a>
+            </li>
+            <li class="menu-item has-submenu pl-1 mx-2 my-2">
+                <a class="" href="/admin/banners"><i class="fas fa-image"></i>
+                    <span class="text pl-3">Banner</span>
+                </a>
+            </li>
+        </ul>
+        <hr>
+
+        <br>
+        <br>
+    </nav>
+</aside>
+<style>
+    .fa-list-alt,
+    .fa-gift,
+    .fa-tag,
+    .fa-image {
+        color: #adb5bd;
+    }
+
+    .text {
+        color: black;
+        font-weight: 400;
+    }
+
+    .menu-item {
+        text-decoration: none;
+    }
+
+    a {
+        /* Your CSS styles here */
+        text-decoration: none !important;
+
+    }
+
+    .logo-img {
+        max-width: 100px;
+        max-height: 100px;
+    }
+</style>
+
+<main class="main-wrap">
+    <header class="main-header navbar">
+        <div class="col-nav  ms-auto ">
+            <ul class="nav">
+                <li class="dropdown nav-item dropleft">
+                    <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownAccount"
+                        aria-expanded="false"> <img class="img-xs rounded-circle"
+                            src="/admin/assets/imgs/people/3251650.png" alt="User"></a>
+                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownAccount">
+                        <a class="dropdown-item text-danger" href="/admin/logout"><i
+                                class="material-icons md-exit_to_app"></i>Logout</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </header>
+    <section class="content-main">
+        <div class="content-header">
+            <div>
+                <h2 class="content-title card-title">Products List</h2>
+
+            </div>
+            <div>
+                <!-- <a href="#" class="btn btn-light rounded font-md">Export</a>
             <a href="#" class="btn btn-light rounded  font-md">Import</a> -->
-            <a href="/admin/product/addProduct" class="btn btn-primary btn-sm rounded">Add Product</a>
+                <a href="/admin/product/addProduct" class="btn btn-primary btn-sm rounded">Add Product</a>
+            </div>
         </div>
-    </div>
-    <div class="card mb-4">
+        <div class="card mb-4">
 
-        <table style="width: 100%;" id="example" class="table table-striped table-bordered table-sm" cellspacing="0"
-            width="100%">
-            <thead>
-                <tr>
-                    <th class="th-sm">Image</th>
-                    <th class="th-sm">Product name</th>
-                    <th class="th-sm">Brand</th>
-                    <th class="th-sm">Category</th>
-                    <th class="th-sm">Stock</th>
-                    <th class="th-sm">Sale Price</th>
-                    <th>List/Unlist</th>
-                    <th class="th-sm">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-
-
-                <% productList.forEach(element=> { %>
+            <table style="width: 100%;" id="example" class="table table-striped table-bordered table-sm" cellspacing="0"
+                width="100%">
+                <thead>
                     <tr>
-                        <td><img src="<%= element?.images[0]?.thumbnailUrl %>"
-                                style="max-width: 75px;max-height: 75px;" alt="Product Image"></td>
-                        <td>
-                            <%= element.title %>
-                        </td>
-                        <td>
-                            <%= element.brand %>
-                        </td>
-                        <td>
-                            <%= element.categoryName?.categoryName %>
-                        </td>
-                        <td>
-                            <%= element.quantity %>
-                        </td>
-                        <td>
-                            <%= element.salePrice %>
-                        </td>
-                        <td>
-                            <% if (element.isListed) { %>
-
-                                <form action="/admin/product/UnList/<%- element?._id %>" method="post">
-                                    <button type="submit" class="btn btn-danger btn-sm unblock-button">Unlist</button>
-                                </form>
-
-                                <% } else { %>
-                                    <form action="/admin/product/list/<%- element?._id %>" method="post">
-                                        <button type="submit" class="btn btn-success btn-sm block-button">List</button>
-                                    </form>
-                                    <% } %>
-                        </td>
-                        <td>
-                            <a href="/admin/product/editProduct/<%- element._id %>">
-                                <button class="btn btn-info btn-sm ml-2 "><i
-                                        class="material-icons md-edit pb-1"></i></button>
-                            </a>
-                        </td>
+                        <th class="th-sm">Image</th>
+                        <th class="th-sm">Product name</th>
+                        <th class="th-sm">Brand</th>
+                        <th class="th-sm">Category</th>
+                        <th class="th-sm">Stock</th>
+                        <th class="th-sm">Sale Price</th>
+                        <th>List/Unlist</th>
+                        <th class="th-sm">Actions</th>
                     </tr>
-                    <% }); %>
-            </tbody>
-        </table>
-    </div>
+                </thead>
+                <tbody>
 
-</section>
-<script>
-    $(document).ready(function () {
-        new DataTable('#example');
 
-    })
-</script>
+                    <% productList.forEach(element=> { %>
+                        <tr>
+                            <td><img src="<%= element?.images[0]?.thumbnailUrl %>"
+                                    style="max-width: 75px;max-height: 75px;" alt="Product Image"></td>
+                            <td>
+                                <%= element.title %>
+                            </td>
+                            <td>
+                                <%= element.brand %>
+                            </td>
+                            <td>
+                                <%= element.categoryName?.categoryName %>
+                            </td>
+                            <td>
+                                <%= element.quantity %>
+                            </td>
+                            <td>
+                                <%= element.salePrice %>
+                            </td>
+                            <td>
+                                <% if (element.isListed) { %>
+
+                                    <form action="/admin/product/UnList/<%- element?._id %>" method="post">
+                                        <button type="submit"
+                                            class="btn btn-danger btn-sm unblock-button">Unlist</button>
+                                    </form>
+
+                                    <% } else { %>
+                                        <form action="/admin/product/list/<%- element?._id %>" method="post">
+                                            <button type="submit"
+                                                class="btn btn-success btn-sm block-button">List</button>
+                                        </form>
+                                        <% } %>
+                            </td>
+                            <td>
+                                <a href="/admin/product/editProduct/<%- element._id %>">
+                                    <button class="btn btn-info btn-sm ml-2 "><i
+                                            class="material-icons md-edit pb-1"></i></button>
+                                </a>
+                            </td>
+                        </tr>
+                        <% }); %>
+                </tbody>
+            </table>
+        </div>
+
+    </section>
+    <script>
+        $(document).ready(function () {
+            new DataTable('#example');
+
+        })
+    </script>

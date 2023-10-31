@@ -1,38 +1,139 @@
-
- <div class="container mt-4 ">
-    <h1>Add Category</h1>
-
-    <form action="" method="post">
-        <div class="form-group col-lg-6">
-            <label for="categoryName">Category Name</label>
-            <input type="text" class="form-control" name="addCategory" id="categoryName"  placeholder="Enter category name" required>
+<div class="screen-overlay"></div>
+<aside class="navbar-aside" id="offcanvas_aside">
+    <div class="aside-top">
+        <a href="/admin/dashboard" class="brand-wrap">
+            <img class="logo-img" src="/admin/assets/imgs/theme/LapshopPro.png" class="logo" alt="Evara Dashboard">
+        </a>
+        <div>
+            <button class="btn btn-icon btn-aside-minimize"> <i class="text-muted material-icons md-menu_open"></i>
+            </button>
         </div>
-
-        <button type="submit" class="btn btn-primary">Add Category</button>
-    </form>
-</div>
-
-
-<% if(typeof message !=='undefined') { %>
-    <div class="alert alert-success fade show mt-3" id="message" role="alert">
-        <%- message %>
     </div>
-<% } %>
+    <nav>
+        <ul class="menu-aside">
+            <li class="menu-item ">
+                <a class="menu-link" href="/admin/dashboard"> <i class="icon material-icons md-home"></i>
+                    <span class="text">Dashboard</span>
+                </a>
+            </li>
+            <li class="menu-item has-submenu mx-2 my-2">
+                <a class="" href="/admin/user"> <i class="icon material-icons md-person"></i>
+                    <span class="text">Users</span>
+                </a>
 
-<% if(typeof catCheck !=='undefined') { %>
-    <div class="alert alert-danger fade show mt-3" id="message" role="alert">
-        <%- catCheck %>
+            </li>
+            <li class="menu-item has-submenu mx-2 my-2">
+                <a class="" href="/admin/orders"> <i class="icon material-icons md-shopping_cart"></i>
+                    <span class="text">Orders</span>
+                </a>
+
+            </li>
+            <li class="menu-item has-submenu mx-2 my-2">
+                <a class="" href="/admin/products"> <i class="icon material-icons md-shopping_bag"></i>
+                    <span class="text">Products</span>
+                </a>
+
+            </li>
+            <li class="menu-item has-submenu pl-1 mx-2 my-2">
+                <a class="" href="/admin/category"> <i class="fa fa-list-alt"></i>
+                    <span class="text pl-3">Category</span>
+                </a>
+            </li>
+            <li class="menu-item has-submenu pl-1 mx-2 my-2">
+                <a class="" href="/admin/coupons"> <i class="fa fa-gift"></i>
+                    <span class="text pl-3">coupons</span>
+                </a>
+            </li>
+            <li class="menu-item has-submenu pl-1 mx-2 my-2">
+                <a class="" href="/admin/banners"><i class="fas fa-image"></i>
+                    <span class="text pl-3">Banner</span>
+                </a>
+            </li>
+        </ul>
+        <hr>
+
+        <br>
+        <br>
+    </nav>
+</aside>
+<style>
+    .fa-list-alt,
+    .fa-gift,
+    .fa-tag,
+    .fa-image {
+        color: #adb5bd;
+    }
+
+    .text {
+        color: black;
+        font-weight: 400;
+    }
+
+    .menu-item {
+        text-decoration: none;
+    }
+
+    a {
+        /* Your CSS styles here */
+        text-decoration: none !important;
+
+    }
+
+    .logo-img {
+        max-width: 100px;
+        max-height: 100px;
+    }
+</style>
+<main class="main-wrap">
+    <header class="main-header navbar">
+        <div class="col-nav  ms-auto ">
+            <ul class="nav">
+                <li class="dropdown nav-item dropleft">
+                    <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownAccount"
+                        aria-expanded="false"> <img class="img-xs rounded-circle"
+                            src="/admin/assets/imgs/people/3251650.png" alt="User"></a>
+                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownAccount">
+                        <a class="dropdown-item text-danger" href="/admin/logout"><i
+                                class="material-icons md-exit_to_app"></i>Logout</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </header>
+    <div class="container mt-4 ">
+        <h1>Add Category</h1>
+
+        <form action="" method="post">
+            <div class="form-group col-lg-6">
+                <label for="categoryName">Category Name</label>
+                <input type="text" class="form-control" name="addCategory" id="categoryName"
+                    placeholder="Enter category name" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Add Category</button>
+        </form>
     </div>
-<% } %>
 
-<script>
-  const message = document.getElementById('message');
 
-const hide = () => {
-    message.style.display = 'none';
-}
+    <% if(typeof message !=='undefined' ) { %>
+        <div class="alert alert-success fade show mt-3" id="message" role="alert">
+            <%- message %>
+        </div>
+        <% } %>
 
-setTimeout(hide, 3000);
+            <% if(typeof catCheck !=='undefined' ) { %>
+                <div class="alert alert-danger fade show mt-3" id="message" role="alert">
+                    <%- catCheck %>
+                </div>
+                <% } %>
 
-</script>
+                    <script>
+                        const message = document.getElementById('message');
 
+                        const hide = () => {
+                            message.style.display = 'none';
+                        }
+
+                        setTimeout(hide, 3000);
+
+                    </script>

@@ -1,94 +1,200 @@
-<!-- Navigation -->
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-
-</nav>
-
-<a href="/admin/addCategory"><button class="btn btn-primary  float-right">AddCategory</button></a>
-<!-- Page Content -->
-<div class="container mt-4">
-    <h1>Category Management</h1>
-
-    <div class="col-search ml-4 mb-2">
-        <form class="searchform" action="/admin/category/search" method="post">
-            <div class="input-group">
-                <input list="search_terms" type="text" class="form-control" name="search" placeholder="Search a category">
-                <button type="submit" class="btn btn-light bg"  > <i class="material-icons md-search"></i></button>
-            </div>
-        </form>
+<div class="screen-overlay"></div>
+<aside class="navbar-aside" id="offcanvas_aside">
+    <div class="aside-top">
+        <a href="/admin/dashboard" class="brand-wrap">
+            <img class="logo-img" src="/admin/assets/imgs/theme/LapshopPro.png" class="logo" alt="Evara Dashboard">
+        </a>
+        <div>
+            <button class="btn btn-icon btn-aside-minimize"> <i class="text-muted material-icons md-menu_open"></i>
+            </button>
+        </div>
     </div>
-    <!-- Category Table -->
-    <table class="table">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>List/unList</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            
-             
-                
-                <% if (catList?.length>0) { %>
-              
-                <% for( let i = 0; i < catList.length; i++ ) { %>
-                
-                    <tr>
-                    <td> <%-  i+1 %> </td>
-                    <td> <%- catList[i].categoryName %> </td>
-                    <td>
-                    <% if (catList[i].isListed) { %>
+    <nav>
+        <ul class="menu-aside">
+            <li class="menu-item ">
+                <a class="menu-link" href="/admin/dashboard"> <i class="icon material-icons md-home"></i>
+                    <span class="text">Dashboard</span>
+                </a>
+            </li>
+            <li class="menu-item has-submenu mx-2 my-2">
+                <a class="" href="/admin/user"> <i class="icon material-icons md-person"></i>
+                    <span class="text">Users</span>
+                </a>
 
-                       
-                            <a href="/admin/category/unList/<%- catList[i]?._id %>">
-                                <button type="submit" class="btn btn-danger btn-sm unblock-button">unList</button>
-                            </a>
-                            
-                     
-                        <% } else { %>
-                            <a href="/admin/category/list/<%- catList[i]?._id %>">
-                                <button type="submit" class="btn btn-success btn-sm unblock-button">list</button>
-                            </a>
-                            <% } %>
-                     </td>
-                  <td>
-                        <div class="d-flex justify-content-even">
-                            <a href="/admin/editCategory/<%- catList[i]._id %>">
-                                <button class="btn btn-info btn-sm"><i class="material-icons md-edit pb-1"></i></button>
-                            </a>
-                          
-                        </div>
-                    </td>
-                    
-                    <td></td>
+            </li>
+            <li class="menu-item has-submenu mx-2 my-2">
+                <a class="" href="/admin/orders"> <i class="icon material-icons md-shopping_cart"></i>
+                    <span class="text">Orders</span>
+                </a>
+
+            </li>
+            <li class="menu-item has-submenu mx-2 my-2">
+                <a class="" href="/admin/products"> <i class="icon material-icons md-shopping_bag"></i>
+                    <span class="text">Products</span>
+                </a>
+
+            </li>
+            <li class="menu-item has-submenu pl-1 mx-2 my-2">
+                <a class="" href="/admin/category"> <i class="fa fa-list-alt"></i>
+                    <span class="text pl-3">Category</span>
+                </a>
+            </li>
+            <li class="menu-item has-submenu pl-1 mx-2 my-2">
+                <a class="" href="/admin/coupons"> <i class="fa fa-gift"></i>
+                    <span class="text pl-3">coupons</span>
+                </a>
+            </li>
+            <li class="menu-item has-submenu pl-1 mx-2 my-2">
+                <a class="" href="/admin/banners"><i class="fas fa-image"></i>
+                    <span class="text pl-3">Banner</span>
+                </a>
+            </li>
+        </ul>
+        <hr>
+
+        <br>
+        <br>
+    </nav>
+</aside>
+<style>
+    .fa-list-alt,
+    .fa-gift,
+    .fa-tag,
+    .fa-image {
+        color: #adb5bd;
+    }
+
+    .text {
+        color: black;
+        font-weight: 400;
+    }
+
+    .menu-item {
+        text-decoration: none;
+    }
+
+    a {
+        /* Your CSS styles here */
+        text-decoration: none !important;
+
+    }
+
+    .logo-img {
+        max-width: 100px;
+        max-height: 100px;
+    }
+</style>
+<main class="main-wrap">
+    <header class="main-header navbar">
+        <div class="col-nav  ms-auto ">
+            <ul class="nav">
+                <li class="dropdown nav-item dropleft">
+                    <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownAccount"
+                        aria-expanded="false"> <img class="img-xs rounded-circle"
+                            src="/admin/assets/imgs/people/3251650.png" alt="User"></a>
+                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownAccount">
+                        <a class="dropdown-item text-danger" href="/admin/logout"><i
+                                class="material-icons md-exit_to_app"></i>Logout</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+    </nav>
+
+    <a href="/admin/addCategory"><button class="btn btn-primary  float-right">AddCategory</button></a>
+    <!-- Page Content -->
+    <div class="container mt-4">
+        <h1>Category Management</h1>
+
+        <div class="col-search ml-4 mb-2">
+            <form class="searchform" action="/admin/category/search" method="post">
+                <div class="input-group">
+                    <input list="search_terms" type="text" class="form-control" name="search"
+                        placeholder="Search a category">
+                    <button type="submit" class="btn btn-light bg"> <i class="material-icons md-search"></i></button>
+                </div>
+            </form>
+        </div>
+        <!-- Category Table -->
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>List/unList</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+
+
+
+                <% if (catList?.length>0) { %>
+
+                    <% for( let i=0; i < catList.length; i++ ) { %>
+
+                        <tr>
+                            <td> <%- i+1 %> </td>
+                            <td> <%- catList[i].categoryName %> </td>
+                            <td>
+                                <% if (catList[i].isListed) { %>
+
+
+                                    <a href="/admin/category/unList/<%- catList[i]?._id %>">
+                                        <button type="submit"
+                                            class="btn btn-danger btn-sm unblock-button">unList</button>
+                                    </a>
+
+
+                                    <% } else { %>
+                                        <a href="/admin/category/list/<%- catList[i]?._id %>">
+                                            <button type="submit"
+                                                class="btn btn-success btn-sm unblock-button">list</button>
+                                        </a>
+                                        <% } %>
+                            </td>
+                            <td>
+                                <div class="d-flex justify-content-even">
+                                    <a href="/admin/editCategory/<%- catList[i]._id %>">
+                                        <button class="btn btn-info btn-sm"><i
+                                                class="material-icons md-edit pb-1"></i></button>
+                                    </a>
+
+                                </div>
+                            </td>
+
+                            <td></td>
                         </tr>
-                        
+
                         <% } %>
 
-                        
-                        <% } else { %>
-                            <h2>NO CATOGERIES FOUND</h2>
-                            <% } %>
-                         
-                            
-                        </tbody>
-                    </table>
-                </div>
 
-<!-- Add Category Modal -->
-<div class="modal fade" id="addCategoryModal" tabindex="-1" role="dialog" aria-labelledby="addCategoryModalLabel"
-    aria-hidden="true">
-    <!-- Add category modal content -->
-</div>
+                            <% } else { %>
+                                <h2>NO CATOGERIES FOUND</h2>
+                                <% } %>
 
-<!-- Edit Category Modal -->
-<div class="modal fade" id="editCategoryModal" tabindex="-1" role="dialog" aria-labelledby="editCategoryModalLabel"
-    aria-hidden="true">
-    <!-- Edit category modal content -->
-</div>
 
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Add Category Modal -->
+    <div class="modal fade" id="addCategoryModal" tabindex="-1" role="dialog" aria-labelledby="addCategoryModalLabel"
+        aria-hidden="true">
+        <!-- Add category modal content -->
+    </div>
+
+    <!-- Edit Category Modal -->
+    <div class="modal fade" id="editCategoryModal" tabindex="-1" role="dialog" aria-labelledby="editCategoryModalLabel"
+        aria-hidden="true">
+        <!-- Edit category modal content -->
+    </div>
