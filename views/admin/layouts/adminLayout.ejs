@@ -1,8 +1,8 @@
 <!DOCTYPE HTML>
 <html lang="en">
 
-
 <!-- Mirrored from wp.alithemes.com/html/evara/evara-backend/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 01 Aug 2021 15:32:35 GMT -->
+
 <head>
     <meta charset="utf-8">
     <title>
@@ -50,15 +50,11 @@
     <% if (title==="Login" ) { %>
         <%- body %>
             <% } else { %>
-                <%- include('../partials/sideBar.ejs') %>
-                    <%- include('../partials/navbar.ejs') %>
+                <%- include('../pages/partials/sideBar.ejs') %>
+                    <%- include('../pages/partials/navbar.ejs') %>
                         <%- body%>
-                            <%- include('../partials/footer.ejs') %>
+                            <%- include('../pages/partials/footer.ejs') %>
                                 <% } %>
-
-
-
-
 
 
 </body>
