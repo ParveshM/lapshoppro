@@ -98,6 +98,6 @@ userRoute.get('/download-invoice/:id', ensureAuthenticated, orderController.down
 
 
 // 404 notfound page--
-// userRoute.get('*', (req, res) => { res.render('./shop/pages/404') })
+userRoute.get('*', (req, res) => { res.render('./shop/pages/404') })
 
 module.exports = userRoute;

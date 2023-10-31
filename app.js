@@ -79,8 +79,8 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(methodOverride('_method'));
 
 // UserRoutes-----
-app.use('/', userRoute);
 app.use('/admin', adminRoute)
+app.use('/', userRoute);
 // AdminRoutes---
 
 
