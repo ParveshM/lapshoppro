@@ -12,11 +12,14 @@
                 <div class="col-md-12 col-12 col-lg-6 col-xl-6 ms-auto me-auto">
                     <div class="login">
                         <div class="login-form-container">
+                            <div class="error-message" id="form-error" style="display: none;"></div>
                             <div class="login-form">
-                                <form action="#" method="post">
-                                    <label for="email">Email:</label>
+                                <form action="" method="post" onsubmit="return validateForm()">
+                                    <label for="email">Email*</label>
+                                    <div class="error-message" id="email-error"></div>
                                     <input type="text" id="email" name="email" placeholder="Email">
-                                    <label for="password">Password:</label>
+                                    <label for="password">Password*</label>
+                                    <div class="error-message" id="password-error"></div>
                                     <input type="password" id="password" name="password" placeholder="Password">
                                     <div class="button-box">
                                         <div class="login-toggle-btn">
@@ -27,7 +30,6 @@
                                             <a href="/register">Don't have an account ?</a>
                                             <a href="/register" class="ml-2">Register now</a>
                                         </div>
-                                        <!-- <a href="/register">Don't have an account ? Register now</a> -->
                                     </div>
                                 </form>
                             </div>
@@ -37,3 +39,65 @@
             </div>
         </div>
     </div>
+    <style>
+        .error-message {
+            color: red;
+        }
+    </style>
+    <script>
+        let isformValidated = false;
+        document.addEventListener('DOMContentLoaded', function () {
+            const emailInput = document.querySelector('input[name="email"]');
+            const passwordInput = document.querySelector('input[name="password"]');
+
+            emailInput.addEventListener('blur', function () {
+                validateEmail(emailInput);
+            });
+
+            passwordInput.addEventListener('blur', function () {
+                validatePassword(passwordInput);
+            });
+
+
+        });
+        function validateEmail(input) {
+            const emailError = document.getElementById('email-error');
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (input.value.trim() === '') {
+                emailError.textContent = 'Email is required.';
+                isformValidated = false;
+            } else if (!emailRegex.test(input.value)) {
+                emailError.textContent = 'Invalid email.';
+                isformValidated = false;
+            } else {
+                emailError.textContent = '';
+                isformValidated = true;
+            }
+        }
+        function validatePassword(input) {
+            const passwordError = document.getElementById('password-error');
+            if (input.value.trim() === '') {
+                passwordError.textContent = 'Password is required.';
+                isformValidated = false;
+            } else {
+                passwordError.textContent = '';
+                isformValidated = true;
+            }
+        }
+
+        const formError = document.getElementById('form-error');
+        function validateForm() {
+            if (!isformValidated) {
+                formError.style.display = 'block'
+                formError.textContent = 'Please fill in the required fields.';
+                setTimeout(hide, 3000);
+                return false;
+            }
+            return true;
+        }
+        function hide() {
+            formError.style.display = 'none'
+        }
+        setTimeout(hide, 3000)
+
+    </script>

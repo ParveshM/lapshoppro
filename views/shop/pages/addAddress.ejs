@@ -2,70 +2,79 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1 col-12">
-                <form action="/addAddress" method="POST" class="address-form">
+                <form action="/addAddress" method="POST" class="address-form" onsubmit="return validateForm()">
                     <h3>Add Address</h3>
                     <% if (from) { %>
-                      <input type="hidden" name="from" value="Checkout">
-                    <% } %>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="first-name">Name <span class="required">*</span></label>
-                                <input type="text" name="name" class="form-control" placeholder="Name" required />
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group ">
-                                <label for="addressType">Address Type:</label>
-                                <div class="form-check">
-                                    <input type="radio" class="form-check-input" id="home" name="addressType"
-                                        value="Home" checked>
-                                    <label class="form-check-label" for="home">Home</label>
+                        <input type="hidden" name="from" value="Checkout">
+                        <% } %>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="first-name">Name <span class="required">*</span></label>
+                                        <input type="text" name="name" class="form-control" placeholder="Name" />
+                                        <div class="error-message"></div>
+                                    </div>
                                 </div>
-                                <div class="form-check form-check-inline">
-                                    <input type="radio" class="form-check-input" id="work" name="addressType"
-                                        value="Work">
-                                    <label class="form-check-label" for="work">Work</label>
+
+                                <div class="col-md-6">
+                                    <div class="form-group ">
+                                        <label for="addressType">Address Type:</label>
+                                        <div class="form-check">
+                                            <input type="radio" class="form-check-input" id="home" name="addressType"
+                                                value="Home" checked>
+                                            <label class="form-check-label" for="home">Home</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input type="radio" class="form-check-input" id="work" name="addressType"
+                                                value="Work">
+                                            <label class="form-check-label" for="work">Work</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="address">Address <span class="required">*</span></label>
+                                        <input type="text" name="address" class="form-control"
+                                            placeholder="Street Address" />
+                                        <div class="error-message"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 ">
+                                    <div class="form-group mt-2">
+                                        <label for="city">Town / City <span class="required">*</span></label>
+                                        <input type="text" name="town" class="form-control" placeholder="Town / City" />
+                                        <span class="error-message" id="city-error"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 ">
+                                    <div class="form-group mt-2">
+                                        <label for="state">State<span class="required">*</span></label>
+                                        <input type="text" name="state" class="form-control" placeholder="State" />
+                                        <div class="error-message"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 ">
+                                    <div class="form-group mt-2">
+                                        <label for="postcode">Postcode / Zip <span class="required">*</span></label>
+                                        <input type="text" name="postCode" class="form-control" />
+                                        <div class="error-message"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mt-2">
+                                        <label for="phone">Phone <span class="required">*</span></label>
+                                        <input type="text" name="phone" class="form-control" placeholder="Phone" />
+                                        <div class="error-message"></div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <label for="address">Address <span class="required">*</span></label>
-                                <input type="text" name="address" class="form-control" placeholder="Street Address"
-                                    required />
-                            </div>
-                        </div>
-                        <div class="col-md-6  ">
-                            <div class="form-group mt-2">
-                                <label for="city">Town / City <span class="required">*</span></label>
-                                <input type="text" name="town" class="form-control" placeholder="Town / City"
-                                    required />
-                            </div>
-                        </div>
-                        <div class="col-md-6 ">
-                            <div class="form-group mt-2">
-                                <label for="state">State<span class="required">*</span></label>
-                                <input type="text" name="state" class="form-control" placeholder="State" required />
-                            </div>
-                        </div>
-                        <div class="col-md-6 ">
-                            <div class="form-group mt-2">
-                                <label for="postcode">Postcode / Zip <span class="required">*</span></label>
-                                <input type="text" name="postCode" class="form-control" required />
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group mt-2">
-                                <label for="phone">Phone <span class="required">*</span></label>
-                                <input type="text" name="phone" class="form-control" placeholder="Phone" required />
-                            </div>
-                        </div>
-                    </div>
-                    <a href="/savedAddress"><button type="submit" class="btn btn-primary my-3">Save Address</button>
-                    </a>
+                            <a href="/savedAddress"><button type="submit" class="btn btn-primary my-3">Save
+                                    Address</button>
+                            </a>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+<script src="/assets/js/shop/addressValidation.js"></script>

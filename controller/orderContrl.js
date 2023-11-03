@@ -27,10 +27,8 @@ const checkoutPage = asyncHandler(async (req, res) => {
         const addresses = userWithAddresses.addresses;
 
         const totalArray = calculateSubtotal(userWithCart);
-        console.log('check totalarrayt', totalArray);
         // if the product quantity is less than cart quantity
         if (!totalArray) {
-            console.log('inside not ');
             req.flash('warning', 'OOPS! , insufficient stock')
             return res.redirect('/cart')
         }
@@ -177,6 +175,10 @@ const placeOrder = asyncHandler(async (req, res) => {
 
         if (userWithCart.cart && userWithCart.cart.length > 0) {
             const totalArray = calculateSubtotal(userWithCart);
+            if (!totalArray) {
+                console.log('inside nto',totalArray);
+                return res.json({outofStock : true, message :'Out of Stock'})
+            } 
             const [cartItems, cartSubtotal, processingFee, orderTotal] = [...totalArray]; //calculating 
             console.log('order total', orderTotal);
 
@@ -691,7 +693,7 @@ const updateOrder = asyncHandler(async (req, res) => {
 
                 updateWalletAmount(userId, productPrice, description, type)
             } else {
-                console.log('erro in updating');
+                console.log('NOthing in updating');
             }
 
             res.redirect('/admin/orders')

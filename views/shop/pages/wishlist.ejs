@@ -27,17 +27,15 @@
                             <table>
                                 <thead>
                                     <tr>
-                                        <th>remove</th>
                                         <th>images</th>
                                         <th>Product</th>
                                         <th>Price</th>
+                                        <th>remove</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <% wishlist.forEach(item=> { %>
                                         <tr>
-                                            <td class="product-remove"><a href="/removeWishlist/<%= item._id %>"><i
-                                                        class="pe-7s-close"></i></a></td>
                                             <td class="product-thumbnail">
                                                 <a href="/viewProduct/<%= item._id %>"><img
                                                         src="<%= item.images[0].thumbnailUrl %>" alt="Product image"
@@ -47,7 +45,18 @@
                                                     <%= item.title %>
                                                 </a></td>
                                             <td class=" product-price-cart"><span class="amount">₹<%= item.salePrice %>
-                                                </span></td>
+                                                </span>
+                                            </td>
+                                            <td class="product-remove">
+                                                <% if (item.quantity> 0) { %>
+                                                    <a href="/addtoCart/<%= item._id %>">
+                                                        <i class="ti-shopping-cart"></i>
+                                                    </a>
+                                                    <% } %>
+                                                        <a href="/removeWishlist/<%= item._id %>">
+                                                            <i class="ti-close" style="font-size: 29px;"></i>
+                                                        </a>
+                                            </td>
                                         </tr>
                                         <% }); %>
                                             <% } else { %>

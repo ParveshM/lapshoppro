@@ -444,6 +444,9 @@
                     method: 'POST',
                     data: formData,
                     success: function (response) {
+                        if (response.outofStock) {
+                            outofStockAlert();
+                        }
                         if (response.codSuccess || response.walletSuccess) {
                             window.location.href = `/orderPlaced?id=${response.orderID}`;
                         } else {
@@ -548,6 +551,23 @@
             })
         }
 
+
+        function outofStockAlert() {
+            Swal.fire({
+                title: 'Sorry! Insufficient stock for some products',
+                text: 'By clicking ok you will be redirected to Cart',
+                icon: 'warning',
+                showCancelButton: false,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ok'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // If the user clicks "Yes," redirect to the removeProduct endpoint
+                    window.location.href = "/cart"
+                }
+            });
+        }
 
         function changeInCartAlert() {
             Swal.fire({

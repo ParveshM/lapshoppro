@@ -2,19 +2,19 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1 col-12">
-                <form action="" method="POST" class="address-form">
+                <form action="" method="POST" class="address-form" onsubmit="return validateForm()">
                     <h3>Edit Address</h3>
-
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="first-name"> Name:<span class="required">*</span></label>
                                 <input type="text" name="name" class="form-control" placeholder="Name"
-                                    value="<%= addData.name %>" required />
+                                    value="<%= addData.name %>" />
+                                <div class="error-message"></div>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="form-group ">
+                            <div class="form-group">
                                 <label for="addressType">Address Type:</label>
                                 <div class="form-check">
                                     <input type="radio" class="form-check-input" id="home" name="addressType"
@@ -32,35 +32,40 @@
                             <div class="form-group">
                                 <label for="address">Address <span class="required">*</span></label>
                                 <input type="text" name="address" class="form-control" value="<%= addData.address %>"
-                                    placeholder="Street Address" required />
+                                    placeholder="Street Address" />
+                                <div class="error-message"></div>
                             </div>
                         </div>
                         <div class="col-md-6  ">
                             <div class="form-group mt-2">
                                 <label for="city">Town / City <span class="required">*</span></label>
                                 <input type="text" name="town" class="form-control" value="<%= addData.town %>"
-                                    placeholder="Town / City" required />
+                                    placeholder="Town / City" />
+                                <div class="error-message"></div>
                             </div>
                         </div>
                         <div class="col-md-6 ">
                             <div class="form-group mt-2">
                                 <label for="state">State<span class="required">*</span></label>
                                 <input type="text" name="state" class="form-control" value="<%= addData.state %>"
-                                    placeholder="State" required />
+                                    placeholder="State" />
+                                <div class="error-message"></div>
                             </div>
                         </div>
                         <div class="col-md-6 ">
                             <div class="form-group mt-2">
                                 <label for="postcode">Postcode / Zip <span class="required">*</span></label>
-                                <input type="text" name="postCode" class="form-control" value="<%= addData.postCode %>"
-                                    required />
+                                <input type="text" name="postCode" class="form-control"
+                                    value="<%= addData.postCode %>" />
+                                <div class="error-message"></div>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group mt-2">
                                 <label for="phone">Phone <span class="required">*</span></label>
                                 <input type="text" name="phone" class="form-control" value="<%= addData.phone %>"
-                                    placeholder="Phone" required />
+                                    placeholder="Phone" />
+                                <div class="error-message"></div>
                             </div>
                         </div>
                     </div>
@@ -71,3 +76,5 @@
         </div>
     </div>
 </div>
+
+<script src="/assets/js/shop/addressValidation.js"></script>
