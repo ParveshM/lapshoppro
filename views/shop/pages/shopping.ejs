@@ -176,25 +176,22 @@
                                                             </div>
                                                             <div class="product-list-wishlist">
                                                                 <% if (userWishlist) { %>
-                                                                    <a class="btn-hover list-btn-wishlist" id="wishlist"
-                                                                        href=""
-                                                                        onclick="addTowishlist(`<%= element._id %>`)">
-
-                                                                        <% if (userWishlist.includes(element._id)) { %>
-                                                                            <i class="pe-7s-like"
-                                                                                style="color: red;"></i>
-                                                                            <% } else { %>
-                                                                                <i class="pe-7s-like"></i>
-                                                                                <% } %>
-                                                                    </a>
+                                                                    <label class="wishlist-checkbox">
+                                                                        <input type="checkbox"
+                                                                            id="wishlist-<%= element._id %>" <%
+                                                                            if(userWishlist.includes(element._id)) {
+                                                                            %>checked<% } %>
+                                                                            onchange="toggleWishlist('<%= element._id %>
+                                                                                ')">
+                                                                                <i class="pe-7s-like"
+                                                                                    style="color: <% if (userWishlist.includes(element._id)) { %>red<% } else { %>black<% } %>;"></i>
+                                                                    </label>
                                                                     <% } else { %>
                                                                         <a class="btn-hover list-btn-wishlist"
-                                                                            href="/login"> <i
-                                                                                class="pe-7s-like"></i></a>
+                                                                            href="/login"> <i class="pe-7s-like"></i>
+                                                                            Log in to Wishlist</a>
                                                                         <% } %>
                                                             </div>
-
-
                                                         </div>
                                                         <div id="fixed-div"
                                                             class="mt-2 fixed-div border rounded-pill p-2"
@@ -283,6 +280,35 @@
         font-weight: bold;
         /* You can modify other styles as needed */
     }
+
+    .wishlist-checkbox input {
+        display: none;
+    }
+
+    .wishlist-checkbox label {
+        position: relative;
+        cursor: pointer;
+    }
+
+    .wishlist-checkbox label i.pe-7s-like {
+        font-size: 24px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        color: black;
+        /* Default color */
+    }
+
+    .wishlist-checkbox input:checked+label i.pe-7s-like {
+        color: red;
+        /* Color when checked */
+    }
 </style>
+
+
+
+
+
+
 
 <script src="/assets/js/shop/shopping.js"></script>

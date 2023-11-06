@@ -368,7 +368,6 @@ const shopping = asyncHandler(async (req, res) => {
         if (filter.categoryName) {
             selectedCategory.push(filter.categoryName)
         }
-        console.log('selected cat', selectedCategory);
 
         res.render('./shop/pages/shopping', {
             products: findProducts,
@@ -537,6 +536,7 @@ const wishlist = asyncHandler(async (req, res) => {
 // add to wishlist --
 const addTowishlist = asyncHandler(async (req, res) => {
     try {
+        console.log('recivied req');
         const userId = req.user.id;
         const productId = req.params.id
         // checking if the product already existing in the wishlist

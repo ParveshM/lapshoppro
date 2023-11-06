@@ -54,36 +54,98 @@ searchButton.addEventListener('click', (e) => {
 
 
 // addTowishlist ajax function
-function addTowishlist(productId) {
-    const wishlistMessage = document.getElementById('wishlist-message')
-    const fixedDiv = document.getElementById('fixed-div')
+// function addTowishlist(productId) {
+//     const wishlistMessage = document.getElementById('wishlist-message')
+//     const fixedDiv = document.getElementById('fixed-div')
 
+//     function hide() {
+//         fixedDiv.style.display = 'none';
+//     }
+//     $.ajax({
+//         type: 'GET',
+//         url: `/addTo-wishlist/${productId}`,
+//         success: function (response) {
+//             if (response.success) {
+//                 fixedDiv.style = 'block'
+//                 fixedDiv.style.color = 'red'
+//                 fixedDiv.style.backgroundColor = 'green';
+//                 wishlistMessage.innerText = response.message
+//                 setTimeout(hide, 3000);
+//             } else {
+//                 console.log('response', response.message);
+//                 fixedDiv.style.color = ''
+//                 fixedDiv.style = 'block'
+//                 fixedDiv.style.backgroundColor = 'red';
+//                 wishlistMessage.innerText = response.message
+//                 setTimeout(hide, 3000);
+
+//             }
+//         },
+//         error: function (textStatus, errorThrown) {
+
+//             console.log('Errro in sending addtowishlist request', textStatus, errorThrown);
+//         }
+//     })
+// }
+function toggleWishlist(productId) {
+
+    const wishlistMessage = document.getElementById('wishlist-message');
+    const fixedDiv = document.getElementById('fixed-div');
+    const wishlist = document.getElementById('wishlist-' + productId);
     function hide() {
         fixedDiv.style.display = 'none';
     }
-    $.ajax({
-        type: 'GET',
-        url: `/addTo-wishlist/${productId}`,
-        success: function (response) {
-            if (response.success) {
-                fixedDiv.style = 'block'
-                fixedDiv.style.color = 'red'
-                fixedDiv.style.backgroundColor = 'green';
-                wishlistMessage.innerText = response.message
-                setTimeout(hide, 3000);
-            } else {
-                console.log('response', response.message);
-                fixedDiv.style.color = ''
-                fixedDiv.style = 'block'
-                fixedDiv.style.backgroundColor = 'red';
-                wishlistMessage.innerText = response.message
-                setTimeout(hide, 3000);
 
+
+
+    if (wishlist.checked) {
+        $.ajax({
+            type: 'GET',
+            url: `/addTo-wishlist/${productId}`,
+            success: function (response) {
+                if (response.success) {
+                    fixedDiv.style.display = 'block';
+                    fixedDiv.style.color = 'red';
+                    fixedDiv.style.backgroundColor = 'green';
+                    wishlistMessage.innerText = response.message;
+                    wishlist.nextElementSibling.style.color = 'red';
+                    setTimeout(hide, 3000);
+                } else {
+                    fixedDiv.style.color = '';
+                    fixedDiv.style.display = 'block';
+                    fixedDiv.style.backgroundColor = 'red';
+                    wishlistMessage.innerText = response.message;
+                    setTimeout(hide, 3000);
+                }
+            },
+            error: function (textStatus, errorThrown) {
+                console.log('Error in sending addtowishlist request', textStatus, errorThrown);
             }
-        },
-        error: function (textStatus, errorThrown) {
-
-            console.log('Errro in sending addtowishlist request', textStatus, errorThrown);
-        }
-    })
+        });
+    } else {
+        $.ajax({
+            type: 'GET',
+            url: `/addTo-wishlist/${productId}`,
+            success: function (response) {
+                if (response.success) {
+                    fixedDiv.style.display = 'block';
+                    fixedDiv.style.color = 'red';
+                    fixedDiv.style.backgroundColor = 'green';
+                    wishlistMessage.innerText = response.message;
+                    setTimeout(hide, 3000);
+                } else {
+                    fixedDiv.style.color = '';
+                    fixedDiv.style.display = 'block';
+                    fixedDiv.style.backgroundColor = 'red';
+                    wishlistMessage.innerText = response.message;
+                    wishlist.nextElementSibling.style.color = 'black';
+                    setTimeout(hide, 3000);
+                }
+            },
+            error: function (textStatus, errorThrown) {
+                console.log('Error in sending remove from wishlist request', textStatus, errorThrown);
+            }
+        });
+    }
 }
+
