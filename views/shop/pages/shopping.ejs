@@ -178,18 +178,17 @@
                                                                 <% if (userWishlist) { %>
                                                                     <label class="wishlist-checkbox">
                                                                         <input type="checkbox"
-                                                                            id="wishlist-<%= element._id %>" <%
-                                                                            if(userWishlist.includes(element._id)) {
+                                                                            id="wishlist-<%= element._id %>"
+                                                                             <% if(userWishlist.includes(element._id)) {
                                                                             %>checked<% } %>
-                                                                            onchange="toggleWishlist('<%= element._id %>
-                                                                                ')">
+                                                                            onchange="toggleWishlist('<%= element._id %>')">
                                                                                 <i class="pe-7s-like"
-                                                                                    style="color: <% if (userWishlist.includes(element._id)) { %>red<% } else { %>black<% } %>;"></i>
+                                                                                    style="font-size: 40px; cursor: pointer; color: <% if (userWishlist.includes(element._id)) { %>red<% } else { %>black<% } %>;"></i>
                                                                     </label>
                                                                     <% } else { %>
                                                                         <a class="btn-hover list-btn-wishlist"
                                                                             href="/login"> <i class="pe-7s-like"></i>
-                                                                            Log in to Wishlist</a>
+                                                                        </a>
                                                                         <% } %>
                                                             </div>
                                                         </div>
@@ -207,7 +206,7 @@
 
                                                 <% } else { %>
                                                     <div
-                                                        class="d-flex  flex-column justify-content-center align-items-center mt-5">
+                                                        class="d-flex flex-column justify-content-center align-items-center mt-5">
                                                         <img src="/assets/img/noProductsFound.png"
                                                             alt="No products found">
                                                         <h3>No Products found</h3>
