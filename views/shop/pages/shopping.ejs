@@ -50,9 +50,16 @@
                         <h3 class="sidebar-title">Categories</h3>
                         <div class="sidebar-categories">
                             <ul>
-                                <% if (category.length>0) { %>
+                                <% if (category.length>0) { %>  
                                     <% category.forEach(element=> { %>
-                                        <li><a href="/shop?p=<%= currentPage %>&category=<%= element.categoryName %>">
+                                        <li><a href="/shop?p=<%= currentPage %>&category=<%= element.categoryName %>"
+                                                <% if (selectedCategory && selectedCategory.length>0) { %>
+                                                    class="<%= selectedCategory.includes(element._id) ? 'text-dark' : '' %>"
+                                                    <% } else { %>
+                                                        class="text-danger"
+                                                        <% } %>
+                                                 
+                                                >
                                                 <%= element.categoryName %>
                                             </a></li>
                                         <% }); %>
@@ -177,11 +184,10 @@
                                                                 <% if (userWishlist) { %>
                                                                     <label class="wishlist-checkbox">
                                                                         <input type="checkbox"
-                                                                            id="wishlist-<%= element._id %>" <%
-                                                                            if(userWishlist.includes(element._id)) {
+                                                                            id="wishlist-<%= element._id %>"
+                                                                             <% if(userWishlist.includes(element._id)) {
                                                                             %>checked<% } %>
-                                                                            onchange="toggleWishlist('<%= element._id %>
-                                                                                ')">
+                                                                            onchange="toggleWishlist('<%= element._id %>')">
                                                                                 <i class="pe-7s-like"
                                                                                     style="font-size: 40px; cursor: pointer; color: <% if (userWishlist.includes(element._id)) { %>red<% } else { %>black<% } %>;"></i>
                                                                     </label>
