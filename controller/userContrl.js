@@ -364,6 +364,11 @@ const shopping = asyncHandler(async (req, res) => {
 
         // Count the total number of matching products
         const count = await Product.find(filter).countDocuments();
+        let selectedCategory = [];
+        if (filter.categoryName) {
+            selectedCategory.push(filter.categoryName)
+        }
+        console.log('selected cat',selectedCategory);
 
         res.render('./shop/pages/shopping', {
             products: findProducts,
@@ -373,6 +378,7 @@ const shopping = asyncHandler(async (req, res) => {
             userWishlist,
             currentPage: page,
             totalPages: Math.ceil(count / limit),
+            selectedCategory
         });
     } catch (error) {
         throw new Error(error);
