@@ -410,6 +410,9 @@
 
         $('#checkout-form').submit(function (e) {
             e.preventDefault();
+            const submitButton = document.getElementById('submitButton');
+            submitButton.disabled = true; // Disables the submit button
+
             // checking the cartItems if there is any changes--
             $.ajax({
                 url: '/checkCart',
@@ -421,9 +424,10 @@
                     if (response.success) {
                         console.log(response);
                         placeOrder()  //if no change in cart place the order else refresh
+                        submitButton.disabled = false
                     } else {
-                        console.log('coupon code', couponCode);
-                        changeInCartAlert()
+                      changeInCartAlert()
+                      submitButton.disabled = false
                     }
 
                 },

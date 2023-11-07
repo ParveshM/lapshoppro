@@ -55,11 +55,7 @@
                                         <li><a href="/shop?p=<%= currentPage %>&category=<%= element.categoryName %>"
                                                 <% if (selectedCategory && selectedCategory.length>0) { %>
                                                     class="<%= selectedCategory.includes(element._id) ? 'text-dark' : '' %>"
-                                                    <% } else { %>
-                                                        class="text-danger"
-                                                        <% } %>
-                                                 
-                                                >
+                                             <% } %>>
                                                 <%= element.categoryName %>
                                             </a></li>
                                         <% }); %>
