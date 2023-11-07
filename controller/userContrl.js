@@ -72,7 +72,7 @@ const insertUser = async (req, res) => {
 const sendOTPpage = asyncHandler(async (req, res) => {
     try {
         const email = req.session.otpUser.email
-        console.log(req.session.otpUser , 'email', email);
+        console.log(req.session.otpUser, 'email', email);
         res.render('./shop/pages/verifyOTP', { message: email })
     } catch (error) {
         throw new Error(error)
@@ -117,7 +117,7 @@ const verifyOTP = asyncHandler(async (req, res) => {
         } else {
             const message = 'Verification failed, please check the OTP or resend it.';
             console.log('verification failed');
-            res.render('./shop/pages/verifyOTP', { errorMessage:message })
+            res.render('./shop/pages/verifyOTP', { errorMessage: message })
         }
     } catch (error) {
         throw new Error(error);
@@ -139,7 +139,7 @@ const reSendOTP = async (req, res) => {
         try {
             sendOtp(email, OTP, userName);
             console.log('otp is sent');
-            return res.render('./shop/pages/reSendOTP', { message:email });
+            return res.render('./shop/pages/reSendOTP', { message: email });
         } catch (error) {
             console.error('Error sending OTP:', error);
             return res.status(500).send('Error sending OTP');
@@ -240,8 +240,13 @@ const userProfile = asyncHandler(async (req, res) => {
 // Edit users name
 const editUserName = asyncHandler(async (req, res) => {
     try {
-        const userId = req.user.id
-
+        const updatedName = req.body.updatedName;
+        const userId = req.user._id;
+        if (updatedName == '') {
+            return res.json({ data: req.user.userName, message: 'UserName is not updated' })
+        }
+        const updatedUser = await User.findByIdAndUpdate(userId, { userName: updatedName }, { new: true })
+        res.json({ data: updatedUser.userName, message: "UserName updated Succesfully" })
     } catch (error) {
         throw new Error(error);
     }
@@ -279,47 +284,55 @@ const shopping = asyncHandler(async (req, res) => {
         const user = req.user;
         const page = req.query.p || 1;
         const limit = 2;
-        // Get the IDs of the listed categories
+
         const listedCategories = await Category.find({ isListed: true });
-        const listedCategoryIds = listedCategories.map(category => category._id);
+        const categoryMapping = {};
 
-        // Define a filter object to use in the query
-        const filter = {
-            categoryName: { $in: listedCategoryIds },
-            isListed: true,
-        };
+        listedCategories.forEach(category => {
+            categoryMapping[category.categoryName] = category._id;
+        });
 
-        // Check if a category filter is provided in the request
+        const filter = { isListed: true };
+        let cat = '1217a681e118b54f54d810a1'
         if (req.query.category) {
-            if (!isValidQueryId(req.query.category)) {
-                return res.render('./shop/pages/404')
+            // Check if the category name exists in the mapping
+            if (categoryMapping.hasOwnProperty(req.query.category)) {
+                filter.categoryName = categoryMapping[req.query.category];
+            } else {
+                filter.categoryName = cat
             }
-            filter.categoryName = req.query.category;
         }
-
         // Check if a search query is provided
         if (req.query.search) {
             filter.$or = [
                 { title: { $regex: req.query.search, $options: 'i' } },
                 { description: { $regex: req.query.search, $options: 'i' } },
             ];
+            // if search and category both included in the query parameters 
+            if (req.query.search && req.query.category) {
+                if (categoryMapping.hasOwnProperty(req.query.category)) {
+                    filter.categoryName = categoryMapping[req.query.category];
+                } else {
+                    filter.categoryName = cat
+                }
+            }
         }
 
         let sortCriteria = {};
 
         // Check for price sorting
-        if (req.query.sort == 'lowtoHigh') {
+        if (req.query.sort === 'lowtoHigh') {
             sortCriteria.salePrice = 1;
         } else if (req.query.sort === 'highToLow') {
             sortCriteria.salePrice = -1;
         }
-        // Add the ability to filter by both category and price
+        //filter by both category and price
         if (req.query.category && req.query.sort) {
-            if (!isValidQueryId(req.query.category)) {
-                return res.render('./shop/pages/404')
+            if (categoryMapping.hasOwnProperty(req.query.category)) {
+                filter.categoryName = categoryMapping[req.query.category];
+            } else {
+                filter.categoryName = cat
             }
-            filter.categoryName = req.query.category;
-            console.log(req.query.sort === 'lowtoHigh');
 
             if (req.query.sort) {
                 sortCriteria.salePrice = 1;
@@ -335,7 +348,7 @@ const shopping = asyncHandler(async (req, res) => {
             .skip((page - 1) * limit)
             .limit(limit)
             .sort(sortCriteria);
-        // Retrieve cart product IDs (as in your original code)
+
         let cartProductIds;
         let userWishlist;
         if (user) {
@@ -351,6 +364,10 @@ const shopping = asyncHandler(async (req, res) => {
 
         // Count the total number of matching products
         const count = await Product.find(filter).countDocuments();
+        let selectedCategory = [];
+        if (filter.categoryName) {
+            selectedCategory.push(filter.categoryName)
+        }
 
         res.render('./shop/pages/shopping', {
             products: findProducts,
@@ -360,6 +377,7 @@ const shopping = asyncHandler(async (req, res) => {
             userWishlist,
             currentPage: page,
             totalPages: Math.ceil(count / limit),
+            selectedCategory
         });
     } catch (error) {
         throw new Error(error);
@@ -507,6 +525,7 @@ const wishlist = asyncHandler(async (req, res) => {
                 path: 'images',
             },
         });
+        console.log('user wishlist', userWishlist);
         console.log('dsfs', userWishlist.wishlist);
         res.render('./shop/pages/wishlist', { wishlist: userWishlist.wishlist })
     } catch (error) {
@@ -517,6 +536,7 @@ const wishlist = asyncHandler(async (req, res) => {
 // add to wishlist --
 const addTowishlist = asyncHandler(async (req, res) => {
     try {
+        console.log('recivied req');
         const userId = req.user.id;
         const productId = req.params.id
         // checking if the product already existing in the wishlist

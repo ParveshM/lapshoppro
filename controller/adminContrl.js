@@ -15,9 +15,7 @@ const loadLogin = asyncHandler(async (req, res) => {
 })
 // verifyAdmin--
 const verifyAdmin = asyncHandler(async (req, res) => {
-
     try {
-
         const email = process.env.ADMIN_EMAIL
         const password = process.env.ADMIN_PASSWORD
 
@@ -27,7 +25,7 @@ const verifyAdmin = asyncHandler(async (req, res) => {
         if (user) {
             res.render('./admin/pages/login', { adminCheck: 'You are not an Admin', title: 'Login' })
         }
-        if (email === email && req.body.password === password) {
+        if (req.body.email === email && req.body.password === password) {
 
             req.session.admin = email;
             res.redirect('/admin/dashboard')
@@ -64,7 +62,7 @@ const loadDashboard = asyncHandler(async (req, res) => {
                 category,
                 orders,
                 totalRevenue,
-                monthlyRevenue:slice,
+                monthlyRevenue: slice,
                 latestOrders,
                 salesData,
                 newUsers,
@@ -165,8 +163,11 @@ const generateSalesReport = asyncHandler(async (req, res) => {
                 },
             },
         ])
+        const total = matchedOrders.reduce((prev, curr) => {
+            return prev + curr.total;
+        }, 0);
 
-        res.json(matchedOrders)
+        res.json({ matchedOrders: matchedOrders, salesTotal: total })
     } catch (error) {
         throw new Error(error)
     }

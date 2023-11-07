@@ -1,4 +1,3 @@
-const { checkCartItemsMatch } = require("../helpers/checkCartHelper");
 
 // calculating the total from cart
 function calculateSubtotal(userWithCart) {
@@ -7,12 +6,11 @@ function calculateSubtotal(userWithCart) {
         quantity: cartItem.quantity,
 
     }));
-
     // checking if any of the cart quantity is greater than product quantity it will return true
     const checkingQuantity = cartItems.some(item => parseFloat(item.product.quantity) < item.quantity);
-    if (checkingQuantity) return false;
-    console.log(checkingQuantity);
-
+    if (checkingQuantity) {
+        return false
+    };
     const result = [];
     // Calculate Cart Subtotal
     const cartSubtotal = cartItems.reduce((total, item) => {

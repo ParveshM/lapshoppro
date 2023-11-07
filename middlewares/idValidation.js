@@ -13,12 +13,6 @@ const validateID = [
   },
 ];
 
-function isValidQueryId(id) {
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return false
-  }
-  return true
-}
 
 const adminValidateID = [
   param('id')
@@ -34,4 +28,4 @@ const adminValidateID = [
 ];
 
 
-module.exports = { validateID, adminValidateID , isValidQueryId};
+module.exports = { validateID, adminValidateID };

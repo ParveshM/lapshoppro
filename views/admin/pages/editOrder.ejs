@@ -200,15 +200,27 @@
                                                                         </p>
                                                                     </div>
                                                                 </div>
-                                                                <div class="col-md-6 mb-2">
-                                                                    <div
-                                                                        class="d-flex flex-column justify-content-between align-middle mb-2">
-                                                                        <h6>Total Amount:</h6>
-                                                                        <p class="font-weight-bold">₹<%=
-                                                                                (viewOrder.total).toLocaleString() %>
-                                                                        </p>
+                                                                <% if (viewOrder.discount) { %>
+                                                                    <div class="col-md-6 ">
+                                                                        <div
+                                                                            class="mb-2 d-flex flex-column justify-content-between align-middle">
+                                                                            <h6>Dicount Amount:</h6>
+                                                                            <p>
+                                                                                ₹<%= viewOrder.discount%>
+                                                                            </p>
+                                                                        </div>
                                                                     </div>
-                                                                </div>
+                                                                    <% } %>
+                                                                        <div class="col-md-6 mb-2">
+                                                                            <div
+                                                                                class="d-flex flex-column justify-content-between align-middle mb-2">
+                                                                                <h6>Total Amount:</h6>
+                                                                                <p class="font-weight-bold">₹<%=
+                                                                                        (viewOrder.total).toLocaleString()
+                                                                                        %>
+                                                                                </p>
+                                                                            </div>
+                                                                        </div>
                                                             </div>
                                                             <div class="row d-flex justify-content-between">
                                                                 <div class="col-md-6">

@@ -9,12 +9,30 @@
           <div class="mb-4">
             <h2 class="h4 fw-bold">Name:</h2>
             <p class="lead">
-              <%= user.userName %>
-                <!-- <button class="btn btn btn-sm ml-2" onclick="editUserName(`<%= user._id %>`)"><i
-                    class="fas fa-edit"></i></i></button> -->
+              <span id="userName">
+                <%= user.userName %>
+              </span>
+              <button id="seven" class="button " style="border: none"><i class="fas fa-edit"
+                  style="color:black; font-size: 16px;"></i></button>
             </p>
-
           </div>
+
+          <!-- Edit Input modal -->
+          <div id="modal-container">
+            <div class="modal-background">
+              <div class="modal">
+                <button id="close" class="close-button">&#10005</button>
+                <p>Edit your name</p>
+                <input type="text" id="updatedName" value="<%= user.userName %>" required>
+                <button id="edit">Update</button>
+                <svg class="modal-svg" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"
+                  preserveAspectRatio="none">
+                  <rect x="0" y="0" fill="none" width="226" height="162" rx="3" ry="3"></rect>
+                </svg>
+              </div>
+            </div>
+          </div>
+          <!-- Modal End -->
           <div class="mb-4">
             <h2 class="h4 fw-bold">Email:</h2>
             <p class="lead">
@@ -22,8 +40,8 @@
             </p>
           </div>
           <div class="mb-4">
-            <marquee behavior="alternate" direction="left">
-            <h2 class="h6 fw-bold text-success">Refer a friend and earn upto 30 cashback</h2>
+            <marquee direction="left">
+              <h2 class="h6 fw-bold text-success">Refer a friend and earn upto 30 cashback</h2>
             </marquee>
             <p class="lead">
               <span id="referral-code">
@@ -89,15 +107,520 @@
   .fa-copy {
     font-size: 22px;
   }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  #modal-container {
+    position: fixed;
+    display: table;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    transform: scale(0);
+    z-index: 1;
+
+    &.seven {
+      transform: scale(1);
+
+      .modal-background {
+        background: rgba(0, 0, 0, .0);
+        animation: fadeIn .5s cubic-bezier(0.165, 0.840, 0.440, 1.000) forwards;
+
+        .modal {
+          height: 100px;
+          width: 100px;
+          border-radius: 75px;
+          overflow: hidden;
+          animation: bondJamesBond 1.5s cubic-bezier(0.165, 0.840, 0.440, 1.000) forwards;
+
+          h2,
+          p {
+            opacity: 0;
+            position: relative;
+            animation: modalContentFadeIn .5s 1.4s linear forwards;
+          }
+        }
+      }
+
+      &.out {
+        animation: slowFade .5s 1.5s linear forwards;
+
+        .modal-background {
+          background-color: rgba(0, 0, 0, .7);
+          animation: fadeToRed 2s cubic-bezier(0.165, 0.840, 0.440, 1.000) forwards;
+
+          .modal {
+            border-radius: 3px;
+            height: 162px;
+            width: 227px;
+            animation: killShot 1s cubic-bezier(0.165, 0.840, 0.440, 1.000) forwards;
+
+            h2,
+            p {
+              animation: modalContentFadeOut .5s .5 cubic-bezier(0.165, 0.840, 0.440, 1.000) forwards;
+            }
+          }
+        }
+      }
+    }
+
+    .modal-background {
+      display: table-cell;
+      background: rgba(0, 0, 0, .8);
+      text-align: center;
+      vertical-align: middle;
+
+      .modal {
+        background: white;
+        padding: 16px;
+        display: inline-block;
+        border-radius: 3px;
+        font-weight: 300;
+        position: relative;
+
+        h2 {
+          font-size: 25px;
+          line-height: 25px;
+          margin-bottom: 15px;
+        }
+
+        p {
+          font-size: 18px;
+          line-height: 22px;
+        }
+
+        .modal-svg {
+          position: absolute;
+          top: 0;
+          left: 0;
+          height: 100%;
+          width: 100%;
+          border-radius: 3px;
+
+          rect {
+            stroke: #fff;
+            stroke-width: 2px;
+            stroke-dasharray: 778;
+            stroke-dashoffset: 778;
+          }
+        }
+      }
+    }
+  }
+
+  .close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+  }
+
+  #edit {
+    margin-top: 10px;
+    background: #3498db;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+
+  @keyframes unfoldIn {
+    0% {
+      transform: scaleY(.005) scaleX(0);
+    }
+
+    50% {
+      transform: scaleY(.005) scaleX(1);
+    }
+
+    100% {
+      transform: scaleY(1) scaleX(1);
+    }
+  }
+
+  @keyframes unfoldOut {
+    0% {
+      transform: scaleY(1) scaleX(1);
+    }
+
+    50% {
+      transform: scaleY(.005) scaleX(1);
+    }
+
+    100% {
+      transform: scaleY(.005) scaleX(0);
+    }
+  }
+
+  @keyframes zoomIn {
+    0% {
+      transform: scale(0);
+    }
+
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  @keyframes zoomOut {
+    0% {
+      transform: scale(1);
+    }
+
+    100% {
+      transform: scale(0);
+    }
+  }
+
+  @keyframes fadeIn {
+    0% {
+      background: rgba(0, 0, 0, .0);
+    }
+
+    100% {
+      background: rgba(0, 0, 0, .7);
+    }
+  }
+
+  @keyframes fadeOut {
+    0% {
+      background: rgba(0, 0, 0, .7);
+    }
+
+    100% {
+      background: rgba(0, 0, 0, .0);
+    }
+  }
+
+  @keyframes scaleUp {
+    0% {
+      transform: scale(.8) translateY(1000px);
+      opacity: 0;
+    }
+
+    100% {
+      transform: scale(1) translateY(0px);
+      opacity: 1;
+    }
+  }
+
+  @keyframes scaleDown {
+    0% {
+      transform: scale(1) translateY(0px);
+      opacity: 1;
+    }
+
+    100% {
+      transform: scale(.8) translateY(1000px);
+      opacity: 0;
+    }
+  }
+
+  @keyframes scaleBack {
+    0% {
+      transform: scale(1);
+    }
+
+    100% {
+      transform: scale(.85);
+    }
+  }
+
+  @keyframes scaleForward {
+    0% {
+      transform: scale(.85);
+    }
+
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  @keyframes quickScaleDown {
+    0% {
+      transform: scale(1);
+    }
+
+    99.9% {
+      transform: scale(1);
+    }
+
+    100% {
+      transform: scale(0);
+    }
+  }
+
+  @keyframes slideUpLarge {
+    0% {
+      transform: translateY(0%);
+    }
+
+    100% {
+      transform: translateY(-100%);
+    }
+  }
+
+  @keyframes slideDownLarge {
+    0% {
+      transform: translateY(-100%);
+    }
+
+    100% {
+      transform: translateY(0%);
+    }
+  }
+
+  @keyframes moveUp {
+    0% {
+      transform: translateY(150px);
+    }
+
+    100% {
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes moveDown {
+    0% {
+      transform: translateY(0px);
+    }
+
+    100% {
+      transform: translateY(150px);
+    }
+  }
+
+  @keyframes blowUpContent {
+    0% {
+      transform: scale(1);
+      opacity: 1;
+    }
+
+    99.9% {
+      transform: scale(2);
+      opacity: 0;
+    }
+
+    100% {
+      transform: scale(0);
+    }
+  }
+
+  @keyframes blowUpContentTwo {
+    0% {
+      transform: scale(2);
+      opacity: 0;
+    }
+
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  @keyframes blowUpModal {
+    0% {
+      transform: scale(0);
+    }
+
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  @keyframes blowUpModalTwo {
+    0% {
+      transform: scale(1);
+      opacity: 1;
+    }
+
+    100% {
+      transform: scale(0);
+      opacity: 0;
+    }
+  }
+
+  @keyframes roadRunnerIn {
+    0% {
+      transform: translateX(-1500px) skewX(30deg) scaleX(1.3);
+    }
+
+    70% {
+      transform: translateX(30px) skewX(0deg) scaleX(.9);
+    }
+
+    100% {
+      transform: translateX(0px) skewX(0deg) scaleX(1);
+    }
+  }
+
+  @keyframes roadRunnerOut {
+    0% {
+      transform: translateX(0px) skewX(0deg) scaleX(1);
+    }
+
+    30% {
+      transform: translateX(-30px) skewX(-5deg) scaleX(.9);
+    }
+
+    100% {
+      transform: translateX(1500px) skewX(30deg) scaleX(1.3);
+    }
+  }
+
+  @keyframes sketchIn {
+    0% {
+      stroke-dashoffset: 778;
+    }
+
+    100% {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @keyframes sketchOut {
+    0% {
+      stroke-dashoffset: 0;
+    }
+
+    100% {
+      stroke-dashoffset: 778;
+    }
+  }
+
+  @keyframes modalFadeIn {
+    0% {
+      background-color: transparent;
+    }
+
+    100% {
+      background-color: white;
+    }
+  }
+
+  @keyframes modalFadeOut {
+    0% {
+      background-color: white;
+    }
+
+    100% {
+      background-color: transparent;
+    }
+  }
+
+  @keyframes modalContentFadeIn {
+    0% {
+      opacity: 0;
+      top: -20px;
+    }
+
+    100% {
+      opacity: 1;
+      top: 0;
+    }
+  }
+
+  @keyframes modalContentFadeOut {
+    0% {
+      opacity: 1;
+      top: 0px;
+    }
+
+    100% {
+      opacity: 0;
+      top: -20px;
+    }
+  }
+
+  @keyframes bondJamesBond {
+    0% {
+      transform: translateX(1000px);
+    }
+
+    80% {
+      transform: translateX(0px);
+      border-radius: 75px;
+      height: 75px;
+      width: 75px;
+    }
+
+    90% {
+      border-radius: 3px;
+      height: 182px;
+      width: 247px;
+    }
+
+    100% {
+      border-radius: 3px;
+      height: 162px;
+      width: 227px;
+    }
+  }
+
+  @keyframes killShot {
+    0% {
+      transform: translateY(0) rotate(0deg);
+      opacity: 1;
+    }
+
+    100% {
+      transform: translateY(300px) rotate(45deg);
+      opacity: 0;
+    }
+  }
+
+  @keyframes fadeToRed {
+    0% {
+      background-color: rgba(black, .6);
+    }
+
+    100% {
+      background-color: rgba(red, .8);
+    }
+  }
+
+  @keyframes slowFade {
+    0% {
+      opacity: 1;
+    }
+
+    99.9% {
+      opacity: 0;
+      transform: scale(1);
+    }
+
+    100% {
+      transform: scale(0);
+    }
+  }
 </style>
 
+
 <script>
+  $('.button').click(function () {
+    var buttonId = $(this).attr('id');
+    $('#modal-container').removeAttr('class').addClass(buttonId);
+    $('body').addClass('modal-active');
+  })
+
+  $('#close').click(function () {
+    $('#modal-container').addClass('out');
+    $('body').removeClass('modal-active');
+  })
   // Initialize Bootstrap tooltips
   $(function () {
     $('[data-toggle="tooltip"]').tooltip();
   });
-
-  document.getElementById("copy-button").addEventListener("click", function () {
+  const copyButton = document.getElementById("copy-button")
+  copyButton.addEventListener("click", function () {
     const referralCodeElement = document.getElementById("referral-code");
     const referralCode = referralCodeElement.textContent;
     const tempInput = document.createElement("input");
@@ -109,31 +632,41 @@
 
     // Show the "Copied" tooltip
     $('#copy-button').attr('title', 'Copied').tooltip('show');
-
     // Hide the tooltip after a short delay
     setTimeout(function () {
       $('#copy-button').tooltip('hide');
-    }, 2000); // Adjust the duration (in milliseconds) as needed
+    }, 2000);
   });
 
   // editUserName
-  function editUserName(userId) {
-    $.ajax({
-      type: "GET",
-      url: `/profile/editUser/${userId}`,
-      success: function (response) {
-      console.log('res',response);
+  const edit = document.getElementById('edit')
+  edit.addEventListener("click", function () {
+    const updatedName = document.getElementById("updatedName").value;
+    const userName = document.getElementById("userName")
+
+    var data = {
+      updatedName
+    };
+    fetch("profile/updateUserName", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
       },
-      error: function (jqXHR, textStatus, errorThrown) {
-        if (jqXHR.status === 400) {
-          // Handle out of stock or other errors
-          console.error("Request rejected:", jqXHR.responseJSON.message);
-        } else {
-          // Handle other error cases
-          console.error("Error:", textStatus, errorThrown);
-        }
-      }
-    });
-  }
+      body: JSON.stringify(data),
+    })
+      .then((response) => response.json())
+      .then((response) => {
+        userName.textContent = response.data;
+        updatedName.value = response.data;
+        $('#modal-container').addClass('out');
+        $('body').removeClass('modal-active');
+
+      })
+      .catch((error) => {
+        console.error("Error updating name:", error);
+      });
+  });
+
+
 
 </script>

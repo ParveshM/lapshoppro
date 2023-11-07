@@ -114,19 +114,20 @@
                                                         <% } %>
                                                             <% } %>
                                 </div>
-                                <div class="quickview-btn-wishlist">
-                                    <% if(wishlist) { %>
-                                        <a class="btn-hover" href="" onclick="addTowishlist(`<%= product._id %>`)">
-                                            <% if (wishlist.includes(product._id)) { %>
-                                                <i class="pe-7s-like" style="color: red;"></i>
-                                                <% } else { %>
-                                                    <i class="pe-7s-like"></i>
-                                                    <% } %>
-                                                        <% } else { %>
-                                                            <a class="btn-hover" href="/login">
-                                                                <i class="pe-7s-like"></i></a>
-                                                            <% } %>
-                                        </a>
+                                <div class="product-list-wishlist">
+                                    <% if (wishlist) { %>
+                                        <label class="wishlist-checkbox">
+                                            <input type="checkbox" id="wishlist-<%= product._id %>" <%
+                                                if(wishlist.includes(product._id)) { %>checked<% } %>
+                                                onchange="toggleWishlist('<%= product._id %>')">
+                                                    <i class="pe-7s-like"
+                                                        style="font-size: 40px; cursor: pointer; color: <% if (wishlist.includes(product._id)) { %>red<% } else { %>black<% } %>;"></i>
+                                        </label>
+                                        <% } else { %>
+                                            <a class="btn-hover list-btn-wishlist" href="/login"> <i
+                                                    class="pe-7s-like"></i>
+                                               </a>
+                                            <% } %>
                                 </div>
                                 <div id="fixed-div" class="mt-2 fixed-div border rounded-pill p-2"
                                     style="display: none;">
@@ -153,7 +154,7 @@
                                 <ul>
                                     <li class="categories-title">Share :</li>
                                     <li>
-                                        <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Flocalhost:3000%2FviewProduct%2F<%= product._id %>&amp;quote=<%= encodeURIComponent('Check out this awesome product: ' + product.title) %>"
+                                        <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2parveshm.site%2FviewProduct%2F<%= product._id %>&amp;quote=<%= encodeURIComponent('Check out this awesome product: ' + product.title) %>"
                                             class="fb-xfbml-parse-ignore">
                                             <i class="icofont icofont-social-facebook text-primary"></i>
                                         </a>
@@ -162,7 +163,7 @@
                                     </li>
                                     <li>
                                         <a
-                                            href="whatsapp://send?text=<%= encodeURIComponent('*Check out this awesome product:* ' + product.title) %>-%20http%3A%2F%2Flocalhost:3000%2FviewProduct%2F<%= product._id %>">
+                                            href="whatsapp://send?text=<%= encodeURIComponent('*Check out this awesome product:* ' + product.title) %>-%20https%3A%2F%2Fparveshm.site%2FviewProduct%2F<%= product._id %>">
                                             <i class="icofont icofont-social-whatsapp text-success"></i>
                                         </a>
                                     </li>
@@ -307,16 +308,10 @@
     /* CSS Styles */
     .structured-text {
         width: 100%;
-        /* Set an appropriate width */
         white-space: pre-line;
-        /* Preserve line breaks */
         line-height: 1.5;
-        /* Adjust line spacing as needed */
         font-family: Arial, sans-serif;
-        /* Choose a font */
         font-size: 14px;
-        /* Adjust font size as needed */
-        /* Add more styles as desired */
     }
 
     .fixed-div {
@@ -324,5 +319,26 @@
         bottom: 10px;
         right: 40px;
     }
+
+    .wishlist-checkbox input {
+        display: none;
+    }
+
+    .wishlist-checkbox label {
+        position: relative;
+        cursor: pointer;
+    }
+
+    .wishlist-checkbox label i.pe-7s-like {
+        font-size: 24px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        color: black;
+    }
+
+    .wishlist-checkbox input:checked+label i.pe-7s-like {
+        color: red;
+    }
 </style>
-<script src="/assets/js/shop/wishlist.js"></script>
+<script src="/assets/js/shop/shopping.js"></script>

@@ -9,7 +9,7 @@ var instance = new Razorpay({
 // creating a newOrder--
 const generateRazorPay = (total, orderId) => {
     return new Promise((resolve, reject) => {
-        console.log('total and orderId', total, orderId);
+        
         var options = {
             amount: total * 100,
             currency: "INR",
@@ -21,8 +21,7 @@ const generateRazorPay = (total, orderId) => {
                 console.log('error in creating order', err);
                 reject(err);
             } else {
-                console.log('sdfsd', order);
-                resolve(order)
+               resolve(order)
             }
         });
 

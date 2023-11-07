@@ -17,7 +17,6 @@
 </div>
 
 <div class="shop-page-wrapper ptb-100">
-
     <div class="container">
         <div class="row">
             <div class="col-lg-3">
@@ -25,9 +24,9 @@
                     <div class="sidebar-widget mb-50">
                         <h3 class="sidebar-title">Search Products</h3>
                         <div class="sidebar-search">
-                            <form action="/shop" method="GET">
-                                <input placeholder="Search Products..." type="text" name="search">
-                                <button><i class="ti-search"></i></button>
+                            <form>
+                                <input id="searchInput" placeholder="Search Products..." type="text" name="search">
+                                <button id="searchButton"><i class="ti-search"></i></button>
                             </form>
                         </div>
                     </div>
@@ -38,39 +37,33 @@
                                 <li><a href="/shop">
                                         Default
                                     </a></li>
-                                <li><a href="/shop?sort=lowToHigh" id="lowToHigh">
+                                <li><a href="" id="lowToHigh">
                                         Low to High
                                     </a></li>
-                                <li><a href="/shop?sort=highToLow" id="highToLow">
+                                <li><a href="" id="highToLow">
                                         High to low
                                     </a></li>
                             </ul>
                         </div>
                     </div>
-                    <% if (products.length> 0) { %>
+                    <div class="sidebar-widget mb-45">
+                        <h3 class="sidebar-title">Categories</h3>
+                        <div class="sidebar-categories">
+                            <ul>
+                                <% if (category.length>0) { %>
+                                    <% category.forEach(element=> { %>
+                                        <li><a href="/shop?p=<%= currentPage %>&category=<%= element.categoryName %>"
+                                                class="<%= selectedCategory.includes(element._id) ? 'text-dark' : '' %>">
+                                                <%= element.categoryName %>
+                                            </a></li>
+                                        <% }); %>
 
-                        <div class="sidebar-widget mb-45">
-                            <h3 class="sidebar-title">Categories</h3>
-                            <div class="sidebar-categories">
-                                <ul>
-                                    <% if (category.length>0) { %>
-
-
-                                        <% category.forEach(element=> { %>
-
-                                            <li><a href="/shop?p=<%= currentPage %>&category=<%= element._id %>">
-                                                    <%= element.categoryName %>
-                                                </a></li>
-                                            <% }); %>
-
-                                                <% } else { %>
-                                                    <h3>NO CATEGORIES</h3>
-                                                    <% } %>
-                                </ul>
-                            </div>
+                                            <% } else { %>
+                                                <h3>NO CATEGORIES</h3>
+                                                <% } %>
+                            </ul>
                         </div>
-                        <% } %>
-
+                    </div>
                 </div>
             </div>
             <div class="col-lg-9 order-1 order-lg-2">
@@ -183,25 +176,21 @@
                                                             </div>
                                                             <div class="product-list-wishlist">
                                                                 <% if (userWishlist) { %>
-                                                                    <a class="btn-hover list-btn-wishlist" id="wishlist"
-                                                                        href=""
-                                                                        onclick="addTowishlist(`<%= element._id %>`)">
-
-                                                                        <% if (userWishlist.includes(element._id)) { %>
-                                                                            <i class="pe-7s-like"
-                                                                                style="color: red;"></i>
-                                                                            <% } else { %>
-                                                                                <i class="pe-7s-like"></i>
-                                                                                <% } %>
-                                                                    </a>
+                                                                    <label class="wishlist-checkbox">
+                                                                        <input type="checkbox"
+                                                                            id="wishlist-<%= element._id %>"
+                                                                             <% if(userWishlist.includes(element._id)) {
+                                                                            %>checked<% } %>
+                                                                            onchange="toggleWishlist('<%= element._id %>')">
+                                                                                <i class="pe-7s-like"
+                                                                                    style="font-size: 40px; cursor: pointer; color: <% if (userWishlist.includes(element._id)) { %>red<% } else { %>black<% } %>;"></i>
+                                                                    </label>
                                                                     <% } else { %>
                                                                         <a class="btn-hover list-btn-wishlist"
-                                                                            href="/login"> <i
-                                                                                class="pe-7s-like"></i></a>
+                                                                            href="/login"> <i class="pe-7s-like"></i>
+                                                                        </a>
                                                                         <% } %>
                                                             </div>
-
-
                                                         </div>
                                                         <div id="fixed-div"
                                                             class="mt-2 fixed-div border rounded-pill p-2"
@@ -216,13 +205,21 @@
                                             <% }) %>
 
                                                 <% } else { %>
-                                                    <h2>No Products found</h2>
-                                                    <% } %>
+                                                    <div
+                                                        class="d-flex flex-column justify-content-center align-items-center mt-5">
+                                                        <img src="/assets/img/noProductsFound.png"
+                                                            alt="No products found">
+                                                        <h3>No Products found</h3>
+                                                    </div>
                                 </div>
+                                <% } %>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
+            <% if (totalPages> 1) { %>
+
                 <div class="pagination-style mt-10 text-center">
                     <ul>
                         <% if (currentPage> 1) { %>
@@ -236,7 +233,6 @@
                                         <li class="<%= i === currentPage ? 'active' : '' %>">
                                             <a href="#" onclick="navigatePage(`<%= i %>`)">
                                                 <%= i %>
-
                                             </a>
                                         </li>
                                         <% } %>
@@ -252,9 +248,11 @@
                                                     <% } %>
                     </ul>
                 </div>
-            </div>
+                <% } %>
+
         </div>
     </div>
+</div>
 </div>
 
 <style>
@@ -272,6 +270,44 @@
         bottom: 10px;
         right: 40px;
     }
+
+    .sidebar-categories a.active {
+        background-color: #007bff;
+        /* Change to the background color you prefer */
+        color: #fff;
+        /* Change to the text color you prefer */
+        font-weight: bold;
+        /* You can modify other styles as needed */
+    }
+
+    .wishlist-checkbox input {
+        display: none;
+    }
+
+    .wishlist-checkbox label {
+        position: relative;
+        cursor: pointer;
+    }
+
+    .wishlist-checkbox label i.pe-7s-like {
+        font-size: 24px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        color: black;
+        /* Default color */
+    }
+
+    .wishlist-checkbox input:checked+label i.pe-7s-like {
+        color: red;
+        /* Color when checked */
+    }
 </style>
 
-<script src="/assets/js/shop/wishlist.js"></script>
+
+
+
+
+
+
+<script src="/assets/js/shop/shopping.js"></script>

@@ -8,10 +8,10 @@
                     <div class="login">
                         <div class="login-form-container ">
                             <div class="login-form ">
-                                <form action="/forgetPassword" method="post">
-                                    <input type="email" name="email" placeholder="Email" required />
+                                <form action="/forgetPassword" method="post" onsubmit="return validateForm()">
+                                    <div style="color: red;" id="email-error"></div>
+                                    <input type="email" name="email" placeholder="Email" />
                                     <div class="d-flex gap-5">
-
                                         <div class="button-box">
                                             <button type="submit" class="default-btn floatright">Reset
                                                 Password</button>
@@ -34,4 +34,34 @@
     setTimeout(() => {
         alert.style.display = 'none'
     }, 3000);
+
+    let isValidMail = false;
+    document.addEventListener('DOMContentLoaded', function () {
+        const emailInput = document.querySelector('input[name="email"]');
+        emailInput.addEventListener('blur', function () {
+            validateEmail(emailInput);
+        });
+
+    });
+    function validateEmail(input) {
+        const emailError = document.getElementById('email-error');
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (input.value.trim() === '') {
+            emailError.textContent = 'Email is required.';
+            isValidMail = false;
+        } else if (!emailRegex.test(input.value)) {
+            emailError.textContent = 'Invalid email.';
+            isValidMail = false;
+        } else {
+            emailError.textContent = '';
+            isValidMail = true;
+        }
+    }
+
+    function validateForm() {
+        if (!isValidMail) {
+            return false;
+        }
+        return true;
+    }
 </script>

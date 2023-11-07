@@ -27,10 +27,8 @@ const checkoutPage = asyncHandler(async (req, res) => {
         const addresses = userWithAddresses.addresses;
 
         const totalArray = calculateSubtotal(userWithCart);
-        console.log('check totalarrayt', totalArray);
         // if the product quantity is less than cart quantity
         if (!totalArray) {
-            console.log('inside not ');
             req.flash('warning', 'OOPS! , insufficient stock')
             return res.redirect('/cart')
         }
@@ -161,25 +159,22 @@ const applyCoupon = asyncHandler(async (req, res) => {
 });
 
 
-
-
-
 // orderPlacing---
 const placeOrder = asyncHandler(async (req, res) => {
     try {
         const user = req.user;
         const { couponCode, address, paymentMethod } = req.body
-        // console.log('bosiuhf', req.body);
-
-        console.log('body of user', req.body, couponCode);
+      
 
         const userWithCart = await User.findById(user).populate('cart.product'); //finding products in the cart
 
         if (userWithCart.cart && userWithCart.cart.length > 0) {
             const totalArray = calculateSubtotal(userWithCart);
+            if (!totalArray) {
+                return res.json({outofStock : true, message :'Out of Stock'})
+            } 
             const [cartItems, cartSubtotal, processingFee, orderTotal] = [...totalArray]; //calculating 
-            console.log('order total', orderTotal);
-
+        
             const orderItems = cartItems.map(item => ({ //get the productId and quantity in the cart
                 product: item.product._id,
                 quantity: item.quantity,
@@ -200,11 +195,10 @@ const placeOrder = asyncHandler(async (req, res) => {
 
             if (paymentMethod === 'COD' || paymentMethod === 'Wallet') {
                 const createOrder = await Order.create(newOrder);
-
                 if (couponCode) {
                     var findCoupon = await isValidCoupon(couponCode, user, orderTotal)
                     if (findCoupon.coupon) {
-                        console.log('orderto', createOrder.total, findCoupon.coupon);
+                        console.log('ordertotal', createOrder.total, findCoupon.coupon);
                         const orderTotal = calculateCouponDiscount(findCoupon.coupon, createOrder.total)
                         var [amountToPay, discountAmount] = [...orderTotal]
                         createOrder.discount = discountAmount;
@@ -223,22 +217,25 @@ const placeOrder = asyncHandler(async (req, res) => {
                     }
                     await user.clearCart()
                     if (paymentMethod == 'Wallet') {
-                        if (findCoupon.coupon) {
-                            await Order.findByIdAndUpdate(
+                        if(couponCode){
+                            if (findCoupon.coupon) {
+                                await Order.findByIdAndUpdate(
+                                    { _id: createOrder._id },
+                                    { paymentStatus: 'Paid', amountPaid: amountToPay, walletPayment: amountToPay });
+    
+                                const description = 'Product purchase';
+                                const type = 'debit'
+                                await decreaseWalletAmount(user._id, amountToPay, description, type)
+                            }
+                        }else {
+                         const walletpay =   await Order.findByIdAndUpdate(
                                 { _id: createOrder._id },
-                                { paymentStatus: 'Paid', amountPaid: amountToPay, walletPayment: amountToPay });
-
-                            const description = 'Product purchase';
-                            const type = 'debit'
-                            await decreaseWalletAmount(user._id, amountToPay, description, type)
-                        } else {
-                            await Order.findByIdAndUpdate(
-                                { _id: createOrder._id },
-                                { paymentStatus: 'Paid', amountPaid: orderTotal, walletPayment: orderTotal });
+                                { paymentStatus: 'Paid', amountPaid: orderTotal, walletPayment: orderTotal },{new:true});
 
                             const description = 'Product purchase';
                             const type = 'debit'
                             await decreaseWalletAmount(user._id, orderTotal, description, type)
+                            console.log('wallet pay ',walletpay);
                         }
 
                         res.json({ walletSuccess: true, orderID: createOrder._id, payment: 'Wallet' });
@@ -317,7 +314,6 @@ const placeOrder = asyncHandler(async (req, res) => {
                         })
                         .catch((err) => { console.log(err) })
                 }
-
             } else {
                 res.render('./shop/pages/404')
             }
@@ -691,7 +687,7 @@ const updateOrder = asyncHandler(async (req, res) => {
 
                 updateWalletAmount(userId, productPrice, description, type)
             } else {
-                console.log('erro in updating');
+                console.log('NOthing in updating');
             }
 
             res.redirect('/admin/orders')

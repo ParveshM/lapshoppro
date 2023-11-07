@@ -56,6 +56,11 @@
                                 <p class="card-text">
                                     <strong>ProcessingFee:</strong> ₹<%= order.processingFee %>
                                 </p>
+                                <% if (order.discount) { %>
+                                    <p class="card-text">
+                                        <strong>Discount:</strong>- ₹<%= order.discount  %>
+                                    </p>
+                                <% } %>
                                 <p class="card-text"><strong>Quantity: <%= quantity %></strong> </p>
                                 <p class="card-text"><strong>Order Total: </strong>₹<%= (order.total).toLocaleString()
                                         %>

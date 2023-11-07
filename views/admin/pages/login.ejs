@@ -15,22 +15,24 @@
           </div>
           <% } %>
             <h2>WELCOME ADMIN!</h2><br>
-            <form action="#" method="post">
+            <form method="post" id="loginForm">
+              <!-- <div class="error-message" id="form-error" style="display: none;"></div> -->
               <!-- Email input -->
               <div class="form-outline mb-4">
-                <input type="email" id="form1Example13" name="email" 
+                <input type="text" id="email" name="email" placeholder="example@gmail.com"
                   class="form-control form-control-lg" />
+                <div class="error-message" id="email-error"></div>
                 <label class="form-label" for="form1Example13">Email address</label>
               </div>
-
               <!-- Password input -->
               <div class="form-outline mb-4">
-                <input type="password" id="form1Example23" name="password" 
+                <input type="password" id="password" name="password" placeholder="pass****"
                   class="form-control form-control-lg" />
+                <div class="error-message" id="password-error"></div>
                 <label class="form-label" for="form1Example23">Password</label>
               </div>
               <!-- Submit button -->
-              <button type="submit" class="btn btn-primary btn-lg btn-block">Sign in</button>
+              <button type="submit" id="submitButton" class="btn btn-primary btn-lg btn-block" disabled >Sign in</button>
             </form>
       </div>
     </div>
@@ -48,6 +50,10 @@
   body {
     background-color: rgb(161, 161, 161);
   }
+
+  .error-message {
+    color: rgb(215, 55, 55);
+  }
 </style>
 
 <script>
@@ -56,6 +62,121 @@
   const hide = () => {
     message.style.display = 'none';
   }
-
   setTimeout(hide, 3000);
+  // Get form and input elements
+const form = document.getElementById("loginForm");
+const emailInput = form.querySelector('input[name="email"]');
+const passwordInput = form.querySelector('input[name="password"]');
+const emailError = document.getElementById("email-error");
+const passwordError = document.getElementById("password-error");
+const submitButton = document.getElementById("submitButton");
+
+// Regular expression for validating email
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Function to check if an email is valid
+function isValidEmail(email) {
+    return emailRegex.test(email);
+}
+
+// Function to validate the form
+function validateForm() {
+    let valid = true;
+
+    if(emailInput.value.trim() === ''){
+                emailError.textContent = 'Email is required'
+    }else if (!isValidEmail(emailInput.value)) {
+        emailError.textContent = "Please enter a valid email address.";
+        valid = false;
+    } else {
+        emailError.textContent = "";
+    }
+
+    if (passwordInput.value.trim() === "") {
+        passwordError.textContent = "Password is required.";
+        valid = false;
+    } else {
+        passwordError.textContent = "";
+    }
+
+    // Enable or disable the submit button based on validity
+    submitButton.disabled = !valid;
+
+    return valid;
+}
+
+// Add blur event listeners for input fields
+emailInput.addEventListener("blur", validateForm);
+passwordInput.addEventListener("blur", validateForm);
+
+// Add submit event listener to the form
+form.addEventListener("submit", function (e) {
+    if (!validateForm()) {
+        e.preventDefault(); // Prevent form submission if it's invalid
+    }
+});
+
+
+  // let isformValidated = false;
+  // document.addEventListener('DOMContentLoaded', function () {
+  //   const emailInput = document.querySelector('input[name="email"]');
+  //   const passwordInput = document.querySelector('input[name="password"]');
+
+  //   emailInput.addEventListener('blur', function () {
+  //     validateEmail(emailInput);
+  //   });
+
+  //   passwordInput.addEventListener('blur', function () {
+  //     validatePassword(passwordInput);
+  //   });
+
+
+  // });
+  // function validateEmail(input) {
+  //   const emailError = document.getElementById('email-error');
+  //   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  //   if (input.value.trim() === '') {
+  //     emailError.textContent = 'Email is required.';
+  //     isformValidated = false;
+  //   } else if (!emailRegex.test(input.value)) {
+  //     emailError.textContent = 'Invalid email.';
+  //     isformValidated = false;
+  //   } else {
+  //     emailError.textContent = '';
+  //     isformValidated = true;
+  //   }
+  // }
+  // function validatePassword(input) {
+  //   const passwordError = document.getElementById('password-error');
+  //   if (input.value.trim() === '') {
+  //     passwordError.textContent = 'Password is required.';
+  //     isformValidated = false;
+  //   } else {
+  //     passwordError.textContent = '';
+  //     isformValidated = true;
+  //   }
+  // }
+
+  // const formError = document.getElementById('form-error');
+
+  // function validateForm() {
+  //   const emailInput = document.querySelector('input[name="email"]');
+  // const passwordInput = document.querySelector('input[name="password"]');
+ 
+  //   if (!isformValidated) {
+  //     formError.style.display = 'block'
+  //     formError.textContent = 'Please fill in the required fields.';
+  //     setTimeout(hideFormError, 3000);
+  //     return false;
+  //   }
+  //   if (validateEmail(emailInput) && validatePassword(passwordInput)) {
+      
+  //     return true;
+  //   }
+  // }
+  // function hideFormError() {
+  //   formError.style.display = 'none'
+  // }
+  // setTimeout(hideFormError, 3000)
+
 </script>

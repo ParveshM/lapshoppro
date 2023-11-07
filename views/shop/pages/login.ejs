@@ -13,21 +13,22 @@
                     <div class="login">
                         <div class="login-form-container">
                             <div class="login-form">
-                                <form action="#" method="post">
-                                    <label for="email">Email:</label>
+                                <form  method="post" id="loginForm">
+                                    <label for="email">Email*</label>
+                                    <div class="error-message" id="email-error"></div>
                                     <input type="text" id="email" name="email" placeholder="Email">
-                                    <label for="password">Password:</label>
+                                    <label for="password">Password*</label>
+                                    <div class="error-message" id="password-error"></div>
                                     <input type="password" id="password" name="password" placeholder="Password">
                                     <div class="button-box">
                                         <div class="login-toggle-btn">
                                             <a href="/forgetPassword">Forgot Password?</a>
                                         </div>
-                                        <button type="submit" class="default-btn floatright mx-3">Login</button>
+                                        <button type="submit" id="submitButton" class="default-btn floatright mx-3" disabled>Login</button>
                                         <div class="d-flex justify-content-end">
                                             <a href="/register">Don't have an account ?</a>
                                             <a href="/register" class="ml-2">Register now</a>
                                         </div>
-                                        <!-- <a href="/register">Don't have an account ? Register now</a> -->
                                     </div>
                                 </form>
                             </div>
@@ -37,3 +38,62 @@
             </div>
         </div>
     </div>
+    <style>
+        .error-message {
+            color: red;
+        }
+    </style>
+    <script>
+        // Get form and input elements
+        const form = document.getElementById("loginForm");
+        const emailInput = form.querySelector('input[name="email"]');
+        const passwordInput = form.querySelector('input[name="password"]');
+        const emailError = document.getElementById("email-error");
+        const passwordError = document.getElementById("password-error");
+        const submitButton = document.getElementById("submitButton");
+
+        // Regular expression for validating email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        // Function to check if an email is valid
+        function isValidEmail(email) {
+            return emailRegex.test(email);
+        }
+
+        // Function to validate the form
+        function validateForm() {
+            let valid = true;
+            if(emailInput.value.trim() === ''){
+                emailError.textContent = 'Email is required'
+            }else if (!isValidEmail(emailInput.value)) {
+                emailError.textContent = "Please enter a valid email address.";
+                valid = false;
+            } else {
+                emailError.textContent = "";
+            }
+
+            if (passwordInput.value.trim() === "") {
+                passwordError.textContent = "Password is required.";
+                valid = false;
+            } else {
+                passwordError.textContent = "";
+            }
+
+            // Enable or disable the submit button based on validity
+            submitButton.disabled = !valid;
+
+            return valid;
+        }
+
+        // Add blur event listeners for input fields
+        emailInput.addEventListener("blur", validateForm);
+        passwordInput.addEventListener("blur", validateForm);
+
+        // Add submit event listener to the form
+        form.addEventListener("submit", function (e) {
+            if (!validateForm()) {
+                e.preventDefault(); // Prevent form submission if it's invalid
+            }
+        });
+
+    </script>
