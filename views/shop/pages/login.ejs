@@ -12,9 +12,8 @@
                 <div class="col-md-12 col-12 col-lg-6 col-xl-6 ms-auto me-auto">
                     <div class="login">
                         <div class="login-form-container">
-                            <div class="error-message" id="form-error" style="display: none;"></div>
                             <div class="login-form">
-                                <form action="" method="post" onsubmit="return validateForm()">
+                                <form  method="post" id="loginForm">
                                     <label for="email">Email*</label>
                                     <div class="error-message" id="email-error"></div>
                                     <input type="text" id="email" name="email" placeholder="Email">
@@ -25,7 +24,7 @@
                                         <div class="login-toggle-btn">
                                             <a href="/forgetPassword">Forgot Password?</a>
                                         </div>
-                                        <button type="submit" class="default-btn floatright mx-3">Login</button>
+                                        <button type="submit" id="submitButton" class="default-btn floatright mx-3" disabled>Login</button>
                                         <div class="d-flex justify-content-end">
                                             <a href="/register">Don't have an account ?</a>
                                             <a href="/register" class="ml-2">Register now</a>
@@ -45,59 +44,56 @@
         }
     </style>
     <script>
-        let isformValidated = false;
-        document.addEventListener('DOMContentLoaded', function () {
-            const emailInput = document.querySelector('input[name="email"]');
-            const passwordInput = document.querySelector('input[name="password"]');
+        // Get form and input elements
+        const form = document.getElementById("loginForm");
+        const emailInput = form.querySelector('input[name="email"]');
+        const passwordInput = form.querySelector('input[name="password"]');
+        const emailError = document.getElementById("email-error");
+        const passwordError = document.getElementById("password-error");
+        const submitButton = document.getElementById("submitButton");
 
-            emailInput.addEventListener('blur', function () {
-                validateEmail(emailInput);
-            });
+        // Regular expression for validating email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-            passwordInput.addEventListener('blur', function () {
-                validatePassword(passwordInput);
-            });
-
-
-        });
-        function validateEmail(input) {
-            const emailError = document.getElementById('email-error');
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (input.value.trim() === '') {
-                emailError.textContent = 'Email is required.';
-                isformValidated = false;
-            } else if (!emailRegex.test(input.value)) {
-                emailError.textContent = 'Invalid email.';
-                isformValidated = false;
-            } else {
-                emailError.textContent = '';
-                isformValidated = true;
-            }
-        }
-        function validatePassword(input) {
-            const passwordError = document.getElementById('password-error');
-            if (input.value.trim() === '') {
-                passwordError.textContent = 'Password is required.';
-                isformValidated = false;
-            } else {
-                passwordError.textContent = '';
-                isformValidated = true;
-            }
+        // Function to check if an email is valid
+        function isValidEmail(email) {
+            return emailRegex.test(email);
         }
 
-        const formError = document.getElementById('form-error');
+        // Function to validate the form
         function validateForm() {
-            if (!isformValidated) {
-                formError.style.display = 'block'
-                formError.textContent = 'Please fill in the required fields.';
-                setTimeout(hide, 3000);
-                return false;
+            let valid = true;
+            if(emailInput.value.trim() === ''){
+                emailError.textContent = 'Email is required'
+            }else if (!isValidEmail(emailInput.value)) {
+                emailError.textContent = "Please enter a valid email address.";
+                valid = false;
+            } else {
+                emailError.textContent = "";
             }
-            return true;
+
+            if (passwordInput.value.trim() === "") {
+                passwordError.textContent = "Password is required.";
+                valid = false;
+            } else {
+                passwordError.textContent = "";
+            }
+
+            // Enable or disable the submit button based on validity
+            submitButton.disabled = !valid;
+
+            return valid;
         }
-        function hide() {
-            formError.style.display = 'none'
-        }
-        setTimeout(hide, 3000)
+
+        // Add blur event listeners for input fields
+        emailInput.addEventListener("blur", validateForm);
+        passwordInput.addEventListener("blur", validateForm);
+
+        // Add submit event listener to the form
+        form.addEventListener("submit", function (e) {
+            if (!validateForm()) {
+                e.preventDefault(); // Prevent form submission if it's invalid
+            }
+        });
 
     </script>

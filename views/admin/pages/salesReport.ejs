@@ -131,6 +131,7 @@
             e.preventDefault()
             downloadPDF()
         })
+        // Generating sales Report
         document.querySelector('form').addEventListener('submit', async (e) => {
             e.preventDefault();
 
@@ -151,19 +152,21 @@
                 if (!response.ok) {
                     throw new Error('Failed to fetch data');
                 }
-                const data = await response.json();
+                const responseData = await response.json();
+                const data = responseData.matchedOrders;
+                const salesTotal = responseData.salesTotal;
                 if (!data.length) {
                     alert('No data in the dates')
                     return
                 }
                 // Call a function to create and populate the table
-                createTable(data);
+                createTable(data, salesTotal);
             } catch (error) {
                 console.error('Error:', error);
             }
         });
 
-        function createTable(data) {
+        function createTable(data, salesTotal) {
             const tableContainer = document.getElementById('table-container');
 
             // Clear any existing table content
@@ -204,6 +207,17 @@
 
             table.appendChild(tableBody);
             tableContainer.appendChild(table);
+
+            const totalRow = document.createElement('tr');
+            totalRow.innerHTML = `
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>₹${salesTotal}</td>
+    `;
+            tableBody.appendChild(totalRow);
         }
 
         // dowload as excelsheet
@@ -219,7 +233,7 @@
             }
 
             // Create a CSV content string
-            let csvContent = "Order ID,Order Date,Customer,Payment Method,Payment Status,Total\n";
+            let csvContent = "\uFEFFOrder ID,Order Date,Customer,Payment Method,Payment Status,Total\n";
 
             // Iterate through the rows of the table to extract data
             let rows = table.querySelectorAll('tbody tr');

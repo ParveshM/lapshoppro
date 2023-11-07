@@ -1,7 +1,7 @@
 const Coupon = require('../models/couponModel')
 const Order = require('../models/orderModel')
 const User = require('../models/userModel')
-const { decreaseQuantity, updateWalletAmount, decreaseWalletAmount } = require('../helpers/productReturnHelper')
+const { decreaseWalletAmount } = require('../helpers/productReturnHelper')
 
 
 // calculating total by decreasing the wallet amount 
@@ -23,7 +23,7 @@ async function isValidCoupon(couponCode, user, total) {
 
         } else if (findCoupon.maximumUses > 0) {
             if (user.coupons) {
-                console.log('user.in', user.coupons);
+
                 const couponId = String(findCoupon._id); //finding matching productId from orderDb
                 const isCouponused = user.coupons.find(coupon => String(coupon._id) === couponId);
 
@@ -34,7 +34,7 @@ async function isValidCoupon(couponCode, user, total) {
         }
 
         if (total < findCoupon.minimumPurchase || total > findCoupon.maximumPurchase) {
-            console.log('ksdkflj max check',);
+
             const minimumPurchase = findCoupon.minimumPurchase;
             const maximumPurchase = findCoupon.maximumPurchase;
             return { coupon: null, message: `Order total must be greater than ${minimumPurchase} , less than ${maximumPurchase} to get this coupon ` };
@@ -87,92 +87,6 @@ const generateInvoice = async (orderId) => {
         .populate('items.product')
         .populate('billingAddress')
 
-
-    // const docDefinition = {
-    //     content: [
-    //         {
-    //             text: 'INVOICE',
-    //             style: 'header',
-    //             alignment: 'center', // Center-align the "INVOICE" text
-    //         },
-    //         {
-    //             columns: [
-    //                 {
-    //                     width: '*',
-    //                     stack: [
-    //                         { text: `Order Date: ${orderData.orderDate.toLocaleDateString()}` },
-    //                         { text: `Order ID: ${orderData.orderId}` },
-    //                     ],
-    //                 },
-    //                 {
-    //                     width: '*',
-    //                     stack: [
-    //                         { text: `Delivered Date: ${orderData.deliveredDate.toLocaleDateString()}`, alignment: 'right' },
-    //                     ],
-    //                 },
-    //             ],
-    //         },
-    //         { text: 'Billing Address:', style: 'subheader' },
-    //         {
-    //             text: [
-    //                 orderData.billingAddress.name,
-    //                 orderData.billingAddress.address,
-    //                 orderData.billingAddress.town,
-    //                 orderData.billingAddress.state,
-    //                 orderData.billingAddress.postCode,
-    //                 orderData.billingAddress.phone,
-    //             ].join('\n'),
-    //             style: 'address',
-    //         },
-    //         { text: 'Payment Information:', style: 'subheader' },
-    //         {
-    //             text: `Payment Method: ${orderData.paymentMethod}\nPayment Status: ${orderData.paymentStatus}\nWallet Payment: ₹${orderData.walletPayment}`,
-    //             style: 'info',
-    //         },
-    //         { text: 'Order Summary:', style: 'subheader' },
-    //         {
-    //             table: {
-    //                 widths: ['*', '*', '*'],
-    //                 body: [
-    //                     [{ text: 'Product', style: 'tableHeader' }, { text: 'Quantity', style: 'tableHeader' }, { text: 'Price', style: 'tableHeader' }],
-    //                     ...orderData.items.map(item => [item.product.title, item.quantity, `₹${item.price}`]),
-    //                     ['Subtotal', '', `₹${orderData.subtotal}`],
-    //                     ['Processing Fee', '', `₹${orderData.processingFee}`],
-    //                     ['Total', '', `₹${orderData.total}`],
-    //                 ],
-    //             },
-    //         },
-    //     ],
-    //     styles: {
-    //         header: {
-    //             fontSize: 20,
-    //             bold: true,
-    //         },
-    //         subheader: {
-    //             fontSize: 14,
-    //             bold: true,
-    //             margin: [0, 10, 0, 5],
-    //         },
-    //         address: {
-    //             fontSize: 12,
-    //             margin: [0, 0, 0, 10],
-    //         },
-    //         info: {
-    //             fontSize: 12,
-    //             margin: [0, 0, 0, 10],
-    //         },
-    //         tableHeader: {
-    //             fillColor: '#337ab7',
-    //             color: '#ffffff',
-    //             alignment: 'center',
-    //             bold: true,
-    //         },
-    //         tableCell: {
-    //             fillColor: '#f2f2f2',
-    //             alignment: 'center',
-    //         },
-    //     },
-    // };
     const docDefinition = {
         content: [
             {
@@ -221,7 +135,8 @@ const generateInvoice = async (orderId) => {
                         stack: [
                             { text: 'Payment Information:', style: 'subheader', alignment: 'right' },
                             {
-                                text: `Payment Method: ${orderData.paymentMethod}\nPayment Status: ${orderData.paymentStatus}\nWallet Payment: ₹${orderData.walletPayment},`,
+
+                                text: `Payment Method: ${orderData.paymentMethod}\nPayment Status: ${orderData.paymentStatus}\nWallet Payment: ₹${orderData.walletPayment}`,
                                 style: 'info',
                                 alignment: 'right'
                             },
@@ -244,8 +159,8 @@ const generateInvoice = async (orderId) => {
             },
             {
 
-                text: 'Thank you for shopping with us , Have a good day.', // You can customize this text
-                alignment: 'center', // Adjust the alignment as needed
+                text: 'Thank you for shopping with us , Have a good day.',
+                alignment: 'center',
                 style: 'footer',
                 margin: [0, 20, 0, 0]
 
@@ -281,10 +196,6 @@ const generateInvoice = async (orderId) => {
             },
         },
     };
-
-
-    // Your PDF generation and download code...
-
 
     return docDefinition
 

@@ -1,4 +1,3 @@
-const { addTowishlist } = require("../../../../controller/userContrl");
 
 // Script for filtering product
 const query = window.location.search;
@@ -15,8 +14,6 @@ const queryParameters = [];
 if (selectedCategory) {
     queryParameters.push(`category=${selectedCategory}`);
 }
-
-
 
 lowtoHigh.addEventListener('click', (e) => {
     e.preventDefault()
@@ -61,6 +58,7 @@ function toggleWishlist(productId) {
     const wishlistMessage = document.getElementById('wishlist-message');
     const fixedDiv = document.getElementById('fixed-div');
     const wishlist = document.getElementById('wishlist-' + productId);
+    const wishlistAnimate = document.querySelector('.icon-wishlist')
     function hide() {
         fixedDiv.style.display = 'none';
     }
@@ -75,7 +73,12 @@ function toggleWishlist(productId) {
                 fixedDiv.style.backgroundColor = 'green';
                 wishlistMessage.innerText = response.message;
                 wishlist.nextElementSibling.style.color = 'red';
-                setTimeout(hide, 3000);
+                wishlistAnimate.classList.toggle('added');
+                setTimeout(function () {
+                    hide();
+                    wishlistAnimate.classList.remove('added');
+                }, 3000);
+
             } else {
                 fixedDiv.style.color = '';
                 fixedDiv.style.display = 'block';
