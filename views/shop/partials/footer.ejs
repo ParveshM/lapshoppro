@@ -1,38 +1,43 @@
 <style>
-#loader-container {
-    position: fixed;
-    top: 60%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background: rgba(255, 255, 255, 0.9);
-    z-index: 9999;
-}
+    #loader-container {
+        position: fixed;
+        top: 60%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background: transparent;
+        z-index: 9999;
+    }
 
-#loader-container p {
-    margin-top: 10px; /* Adjust the margin as needed to position the text */
-    font-size: 16px; /* Adjust the font size as needed */
-    /* Other text styles */
-}
+    #loader-container p {
+        margin-top: 10px;
+        /* Adjust the margin as needed to position the text */
+        font-size: 16px;
+        /* Adjust the font size as needed */
+        /* Other text styles */
+    }
 
-.loader {
-    border: 8px solid #f3f3f3;
-    border-top: 8px solid #3498db;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    animation: spin 2s linear infinite;
-}
+    .loader {
+        border: 8px solid #f3f3f3;
+        border-top: 8px solid #3498db;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        animation: spin 2s linear infinite;
+    }
 
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
 
-
+        100% {
+            transform: rotate(360deg);
+        }
+    }
 </style>
 <div id="loader-container">
     <div class="loader"></div>
@@ -40,7 +45,7 @@
 </div>
 
 
-<footer class="footer-area">
+<footer class="footer-area ">
     <div class="footer-top-area bg-img pt-105 pb-65" style="background-image: url(/assets/img/bg/1.jpg)"
         data-overlay="9">
         <div class="container">
@@ -324,23 +329,11 @@
 </div>
 
 <script>
-    // Show the loader
-function showLoader() {
     const loader = document.getElementById('loader-container');
-    loader.style.display = 'block';
-}
-
-// Hide the loader
-function hideLoader() {
-    const loader = document.getElementById('loader-container');
-    loader.style.display = 'none';
-}
-
-// You can call showLoader() when you start loading content and hideLoader() when it's done
-showLoader();
-document.addEventListener('DOMContentLoaded', () => {
-    hideLoader(); // Hide the loader when the page has finished loading
-});
+    loader.style.display = 'block'; 
+    document.addEventListener('DOMContentLoaded', () => {
+        loader.style.display = 'none'
+    })
 
 </script>
 <!-- all js here -->
