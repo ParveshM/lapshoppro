@@ -312,9 +312,7 @@ const shopping = asyncHandler(async (req, res) => {
             if (req.query.search && req.query.category) {
                 if (categoryMapping.hasOwnProperty(req.query.category)) {
                     filter.categoryName = categoryMapping[req.query.category];
-                } else {
-                    filter.categoryName = cat
-                }
+                
             }
         }
 
