@@ -293,7 +293,7 @@ const shopping = asyncHandler(async (req, res) => {
         });
 
         const filter = { isListed: true };
-        let cat = '1217a681e118b54f54d810a1'
+       
         if (req.query.category) {
             // Check if the category name exists in the mapping
             if (categoryMapping.hasOwnProperty(req.query.category)) {
