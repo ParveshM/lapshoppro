@@ -5,14 +5,14 @@ const asyncHandler = require('express-async-handler')
 const sharp = require('sharp')
 const path = require('path')
 
-
+ 
 // productManagement list the available products--
 const productManagement = asyncHandler(async (req, res) => {
     try {
         const findProduct = await Product.find().populate('categoryName').populate("images");
         res.render('./admin/pages/products', { title: 'Products', productList: findProduct })
     } catch (error) {
-        throw new Error(error)
+        throw new Error(error) 
     }
 })
 
